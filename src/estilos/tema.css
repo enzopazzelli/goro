@@ -1,0 +1,55 @@
+/*
+ * Único archivo con valores de color literales de todo el sistema.
+ * Regla dura: ni un #hex, ni un rgba(), ni una clase de color de librería
+ * fuera de acá. Si un componente necesita un color que no existe como token,
+ * se agrega el token — no el literal.
+ *
+ * Los tokens se nombran por ROL, nunca por color, para que cambiar la
+ * identidad del comercio sea redefinir estas variables y no tocar
+ * componentes.
+ *
+ * La paleta viene del mockup de venta (index.html), dirección "setentoso
+ * cálido": la que le corresponde al rubro, pero corrida a pistacho y dulce
+ * de leche en vez del naranja quemado de manual.
+ */
+
+:root {
+  /* --- Estructura --- */
+  --marco: #2a1b12; /* barra lateral y bloques oscuros */
+  --marco-suave: #3b2a1e; /* superficies dentro del marco oscuro */
+  --fondo: #f7f1e4; /* área de trabajo */
+  --superficie: #fffcf6; /* tarjetas, tablas, campos */
+  --superficie-honda: #ede4d1; /* filas alternas, superficies hundidas */
+  --linea: #e2d7c0; /* bordes y separadores */
+  --texto: #2a1b12; /* 14.7:1 sobre --fondo */
+  --texto-suave: #6e5f4e; /* rótulos y datos secundarios — 5.5:1 */
+
+  /* --- Marca (lo que se cambia por cliente) --- */
+  --acento: #3f6b3a; /* acción principal — 6.1:1 con --superficie encima */
+  --acento-texto: #fffcf6; /* texto legible arriba de --acento */
+  --acento-fondo: #e4eddc; /* fondo de estado activo */
+
+  /* --- Destaque: totales y lo que se lee de lejos --- */
+  --destacado: #c97b34;
+  --destacado-texto: #8a5620; /* el destacado oscurecido, para usar como texto */
+  --destacado-fondo: #f8ecd9;
+
+  /* --- Semánticos (NO se cambian por cliente: significan algo) --- */
+  --ok: #2c4c28; /* al día, stock sano, caja cuadrada */
+  --ok-fondo: #e4eddc;
+  --alerta: #a83232; /* faltante, deuda, anulado, diferencia */
+  --alerta-fondo: #f9e5e2;
+
+  /* --- Código de barras ---
+   * Negro puro sobre blanco puro. NO son colores de la identidad y no se
+   * personalizan nunca: un lector mide contraste, y bajarlo aunque sea a un
+   * gris oscuro es lo que hace que una etiqueta impresa deje de leerse.
+   * Están acá como tokens solo para no romper la regla de "ningún literal
+   * fuera de este archivo". */
+  --codigo-barra: #000000;
+  --codigo-fondo: #ffffff;
+
+  /* --- Forma --- */
+  --r: 10px; /* radio base */
+  --r-grande: 18px; /* tarjetas y contenedores */
+}

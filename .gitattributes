@@ -1,0 +1,10 @@
+# El repo guarda LF siempre. Sin esto, cada máquina Windows mete un diff de
+# fin de línea en archivos que nadie tocó, y las revisiones se vuelven ruido.
+* text=auto eol=lf
+
+# Binarios: que git no intente normalizarlos.
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary
+*.xlsx binary

@@ -1,0 +1,18 @@
+node_modules
+.next
+out
+build
+next-env.d.ts
+*.tsbuildinfo
+
+# Claves reales. Solo se versiona .env.local.example.
+.env
+.env.local
+.env*.local
+
+supabase/.temp
+supabase/.branches
+
+.DS_Store
+Thumbs.db
+desktop.ini

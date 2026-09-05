@@ -1,0 +1,15 @@
+.next
+node_modules
+package-lock.json
+supabase/.temp
+supabase/.branches
+
+# El mockup es HTML plano escrito a mano, con un formato propio pensado para
+# leerse de arriba a abajo en una reunión. Prettier lo reordenaría sin motivo.
+index.html
+
+# La documentación se escribe para leerse, no para cumplir un ancho de línea.
+# Prettier reflowa las tablas y ensucia el diff de un documento que se revisa
+# a ojo. El formato de código sí se automatiza; el de la prosa no.
+*.md
+

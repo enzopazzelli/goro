@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@import "../estilos/tema.css";
+
+/* Los tokens de tema.css se exponen como utilidades de Tailwind (bg-fondo,
+   text-texto-suave, border-linea…). Es lo que permite que ningún componente
+   escriba un color literal y que el tema siga siendo un solo archivo. */
+@theme inline {
+  --color-marco: var(--marco);
+  --color-marco-suave: var(--marco-suave);
+  --color-fondo: var(--fondo);
+  --color-superficie: var(--superficie);
+  --color-superficie-honda: var(--superficie-honda);
+  --color-linea: var(--linea);
+  --color-texto: var(--texto);
+  --color-texto-suave: var(--texto-suave);
+  --color-acento: var(--acento);
+  --color-acento-texto: var(--acento-texto);
+  --color-acento-fondo: var(--acento-fondo);
+  --color-destacado: var(--destacado);
+  --color-destacado-texto: var(--destacado-texto);
+  --color-destacado-fondo: var(--destacado-fondo);
+  --color-ok: var(--ok);
+  --color-ok-fondo: var(--ok-fondo);
+  --color-alerta: var(--alerta);
+  --color-alerta-fondo: var(--alerta-fondo);
+
+  --radius-base: var(--r);
+  --radius-grande: var(--r-grande);
+
+  --font-display: var(--fuente-display);
+  --font-sans: var(--fuente-texto);
+  --font-mono: var(--fuente-dato);
+}
+
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: var(--fuente-texto);
+}
+
+/* Piso de accesibilidad: el foco de teclado se tiene que ver SIEMPRE. En un
+   mostrador se opera con las manos ocupadas y mucha gente tabula. */
+:focus-visible {
+  outline: 3px solid var(--acento);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Plata, kilos y códigos van en la tipografía de dato: alineados en columna,
+   comparables de un vistazo. */
+.numero {
+  font-family: var(--fuente-dato);
+  font-variant-numeric: tabular-nums;
+}

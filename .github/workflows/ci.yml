@@ -1,0 +1,71 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  # Botón "Run workflow" en la pestaña Actions, para dispararlo a mano sin
+  # tener que inventar un commit.
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run formato
+
+      - run: npm run lint
+
+      # `next typegen` antes de tsc: los tipos globales que usan los layouts
+      # los genera Next dentro de .next/, que en un clon limpio no existe.
+      # Sin eso, tsc falla acá con "Cannot find name 'LayoutProps'" aunque
+      # localmente ande.
+      - run: npm run typecheck
+
+      - run: npm run test:unit
+
+      # Typecheck y build no son lo mismo: un proyecto con los tipos sanos
+      # todavía puede romperse al empaquetar (imports de servidor en cliente,
+      # dependencias que no bundlean). Es barato y atrapa una clase entera de
+      # errores que el resto de los pasos no ve.
+      - run: npm run build
+
+  # ---------------------------------------------------------------------------
+  # Los seis hallazgos de ../lecciones-ciro-polirrubro.md eran todos de base de
+  # datos, y ninguno lo agarró una herramienta: aparecieron porque alguien
+  # preguntó a mano. RLS se aplica en el motor de Postgres, así que no se puede
+  # probar con mocks — hace falta una base real.
+  #
+  # Este job corre los *.rls.test.ts contra un proyecto Supabase de PRUEBA,
+  # nunca el de producción. Se activa cuando existe la variable de repo
+  # SUPABASE_PRUEBAS=si y sus tres secretos. Mientras no exista, se saltea sin
+  # romper el CI — pero queda escrito acá para que sea un paso pendiente
+  # visible, y no una intención que se olvida.
+  # ---------------------------------------------------------------------------
+  seguridad:
+    if: vars.SUPABASE_PRUEBAS == 'si'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx vitest run --testNamePattern "" **/*.rls.test.ts
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL_PRUEBAS }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_PRUEBAS }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY_PRUEBAS }}
