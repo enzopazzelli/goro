@@ -77,6 +77,13 @@ Y en cualquier función `security definer`, comparar roles con
 `coalesce(auth_rol() = 'duenio', false)`. Un `NULL` pelado en un `if` de
 PL/pgSQL **no** dispara la excepción, al revés que en una política RLS.
 
+## Exportar a Excel
+
+Todo texto cargado por una persona (nombre de sabor, detalle de un gasto, nota)
+se sanea antes de escribir la celda: si empieza con `=`, `+`, `-` o `@`, se le
+antepone una comilla. Si no, Excel lo interpreta como fórmula al abrir el
+archivo — es CSV injection, categoría documentada por OWASP.
+
 ## Antes de dar algo por terminado
 
 ```

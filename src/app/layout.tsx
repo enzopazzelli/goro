@@ -1,14 +1,19 @@
 import type { Metadata, Viewport } from "next";
+import { COLOR_NAVEGADOR, NOMBRE_COMERCIO } from "@/config/comercio";
 import { dato, display, texto } from "@/lib/fuentes";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Goro — Sistema de gestión",
-  description: "Sistema de gestión para la heladería Goro.",
+  // El template deja que cada pantalla ponga solo su nombre.
+  title: {
+    default: `${NOMBRE_COMERCIO} — Sistema de gestión`,
+    template: `%s · ${NOMBRE_COMERCIO}`,
+  },
+  description: "Sistema de gestión para la heladería.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#2a1b12",
+  themeColor: COLOR_NAVEGADOR,
 };
 
 export default function LayoutRaiz({ children }: LayoutProps<"/">) {

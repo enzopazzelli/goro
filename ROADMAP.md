@@ -19,12 +19,14 @@ Se apoya en dos documentos que ya existen y no se rediscuten acá:
 |                                | Estado                                                                                                          |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------- |
 | Mockup de venta (`index.html`) | Listo y congelado. Sirve para vender el proyecto, no para crecer. No se le agrega nada más.                     |
-| Sistema real                   | Andamiaje en pie: Next.js + TypeScript, tema, CI, tests. El generador de códigos ya está hecho (paso 0.1).      |
+| Sistema real                   | Núcleo escrito: ingreso por usuario, roles, RLS, menú por rol. Falta aplicar la migración en Supabase.          |
 | Stack                          | Next.js App Router + Supabase (Postgres, Auth, RLS). Un módulo por carpeta, tokens de color en un solo archivo. |
 | Hardware confirmado            | Pistola lectora (Goro la tiene). Balanza simple: **pesa y muestra, no imprime**.                                |
 | Hardware sin decidir           | Impresora de etiquetas. Impresora de tickets.                                                                   |
 | Alcance                        | **Un solo local**, ni ahora ni previsto a futuro. Decidido: el modelo de datos no lleva sucursal.               |
 | Códigos de proveedor           | **No hay.** Lo que llega del proveedor viene sin etiquetar. Todo código lo genera el sistema.                   |
+| Módulos pedidos                | Inventario, Ventas, Caja, Historial, Usuarios, Panel — más el generador de códigos.                             |
+| Fuera de alcance               | **Clientes / cuenta corriente**: Goro no lo pidió. Puede aparecer más adelante, así que no se cierra la puerta. |
 
 ---
 
@@ -39,7 +41,7 @@ El pedido es claro, pero esconde una trampa del rubro: **en una heladería
 | Qué es                                                             | ¿Lleva código?                                 | Quién lo genera                      | Para qué sirve leerlo                                                              |
 | ------------------------------------------------------------------ | ---------------------------------------------- | ------------------------------------ | ---------------------------------------------------------------------------------- |
 | **Pote armado** que va al freezer de autoservicio (1/4, 1/2, 1 kg) | Sí, **uno por pote físico**                    | El sistema, al armarlo               | Cobrar en un segundo, con el peso y el precio ya congelados en la etiqueta         |
-| **Cubeta / bachada** de producción                                 | Sí, **uno por bachada**                        | El sistema, al producirla            | Trazabilidad: qué lote es, cuándo se hizo, cuánto rindió, cuánto se tiró           |
+| **Balde** de helado                                                | Sí, **uno por balde físico**                   | El sistema, cuando el balde entra    | Saber cuál se está usando en el mostrador, cuál está entero para vender, y cuál se fue en canje |
 | **Insumo comprado** (cucuruchos, potes vacíos, salsas)             | Sí, **uno por tipo de insumo** — no por unidad | El sistema, al dar de alta el insumo | Recibir el pedido del proveedor sin buscar el ítem a mano en una lista de cuarenta |
 
 Nada de lo que entra al local viene etiquetado de fábrica: **el proveedor de
@@ -136,6 +138,69 @@ que el código no lleve datos.
 
 ---
 
+## 3. El balde es la unidad de inventario, no el sabor
+
+Esta es la corrección más grande contra el mockup, y hay que hacerla antes de
+escribir la tabla de inventario.
+
+El mockup modela una cubeta por sabor, con sus kilos. Es mentira: **de Frutilla
+puede haber tres baldes a la vez** — uno abierto en el pozzetti, del que se
+sirven cucuruchos, y dos enteros en la cámara esperando. De esos dos, uno puede
+irse vendido entero y el otro terminar reemplazando al del mostrador.
+
+Si el inventario guarda "Frutilla: 8,4 kg", esa realidad no entra. Hay que
+guardar **un balde por balde**, cada uno con su identidad, su código y su
+estado:
+
+| Estado      | Qué significa                                                        |
+| ----------- | -------------------------------------------------------------------- |
+| `cerrado`   | Entero, en la cámara. Se puede vender así o abrir.                   |
+| `abierto`   | Es el que está en el mostrador. Se le descuentan kilos por cada helado. |
+| `vendido`   | Se fue entero, con envase y todo.                                    |
+| `vacio`     | Se terminó sirviendo. Espera el canje.                               |
+| `canjeado`  | Volvió al proveedor a cambio de uno nuevo.                           |
+
+"Frutilla tiene 8,4 kg" pasa a ser una **suma derivada** de los baldes de
+frutilla que están `cerrado` o `abierto`, no un número que se pisa. Es la misma
+regla de siempre —el stock no se sobrescribe, se suma un movimiento— pero
+aplicada un nivel más abajo.
+
+Dos consecuencias que ya se pueden dejar resueltas:
+
+1. **Solo puede haber un balde `abierto` por sabor** (o el número que Goro
+   diga). Eso es un invariante de "solo uno", así que va en un **índice único
+   parcial**, nunca en un `select` previo que chequea antes de insertar.
+2. **Que haya tres baldes de Frutilla no genera ningún conflicto de códigos**,
+   justamente porque el código identifica al balde y no al sabor. Es la misma
+   razón por la que dos potes de 1/4 de frutilla tienen códigos distintos. Si
+   el código identificara al sabor, este caso sería imposible de representar.
+
+### El ciclo del balde
+
+Goro compra baldes y, cuando compra, **entrega el vacío que tenía y le dan
+otro**. Pero si vende el balde entero, **el cliente se queda con el envase** y
+Goro tiene que comprar uno para reponer.
+
+```
+compra → cerrado → abierto → vacio → canjeado → (vuelve otro balde lleno)
+              └──────────────────→ vendido  (el envase se va con el cliente)
+```
+
+Un balde no muere cuando se vacía: sale del circuito por una de dos puertas, y
+**las dos puertas cuestan distinto**. En el canje el envase vuelve y no se
+paga. En la venta el envase se va, y reponerlo es plata que sale.
+
+Eso tiene una consecuencia que conviene tener escrita desde ahora: **vender un
+balde entero deja menos margen del que parece**, porque al helado hay que
+sumarle el envase perdido. Si el sistema guarda el costo del envase, el panel
+puede mostrar el margen real en vez del aparente. Es exactamente el tipo de
+número que hoy nadie calcula y que justifica tener el sistema.
+
+Y es lo que hace que el balde necesite identidad propia en vez de un contador:
+hay que poder decir **cuál** balde se fue, cuándo, y por qué puerta.
+
+---
+
 ## Fase 0 — Antes de escribir una línea de código
 
 Días, no semanas. Es la fase más barata y la que evita rehacer.
@@ -202,16 +267,16 @@ Cada fase termina en algo que Goro puede tocar y verificar. Ninguna termina en
 
 | #      | Fase                                                                                           | Entregable verificable                                                                                                                                                                                                         |
 | ------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **1**  | **Núcleo** — auth, roles, layout, navegación, esquema base, RLS                                | Goro entra con su usuario, Ana entra con el suyo, y cada uno ve un menú distinto                                                                                                                                               |
-| **2**  | **Stock (M1)** — cubetas por sabor, insumos, movimientos, alertas de mínimo                    | Se repone una cubeta y el nivel sube; se vende a mano y baja; queda el historial de por qué                                                                                                                                    |
-| **3**  | **Etiquetas y códigos de barras** — el pedido de Goro                                          | Dos cosas: (a) se arma un pote, se pesa, se imprime su etiqueta y la pistola la lee trayendo sabor + peso + precio; (b) se imprime la hoja de códigos de insumos y escanear uno trae el insumo correcto para cargarle cantidad |
-| **4**  | **Ventas / TPV (M3)** — formatos y sabores, lectura de pistola, pago simple y mixto, anulación | Se cobra un pote escaneándolo y se cobra un cucurucho a dedo, en la misma pantalla, sin cambiar de modo                                                                                                                        |
-| **5**  | **Caja (M5)** — apertura, gastos, cierre con arqueo                                            | Se cierra el turno y la diferencia contra lo contado a mano da bien                                                                                                                                                            |
-| **6**  | **Panel (M4)** — vendido del día, ranking de sabores, ventas por hora                          | Goro mira el gráfico de ventas por hora y decide personal para el finde                                                                                                                                                        |
-| **7**  | **Clientes (M2)** — cuenta corriente de kioscos y clubes                                       | Se le fía al Kiosco El Trébol y el saldo queda bien                                                                                                                                                                            |
-| **8**  | **Producción / bachadas** — qué se hizo, con qué costo, cuánto rindió                          | Se registra una bachada, sale su etiqueta, y el costo por kilo del sabor se actualiza solo                                                                                                                                     |
-| **9**  | **Usuarios y permisos granulares (M8)**                                                        | Goro le saca a Ana el permiso de anular ventas desde una pantalla, sin llamar a nadie                                                                                                                                          |
-| **10** | **Reportes, Excel y backups (M7, M9)**                                                         | Se exporta el stock a Excel y se vuelve a importar el mismo archivo                                                                                                                                                            |
+| **1**  | **Núcleo** — auth, roles, layout, navegación, esquema base, RLS ← _escrito, falta aplicar la migración_ | Goro entra con su usuario, Ana entra con el suyo, y cada uno ve un menú distinto                                                                                                                                       |
+| **2**  | **Inventario** — baldes identificados, insumos, movimientos, y **edición del producto**        | Entran dos baldes de Frutilla; se abre uno y el otro queda entero. Goro le pone a Frutilla un mínimo distinto que al resto y la alerta salta antes solo ahí                                                                    |
+| **3**  | **Etiquetas y códigos de barras** — el pedido de Goro                                          | Tres cosas: (a) se arma un pote, se pesa, se imprime su etiqueta y la pistola la lee trayendo sabor + peso + precio; (b) se imprime la hoja de códigos de insumos y escanear uno trae el insumo; (c) cada balde recibe su código al entrar |
+| **4**  | **Ventas / TPV** — mostrador, **baldes enteros e insumos sueltos**, pistola, anulación         | Se cobra un pote escaneándolo, un cucurucho a dedo y un balde entero, en la misma pantalla y sin cambiar de modo                                                                                                                |
+| **5**  | **Caja** — apertura, gastos, cierre con arqueo                                                 | Se cierra el turno y la diferencia contra lo contado a mano da bien                                                                                                                                                            |
+| **6**  | **Historial** — ventas del turno, filtros, ticket, anulación                                   | Se busca la venta de hace dos horas, se abre el ticket y se anula: el stock vuelve solo                                                                                                                                        |
+| **7**  | **Panel** — vendido del día, ranking de sabores, ventas por hora                               | Goro mira el gráfico de ventas por hora y decide personal para el finde                                                                                                                                                        |
+| **8**  | **Usuarios y permisos**                                                                        | Goro le saca a Ana el permiso de anular ventas desde una pantalla, sin llamar a nadie                                                                                                                                          |
+| **9**  | **Ciclo del balde** — canje con el proveedor, o venta                                          | Goro entrega un balde vacío contra uno nuevo, y el sistema sabe cuáles se fueron por canje y cuáles vendidos (que son los que le costaron un envase)                                                                           |
+| **10** | **Exportar a Excel** — inventario, ventas, caja                                                | Goro baja el inventario a Excel y lo abre en su compu, sin pedirle nada a nadie                                                                                                                                                |
 
 **Por qué la Fase 3 va antes que la Fase 4**: es lo que Goro pidió y lo que
 más quiere ver funcionando. Además, diseñar el TPV sabiendo desde el principio
@@ -244,27 +309,44 @@ insumos                              -- código de ARTÍCULO
 ```
 
 ```
-etiquetas                            -- código de UNIDAD
+baldes                               -- código de UNIDAD, y la unidad de inventario
   id
-  codigo            text unique not null   -- "GP0001234"
-  tipo              enum(pote, bachada)
+  codigo            text unique not null   -- "GC0000042"
   sabor_id          fk sabores
-  bachada_id        fk bachadas       -- de qué lote salió: trazabilidad
-  peso_g            int               -- peso REAL medido en la balanza
-  precio            int               -- congelado al imprimir, en pesos enteros
-  estado            enum(impresa, vendida, anulada, descartada)
-  venta_id          fk ventas         -- null hasta que se cobra
-  impresa_por       fk usuarios
-  impresa_en        timestamptz
+  kg_inicial        numeric           -- lo que traía al entrar
+  kg_restante       numeric           -- se descuenta sirviendo; nunca se pisa
+  estado            enum(cerrado, abierto, vendido, vacio, canjeado)
+  costo             int               -- lo que costó el balde lleno
+  costo_envase      int               -- lo que sale reponer el envase si se vende
+  venta_id          fk ventas         -- solo si salió por la puerta "vendido"
+  entro_en          timestamptz
+  salio_en          timestamptz
 ```
 
-Dos tablas, pero **un solo punto de entrada para el lector**: una función
-`resolver_codigo(texto)` que busca en las dos y devuelve qué es y qué hacer con
+```
+potes                                -- código de UNIDAD, armado para el freezer
+  id
+  codigo            text unique not null   -- "GP0001234"
+  balde_id          fk baldes         -- de qué balde salió: trazabilidad
+  peso_g            int               -- peso REAL medido en la balanza
+  precio            int               -- congelado al imprimir, en pesos enteros
+  estado            enum(impreso, vendido, anulado, descartado)
+  venta_id          fk ventas         -- null hasta que se cobra
+  armado_por        fk usuarios
+  armado_en         timestamptz
+```
+
+Tres tablas, pero **un solo punto de entrada para el lector**: una función
+`resolver_codigo(texto)` que busca en las tres y devuelve qué es y qué hacer con
 eso. La pistola manda una cadena y nada más — no sabe, ni tiene que saber, si
-lo que escaneó es un artículo o una unidad. Toda pantalla que lea códigos
+lo que escaneó es un insumo, un balde o un pote. Toda pantalla que lea códigos
 (vender, recibir mercadería, hacer un ajuste) usa esa misma función. Si mañana
-aparece una tercera naturaleza de código, se agrega ahí y no en cuatro
+aparece una cuarta naturaleza de código, se agrega ahí y no en cuatro
 pantallas.
+
+`kg_restante` vive en el balde y no en el sabor: los kilos de un sabor son la
+suma de sus baldes `cerrado` y `abierto`. Un `select` derivado, no una columna
+que dos ventas simultáneas puedan pisarse.
 
 Cuatro reglas heredadas de `../lecciones-ciro-polirrubro.md`, aplicadas acá:
 
@@ -272,13 +354,14 @@ Cuatro reglas heredadas de `../lecciones-ciro-polirrubro.md`, aplicadas acá:
    chequea si existe. Dos etiquetas impresas en el mismo segundo desde dos
    dispositivos tienen que chocar contra el motor, no contra una carrera.
    (Lección 3.)
-2. **"Una etiqueta no se cobra dos veces" también es un índice**, no un `if`:
-   índice único parcial sobre `venta_id where estado = 'vendida'`, más el
+2. **"Un pote no se cobra dos veces" también es un índice**, no un `if`:
+   índice único parcial sobre `venta_id where estado = 'vendido'`, más el
    cambio de estado dentro de la misma transacción que registra la venta.
-3. **Cobrar un pote etiquetado toca cuatro cosas** — la etiqueta, el stock del
-   sabor, la caja y (si es cuenta corriente) el saldo del cliente. Va en **una
-   sola función del lado del servidor**, nunca en updates sueltos desde el
-   navegador.
+   Lo mismo para **"un solo balde abierto por sabor"**: índice único parcial
+   sobre `sabor_id where estado = 'abierto'`.
+3. **Cobrar toca varias cosas a la vez** — el pote o el balde, los kilos, los
+   insumos y la caja. Va en **una sola función del lado del servidor**, nunca
+   en updates sueltos desde el navegador.
 4. **El stock nunca se pisa con un número absoluto.** Imprimir una etiqueta de
    pote es un movimiento de stock (`-262 g de frutilla`), igual que venderla o
    descartarla. Si algo no cierra un lunes, se tiene que poder reconstruir.
@@ -309,6 +392,17 @@ Y una regla nueva, propia de este proyecto:
 Todo esto se conversa, no se construye todavía. Cada uno es un módulo, no una
 pantalla más:
 
+- **Clientes / cuenta corriente.** Goro no lo pidió: hoy cobra al contado. El
+  mockup lo muestra porque en el rubro es común (kioscos y clubes que compran
+  por mayor y pagan después), y es lo más probable que aparezca más adelante.
+  Por eso las ventas se modelan dejándole lugar desde ahora: una venta puede
+  llegar a tener un cliente, aunque por ahora siempre sea nulo. Agregar el
+  módulo después no debería obligar a migrar las ventas viejas.
+- **Producción / bachadas.** Trazabilidad de fábrica: qué se elaboró, con qué
+  costo, cuánto rindió. No lo pidió. El balde ya da trazabilidad hacia atrás
+  hasta el proveedor, que es lo que hoy necesita.
+- **Backups.** No está en los módulos pedidos, pero conviene hablarlo aparte:
+  no es una comodidad, es lo que evita perder un año de ventas.
 - Venta por peso libre con balanza (hoy hay balanza simple; si aparece una
   etiquetadora, el flujo de armado se rediseña)
 - Delivery / pedidos por WhatsApp
