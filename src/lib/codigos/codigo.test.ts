@@ -20,8 +20,8 @@ describe("generarCodigo", () => {
 });
 
 describe("leerCodigo", () => {
-  it("lee de vuelta lo que generó, para los tres tipos", () => {
-    for (const tipo of ["A", "P", "C"] as const) {
+  it("lee de vuelta lo que generó, para los cuatro tipos", () => {
+    for (const tipo of ["A", "P", "B", "C"] as const) {
       for (const secuencia of [1, 42, 999_999]) {
         expect(leerCodigo(generarCodigo(tipo, secuencia))).toEqual({ tipo, secuencia });
       }

@@ -57,7 +57,7 @@ caro del módulo:
 | -------------------------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | Qué identifica             | Un _tipo_ de cosa: "Cucuruchos"                                                                                        | Un objeto físico: _este_ pote                                   |
 | Cuántos existen            | Uno solo, y dura para siempre                                                                                          | Uno por objeto, y se consume al venderlo                        |
-| Se aplica a                | Insumos                                                                                                                | Potes armados, bachadas                                         |
+| Se aplica a                | Insumos                                                                                                                | Potes armados, baldes, bachadas                                 |
 | Dónde vive                 | Pegado en el estante donde para el insumo, y en una hoja de códigos plastificada colgada donde se recibe la mercadería | En el objeto mismo                                              |
 | Qué contesta al escanearlo | "Esto es Cucuruchos" → y ahora decime cuántos entran o salen                                                           | "Esto es _este_ pote: frutilla, 262 g, $6.500, lote del martes" |
 
@@ -121,7 +121,7 @@ Code 128, corto y legible también a ojo debajo de las barras:
 G P 000123 4
 │ │ │      └─ dígito verificador (evita que un código mal tipeado a mano entre)
 │ │ └──────── secuencia
-│ └────────── tipo: A = artículo (insumo) · P = pote · C = cubeta/bachada
+│ └────────── tipo: A = artículo (insumo) · P = pote · B = balde · C = bachada
 └──────────── prefijo del comercio
 ```
 
@@ -298,8 +298,9 @@ físico que los dos siguientes necesitan para poder hacerse.
       - `code128.ts` — Code 128 subconjunto B escrito a mano (~60 líneas, sin
         dependencias). El código es una identidad, no lleva datos adentro.
       - `codigo.ts` — el formato propio `G` + tipo + secuencia + verificador, con
-        los tres tipos (`A` artículo, `P` pote, `C` bachada) y una lectura que
-        devuelve `null` en vez de explotar: el mostrador escanea cualquier cosa.
+        los cuatro tipos (`A` artículo, `P` pote, `B` balde, `C` bachada) y una
+        lectura que devuelve `null` en vez de explotar: el mostrador escanea
+        cualquier cosa.
       - La página de inicio imprime cuatro códigos de muestra, uno por caso.
 
       El riesgo real de este módulo no es la lógica, son treinta líneas: es un
@@ -395,7 +396,7 @@ insumos                              -- código de ARTÍCULO
 ```
 baldes                               -- código de UNIDAD, y la unidad de inventario
   id
-  codigo            text unique not null   -- "GC0000042"
+  codigo            text unique not null   -- "GB0000042"
   sabor_id          fk sabores
   kg_inicial        numeric           -- lo que traía al entrar
   kg_restante       numeric           -- se descuenta sirviendo; nunca se pisa

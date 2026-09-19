@@ -21,6 +21,8 @@ export const TIPOS = {
   A: "articulo",
   /** Unidad: un objeto físico. Se consume al venderlo. Potes armados. */
   P: "pote",
+  /** Unidad: un balde tal como llega del proveedor. */
+  B: "balde",
   /** Unidad: una bachada de producción. Trazabilidad del lote. */
   C: "bachada",
 } as const;
@@ -34,7 +36,7 @@ const SECUENCIA_MAXIMA = 10 ** LARGO_SECUENCIA - 1;
 /* El tipo entra al cálculo del verificador como un dígito más: si no, GP0001
    y GA0001 compartirían verificador y un error de tipeo en la letra pasaría
    desapercibido. */
-const PESO_TIPO: Record<TipoCodigo, number> = { A: 1, P: 2, C: 3 };
+const PESO_TIPO: Record<TipoCodigo, number> = { A: 1, P: 2, B: 3, C: 4 };
 
 export type Codigo = { tipo: TipoCodigo; secuencia: number };
 
@@ -75,7 +77,10 @@ export function generarCodigo(tipo: TipoCodigo, secuencia: number): string {
  */
 export function leerCodigo(texto: string): Codigo | null {
   const limpio = texto.trim().toUpperCase();
-  const partes = new RegExp(`^${PREFIJO}([APC])(\\d{${LARGO_SECUENCIA}})(\\d)$`).exec(limpio);
+  // Las letras salen de TIPOS y no de una lista repetida a mano, para que
+  // agregar un tipo nuevo no pueda olvidarse de actualizar esta regex.
+  const letras = Object.keys(TIPOS).join("");
+  const partes = new RegExp(`^${PREFIJO}([${letras}])(\\d{${LARGO_SECUENCIA}})(\\d)$`).exec(limpio);
   if (!partes) return null;
 
   const tipo = partes[1] as TipoCodigo;
