@@ -87,6 +87,10 @@ as $$
 $$;
 
 grant execute on function public.siguiente_numero_insumo to authenticated;
+-- Postgres otorga EXECUTE a PUBLIC por default en toda función nueva (a
+-- diferencia de las tablas, que no tienen grant automático). Sin este
+-- revoke, la función queda llamable sin sesión igual.
+revoke execute on function public.siguiente_numero_insumo() from public;
 
 create table public.insumos (
   id         integer generated always as identity primary key,
@@ -114,9 +118,11 @@ create policy "insumos: cualquier sesion activa lee"
   on public.insumos for select to authenticated
   using (public.auth_rol() is not null);
 
+-- cantidad = 0: el alta no puede pisar el cache de stock, solo
+-- registrar_movimiento_insumo lo mueve (Regla 2).
 create policy "insumos: solo el dueño da de alta"
   on public.insumos for insert to authenticated
-  with check (public.es_duenio());
+  with check (public.es_duenio() and cantidad = 0);
 
 create policy "insumos: solo el dueño edita el catalogo"
   on public.insumos for update to authenticated
@@ -177,6 +183,7 @@ end;
 $$;
 
 grant execute on function public.registrar_movimiento_insumo to authenticated;
+revoke execute on function public.registrar_movimiento_insumo(integer, public.tipo_movimiento_insumo, numeric, text) from public;
 
 -- ----------------------------------------------------------------------------
 -- Baldes: código de UNIDAD (tipo B), la unidad real de inventario
@@ -198,6 +205,7 @@ as $$
 $$;
 
 grant execute on function public.siguiente_numero_balde to authenticated;
+revoke execute on function public.siguiente_numero_balde() from public;
 
 create table public.baldes (
   id            integer generated always as identity primary key,
