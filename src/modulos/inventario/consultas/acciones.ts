@@ -126,3 +126,63 @@ export async function registrarMovimiento(
   revalidatePath("/inventario");
   return SIN_ERROR;
 }
+
+export async function darDeAltaBalde(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const saborId = Number(datos.get("saborId"));
+  const kgInicial = Number(datos.get("kgInicial"));
+  const costo = Number(datos.get("costo"));
+  const costoEnvase = Number(datos.get("costoEnvase"));
+
+  if (!Number.isInteger(saborId)) return { error: "Elegí un sabor." };
+  if (!Number.isFinite(kgInicial) || kgInicial <= 0) {
+    return { error: "El peso inicial tiene que ser mayor a cero." };
+  }
+  if (!Number.isInteger(costo) || costo < 0 || !Number.isInteger(costoEnvase) || costoEnvase < 0) {
+    return { error: "Costo y costo de envase tienen que ser números enteros positivos." };
+  }
+
+  const supabase = await clienteServidor();
+  const { data: numero, error: errorSecuencia } = await supabase.rpc("siguiente_numero_balde");
+  if (errorSecuencia || numero === null) return { error: "No se pudo generar el código." };
+
+  const codigo = generarCodigo("B", numero);
+  const { error } = await supabase.from("baldes").insert({
+    codigo,
+    sabor_id: saborId,
+    kg_inicial: kgInicial,
+    kg_restante: kgInicial,
+    costo,
+    costo_envase: costoEnvase,
+  });
+
+  if (error) return { error: "No se pudo dar de alta el balde." };
+
+  revalidatePath("/inventario");
+  return SIN_ERROR;
+}
+
+export async function abrirBalde(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const baldeId = Number(datos.get("baldeId"));
+
+  const supabase = await clienteServidor();
+  const { error, count } = await supabase
+    .from("baldes")
+    .update({ estado: "abierto" }, { count: "exact" })
+    .eq("id", baldeId)
+    .eq("estado", "cerrado");
+
+  if (error) {
+    if (error.code === "23505") return { error: "Ya hay un balde abierto de ese sabor." };
+    return { error: "No se pudo abrir el balde." };
+  }
+  if (!count) return { error: "Ese balde ya no está cerrado." };
+
+  revalidatePath("/inventario");
+  return SIN_ERROR;
+}
