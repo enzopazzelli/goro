@@ -72,6 +72,7 @@ describe("RLS: inventario", () => {
   });
 
   afterAll(async () => {
+    await servicio.from("movimientos_insumo").delete().eq("insumo_id", insumoId);
     await servicio.from("insumos").delete().eq("id", insumoId);
     await servicio.from("sabores").delete().eq("id", saborId);
     await servicio.auth.admin.deleteUser(duenio.id);
@@ -79,9 +80,8 @@ describe("RLS: inventario", () => {
   });
 
   it("sin sesión no se puede leer sabores", async () => {
-    const { data, error } = await anonimo.from("sabores").select("id");
-    expect(data).toEqual([]);
-    expect(error).toBeNull();
+    const { error } = await anonimo.from("sabores").select("id");
+    expect(error).not.toBeNull();
   });
 
   it("un colaborador no puede crear un sabor", async () => {
