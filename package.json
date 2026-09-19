@@ -11,7 +11,7 @@
     "formato:arreglar": "prettier --write .",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
-    "test:unit": "vitest run --exclude \"**/*.rls.test.ts\"",
+    "test:unit": "vitest run --exclude \"**/rls.test.ts\"",
     "verificar": "npm run formato && npm run lint && npm run typecheck && npm run test:unit"
   },
   "dependencies": {

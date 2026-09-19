@@ -64,7 +64,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npx vitest run --testNamePattern "" **/*.rls.test.ts
+      - run: npx vitest run --testNamePattern "" **/rls.test.ts
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPABASE_URL_PRUEBAS }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY_PRUEBAS }}
