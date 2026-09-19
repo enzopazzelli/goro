@@ -201,6 +201,89 @@ hay que poder decir **cuál** balde se fue, cuándo, y por qué puerta.
 
 ---
 
+## 4. Formatos y precios: catálogo, no código
+
+### Los formatos son datos
+
+Cucurucho, doble, vasito, 1/4, 1/2, kilo, balde. En el mockup están escritos en
+el código porque es un mockup. En el sistema van en una tabla, y Goro los crea
+desde una pantalla:
+
+```
+formatos
+  id
+  nombre           "1 kilo", "Pote 2 kg"
+  gramos           1000
+  cantidad_sabores 4          -- cuántos entran; el mostrador lo usa para el cupo
+  precio           21000
+  activo           boolean
+```
+
+Más una relación con los insumos que consume (un kilo se lleva un pote de 1 kg
+y seis cucharitas), porque vender tiene que descontar eso también.
+
+Así, el día que Goro compre un envase nuevo donde entran seis sabores y pesa
+dos kilos, **no hay que tocar nada**: lo carga como un formato más, le pone
+precio y aparece en el mostrador esa misma tarde.
+
+Dos cosas que hay que hacer bien desde el principio:
+
+- **Un formato no se borra, se desactiva.** Si hay ventas viejas que lo
+  referencian, borrarlo rompe el historial. Mismo criterio que los usuarios.
+- **El precio se congela en la venta.** La línea de venta guarda el precio que
+  se cobró, no una referencia al precio de hoy. Si en marzo el kilo valía
+  $21.000 y en junio $24.000, la venta de marzo tiene que seguir diciendo
+  $21.000 para siempre. Es la misma regla que ya vale para la etiqueta de un
+  pote.
+
+Esa segunda regla es la que hace que **cualquier cambio futuro de precios sea
+aditivo**: mientras cada línea guarde lo que cobró, se pueden agregar reglas
+nuevas sin romper ni migrar una sola venta vieja.
+
+### El precio del mostrador no depende del sabor
+
+Un kilo vale lo mismo lleve los sabores que lleve. O sea: el precio vive en el
+formato, y listo. Es lo que hace que armar un helado sea tocar sabores sin
+mirar precios.
+
+Vale dejar anotado que eso **no** quiere decir que todos los sabores cuesten
+igual: en el mockup el pistacho sale $7.200 el kilo de costo y la vainilla
+$3.900. Mismo precio de venta, márgenes muy distintos. No cambia nada del
+modelo, pero es un número que el panel debería mostrar algún día — vender mucho
+pistacho no es lo mismo que vender mucha vainilla, y hoy eso no lo ve nadie.
+
+_Pregunta para Goro:_ ¿existen sabores premium que se cobran más caro? Hoy la
+respuesta es no. Si algún día es sí, se agrega un recargo por sabor y las
+ventas viejas no se enteran, gracias a la regla del precio congelado.
+
+### El precio del balde sí puede depender del sabor
+
+Acá Goro quiere las dos cosas: poder poner el mismo precio a todos, o uno
+distinto por sabor. Se resuelve con **un valor por defecto del comercio y un
+override por producto**:
+
+```
+sabores.precio_balde   nullable   -- null = usar el precio por defecto
+```
+
+Todos en `null` y todos los baldes valen igual. Se le completa a Pistacho y
+solo Pistacho cambia. Sin pantallas distintas, sin modos, sin duplicar nada.
+
+### El mismo patrón sirve para el mínimo
+
+Goro ya pidió algo con la misma forma: que Frutilla avise antes que el resto.
+Es el mismo mecanismo — un valor por defecto y un override por sabor:
+
+```
+sabores.stock_minimo   nullable   -- null = usar el mínimo por defecto
+```
+
+Conviene construirlo **una sola vez, como patrón**, y no como dos features
+parecidas: "valor del comercio que un producto puede pisar". Cuando aparezca el
+tercer caso —y va a aparecer— ya está resuelto.
+
+---
+
 ## Fase 0 — Antes de escribir una línea de código
 
 Días, no semanas. Es la fase más barata y la que evita rehacer.
@@ -269,6 +352,7 @@ Cada fase termina en algo que Goro puede tocar y verificar. Ninguna termina en
 | ------ | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **1**  | **Núcleo** — auth, roles, layout, navegación, esquema base, RLS ← _escrito, falta aplicar la migración_ | Goro entra con su usuario, Ana entra con el suyo, y cada uno ve un menú distinto                                                                                                                                       |
 | **2**  | **Inventario** — baldes identificados, insumos, movimientos, y **edición del producto**        | Entran dos baldes de Frutilla; se abre uno y el otro queda entero. Goro le pone a Frutilla un mínimo distinto que al resto y la alerta salta antes solo ahí                                                                    |
+| **2b** | **Catálogo** — formatos y precios editables                                                    | Goro crea el formato "Pote 2 kg, 6 sabores", le pone precio, y esa misma tarde aparece en el mostrador sin que nadie toque código                                                                                              |
 | **3**  | **Etiquetas y códigos de barras** — el pedido de Goro                                          | Tres cosas: (a) se arma un pote, se pesa, se imprime su etiqueta y la pistola la lee trayendo sabor + peso + precio; (b) se imprime la hoja de códigos de insumos y escanear uno trae el insumo; (c) cada balde recibe su código al entrar |
 | **4**  | **Ventas / TPV** — mostrador, **baldes enteros e insumos sueltos**, pistola, anulación         | Se cobra un pote escaneándolo, un cucurucho a dedo y un balde entero, en la misma pantalla y sin cambiar de modo                                                                                                                |
 | **5**  | **Caja** — apertura, gastos, cierre con arqueo                                                 | Se cierra el turno y la diferencia contra lo contado a mano da bien                                                                                                                                                            |
