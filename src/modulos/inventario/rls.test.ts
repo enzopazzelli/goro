@@ -104,6 +104,38 @@ describe("RLS: inventario", () => {
     expect(error).not.toBeNull();
   });
 
+  it("no se puede insertar un insumo con cantidad distinta de cero", async () => {
+    const { error } = await servicio.from("insumos").insert({
+      nombre: `Insumo con stock trucho ${Date.now()}`,
+      codigo: `GA${String(Date.now()).slice(-7)}`,
+      unidad: "u",
+      minimo: 1,
+      costo: 100,
+      cantidad: 500,
+    });
+    expect(error).not.toBeNull();
+  });
+
+  it("un usuario sin sesión no puede pedir el próximo número de secuencia", async () => {
+    const { error: errorInsumo } = await anonimo.rpc("siguiente_numero_insumo");
+    expect(errorInsumo).not.toBeNull();
+
+    const { error: errorBalde } = await anonimo.rpc("siguiente_numero_balde");
+    expect(errorBalde).not.toBeNull();
+  });
+
+  it("un dueño sí puede crear un sabor", async () => {
+    const nombre = `Sabor de dueño ${Date.now()}`;
+    const { data, error } = await duenio.cliente
+      .from("sabores")
+      .insert({ nombre })
+      .select("id")
+      .single();
+    expect(error).toBeNull();
+
+    await servicio.from("sabores").delete().eq("id", data!.id);
+  });
+
   it("un colaborador sí puede registrar un movimiento por la función", async () => {
     const { error } = await colaborador.cliente.rpc("registrar_movimiento_insumo", {
       p_insumo_id: insumoId,

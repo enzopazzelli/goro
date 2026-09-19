@@ -13,10 +13,14 @@ export type ConfigComercio = {
 
 export async function obtenerConfigComercio(): Promise<ConfigComercio> {
   const supabase = await clienteServidor();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("config_comercio")
     .select("stock_minimo_default")
     .single<{ stock_minimo_default: string }>();
 
-  return { stockMinimoDefault: Number(data?.stock_minimo_default ?? 0) };
+  if (error || !data) {
+    throw new Error("No se pudo leer la configuración del comercio.");
+  }
+
+  return { stockMinimoDefault: Number(data.stock_minimo_default) };
 }

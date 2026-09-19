@@ -76,8 +76,9 @@ create policy "sabores: solo el dueño edita"
 create type public.unidad_insumo as enum ('u', 'kg');
 
 create sequence public.insumos_secuencia;
+revoke all on sequence public.insumos_secuencia from anon, authenticated;
 
-create function public.siguiente_numero_insumo()
+create or replace function public.siguiente_numero_insumo()
 returns integer
 language sql
 security definer
@@ -94,7 +95,7 @@ revoke execute on function public.siguiente_numero_insumo() from public;
 
 create table public.insumos (
   id         integer generated always as identity primary key,
-  nombre     text not null,
+  nombre     text not null unique,
   codigo     text not null unique,
   unidad     public.unidad_insumo not null,
   cantidad   numeric not null default 0,  -- cache; solo la mueve registrar_movimiento_insumo
@@ -159,7 +160,7 @@ create policy "movimientos_insumo: cualquier sesion activa lee"
   on public.movimientos_insumo for select to authenticated
   using (public.auth_rol() is not null);
 
-create function public.registrar_movimiento_insumo(
+create or replace function public.registrar_movimiento_insumo(
   p_insumo_id integer,
   p_tipo public.tipo_movimiento_insumo,
   p_cantidad numeric,
@@ -194,8 +195,9 @@ create type public.estado_balde as enum
   ('cerrado', 'abierto', 'vendido', 'vacio', 'canjeado');
 
 create sequence public.baldes_secuencia;
+revoke all on sequence public.baldes_secuencia from anon, authenticated;
 
-create function public.siguiente_numero_balde()
+create or replace function public.siguiente_numero_balde()
 returns integer
 language sql
 security definer

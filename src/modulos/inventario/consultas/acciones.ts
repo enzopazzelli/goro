@@ -36,7 +36,7 @@ export async function editarStockMinimo(
   const saborId = Number(datos.get("saborId"));
   const valor = String(datos.get("stockMinimo") ?? "").trim();
 
-  if (valor !== "" && (Number.isNaN(Number(valor)) || Number(valor) < 0)) {
+  if (valor !== "" && (!Number.isFinite(Number(valor)) || Number(valor) < 0)) {
     return { error: "El mínimo tiene que ser un número positivo, o vacío para el default." };
   }
 
@@ -136,7 +136,7 @@ export async function darDeAltaBalde(
   const costo = Number(datos.get("costo"));
   const costoEnvase = Number(datos.get("costoEnvase"));
 
-  if (!Number.isInteger(saborId)) return { error: "Elegí un sabor." };
+  if (!Number.isInteger(saborId) || saborId <= 0) return { error: "Elegí un sabor." };
   if (!Number.isFinite(kgInicial) || kgInicial <= 0) {
     return { error: "El peso inicial tiene que ser mayor a cero." };
   }
@@ -169,6 +169,7 @@ export async function abrirBalde(
   datos: FormData,
 ): Promise<EstadoFormulario> {
   const baldeId = Number(datos.get("baldeId"));
+  if (!Number.isInteger(baldeId) || baldeId <= 0) return { error: "Balde inválido." };
 
   const supabase = await clienteServidor();
   const { error, count } = await supabase
