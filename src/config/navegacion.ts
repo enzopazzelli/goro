@@ -17,6 +17,7 @@ const SOLO_DUENIO = ["duenio"] as const;
    garantizan las políticas de Postgres, no este archivo. */
 export const MODULOS: readonly Modulo[] = [
   { href: "/inicio", etiqueta: "Inicio", icono: "🍦", roles: TODOS },
+  { href: "/inventario", etiqueta: "Inventario", icono: "📦", roles: TODOS },
   { href: "/codigos", etiqueta: "Códigos", icono: "🏷️", roles: TODOS },
   { href: "/usuarios", etiqueta: "Usuarios", icono: "👥", roles: SOLO_DUENIO },
 ];
