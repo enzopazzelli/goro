@@ -1,4 +1,4 @@
-export type Rol = "duenio" | "mostrador";
+export type Rol = "duenio" | "colaborador";
 
 export type Perfil = {
   id: string;
@@ -10,5 +10,5 @@ export type Perfil = {
 
 export const ETIQUETA_ROL: Record<Rol, string> = {
   duenio: "Dueño",
-  mostrador: "Mostrador",
+  colaborador: "Colaborador",
 };

@@ -8,12 +8,12 @@ export type Modulo = {
   roles: readonly Rol[];
 };
 
-const TODOS = ["duenio", "mostrador"] as const;
+const TODOS = ["duenio", "colaborador"] as const;
 const SOLO_DUENIO = ["duenio"] as const;
 
 /* El menú se arma desde una sola lista para que "quién ve qué" se lea de
    corrido, en vez de repartido en condicionales por toda la barra lateral.
-   Ocultar un ítem es comodidad: que un mostrador no pueda VER los datos lo
+   Ocultar un ítem es comodidad: que un colaborador no pueda VER los datos lo
    garantizan las políticas de Postgres, no este archivo. */
 export const MODULOS: readonly Modulo[] = [
   { href: "/inicio", etiqueta: "Inicio", icono: "🍦", roles: TODOS },

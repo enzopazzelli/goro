@@ -4,7 +4,7 @@ import type { Perfil } from "../tipos";
 
 /**
  * Todos los perfiles. Quién ve qué no se decide acá: RLS devuelve todas las
- * filas si pide el dueño, y solo la propia si pide un mostrador. La consulta
+ * filas si pide el dueño, y solo la propia si pide un colaborador. La consulta
  * es la misma en los dos casos — esa es la gracia.
  */
 export async function listarPerfiles(): Promise<Perfil[]> {

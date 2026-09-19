@@ -9,7 +9,7 @@
 -- authenticated, revoke a anon, y políticas.
 -- ============================================================================
 
-create type public.rol as enum ('duenio', 'mostrador');
+create type public.rol as enum ('duenio', 'colaborador');
 
 -- Acá se entra con usuario y contraseña, nunca con un correo: en el mostrador
 -- nadie tiene ni quiere una casilla. Supabase Auth exige igual un email para
@@ -24,7 +24,7 @@ create table public.perfiles (
   id         uuid primary key references auth.users (id) on delete cascade,
   usuario    text not null unique,
   nombre     text not null,
-  rol        public.rol not null default 'mostrador',
+  rol        public.rol not null default 'colaborador',
   activo     boolean not null default true,
   creado_en  timestamptz not null default now(),
 
@@ -96,7 +96,7 @@ create policy "perfiles: solo el dueño edita"
 -- El `usuario` sale de la parte local del correo interno, que es justamente de
 -- donde vino: `ana@heladeria.local` → `ana`.
 --
--- El rol SIEMPRE arranca en 'mostrador', nunca se lee de los metadatos que
+-- El rol SIEMPRE arranca en 'colaborador', nunca se lee de los metadatos que
 -- manda el cliente: si se leyera de ahí, cualquiera que pueda registrarse se
 -- haría dueño mandando {"rol":"duenio"} en el alta. Promover a dueño es una
 -- acción del dueño, desde la pantalla de usuarios.

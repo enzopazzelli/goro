@@ -15,7 +15,7 @@ acá abajo cuál fue la última aplicada.
 
 | Migración                      | Aplicada |
 | ------------------------------ | -------- |
-| `20260912120000_nucleo.sql`    | ⬜       |
+| `20260912120000_nucleo.sql`    | ✅       |
 
 ## Después de la primera migración: hacerte dueño
 
@@ -23,7 +23,7 @@ Acá se entra con **usuario**, no con correo. Supabase Auth igual exige un email
 para crear la cuenta, así que se usa uno interno que nadie lee: el usuario, más
 `@heladeria.local` (el dominio sale de `src/config/comercio.ts`).
 
-El trigger le pone rol `mostrador` a todo usuario nuevo, a propósito — si el
+El trigger le pone rol `colaborador` a todo usuario nuevo, a propósito — si el
 rol se leyera de los metadatos del alta, cualquiera que pueda registrarse se
 haría dueño solo. Así que el primer dueño se promueve a mano, una única vez:
 
@@ -35,7 +35,7 @@ haría dueño solo. Así que el primer dueño se promueve a mano, una única vez
 2. SQL Editor:
 
 ```sql
-update public.perfiles set rol = 'duenio', nombre = 'Gustavo Ordóñez'
+update public.perfiles set rol = 'duenio', nombre = 'Goro'
 where usuario = 'goro';
 ```
 
