@@ -284,6 +284,26 @@ líneas de AGENTS.md).
   por ahora se siembra y se ajusta por SQL, igual que la promoción a dueño de
   Fase 1.
 - `precio_balde` por sabor (Fase 2b, Catálogo).
+- **Activar/desactivar un sabor desde la UI.** La columna `sabores.activo`
+  existe (y `listarSabores`/`SeccionBaldes` ya la usan para ordenar/filtrar),
+  pero no hay botón para cambiarla — todo sabor nace `activo = true` y así
+  se queda en esta fase. Encontrado en la revisión final de la rama (2026-09-19):
+  no estaba en el entregable verificable de Fase 2, así que se deja anotado
+  acá para que Fase 2b/8 lo retome explícitamente, en vez de perderse.
+
+## Nota para Fase 4 (no bloquea esta fase)
+
+La política `"baldes: abrir de cerrado a abierto"` (RLS) es correcta y
+suficiente hoy porque **hay una sola transición legal**. Postgres combina
+políticas permisivas del mismo tipo con `OR` tanto en `using` como en
+`with check` — el día que Fase 4 agregue una segunda política para, por
+ejemplo, `abierto → vacio`, la combinación de las dos permitiría también
+`cerrado → vacio` (saltearse la apertura), porque ninguna política puede ver
+a la vez el estado viejo y el nuevo de la OTRA transición. Antes de agregar
+una segunda transición, mover el cambio de `estado` a una función
+`security definer` (mismo patrón que `registrar_movimiento_insumo`) que
+valide la matriz completa — Fase 4 ya necesita una función así para
+descontar `kg_restante`, así que puede ser la misma.
 
 ## Decisiones tomadas en el brainstorming
 
