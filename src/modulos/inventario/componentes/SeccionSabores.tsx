@@ -2,7 +2,9 @@ import { listarSabores } from "@/lib/sabores";
 import { Punto } from "@/componentes/Punto";
 import { Tarjeta } from "@/componentes/Tarjeta";
 import { BotonActivoSabor } from "./BotonActivoSabor";
+import { BotonBorrarSabor } from "./BotonBorrarSabor";
 import { EditorColorSabor } from "./EditorColorSabor";
+import { EditorNombreSabor } from "./EditorNombreSabor";
 import { FormularioMinimo } from "./FormularioMinimo";
 import { FormularioSabor } from "./FormularioSabor";
 
@@ -23,6 +25,7 @@ export async function SeccionSabores({ esDuenio }: { esDuenio: boolean }) {
             <th className="p-2">Sabor</th>
             <th className="p-2">Mínimo (kg)</th>
             <th className="p-2">Estado</th>
+            {esDuenio && <th className="p-2">Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -35,7 +38,13 @@ export async function SeccionSabores({ esDuenio }: { esDuenio: boolean }) {
                   <Punto color={sabor.color} />
                 )}
               </td>
-              <td className="p-2">{sabor.nombre}</td>
+              <td className="p-2">
+                {esDuenio ? (
+                  <EditorNombreSabor saborId={sabor.id} nombreActual={sabor.nombre} />
+                ) : (
+                  sabor.nombre
+                )}
+              </td>
               <td className="numero p-2">
                 {esDuenio ? (
                   <FormularioMinimo saborId={sabor.id} valorActual={sabor.stockMinimo} />
@@ -52,6 +61,11 @@ export async function SeccionSabores({ esDuenio }: { esDuenio: boolean }) {
                   "Inactivo"
                 )}
               </td>
+              {esDuenio && (
+                <td className="p-2">
+                  <BotonBorrarSabor saborId={sabor.id} nombre={sabor.nombre} />
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
