@@ -16,7 +16,7 @@ acá abajo cuál fue la última aplicada.
 | Migración                      | Aplicada |
 | ------------------------------ | -------- |
 | `20260912120000_nucleo.sql`    | ✅       |
-| `20260919130000_inventario.sql`| ⬜       |
+| `20260919130000_inventario.sql`| ✅       |
 
 ## Después de la primera migración: hacerte dueño
 
