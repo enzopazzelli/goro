@@ -67,3 +67,29 @@ export async function registrarAjusteBalde(
   revalidatePath("/inventario");
   return SIN_ERROR;
 }
+
+/** Solo se puede borrar un balde 'cerrado' — la política de RLS es la barrera real. */
+export async function eliminarBalde(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const baldeId = Number(datos.get("baldeId"));
+  if (!Number.isInteger(baldeId) || baldeId <= 0) return { error: "Balde inválido." };
+
+  const supabase = await clienteServidor();
+  const { error, count } = await supabase
+    .from("baldes")
+    .delete({ count: "exact" })
+    .eq("id", baldeId)
+    .eq("estado", "cerrado");
+
+  if (error) {
+    if (error.code === "23503")
+      return { error: "No se puede borrar: ya tiene movimientos cargados." };
+    return { error: "No se pudo borrar el balde." };
+  }
+  if (!count) return { error: "Ese balde ya no está cerrado." };
+
+  revalidatePath("/inventario");
+  return SIN_ERROR;
+}

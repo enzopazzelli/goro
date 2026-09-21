@@ -8,6 +8,7 @@ import { Tarjeta } from "@/componentes/Tarjeta";
 import { saborEnAlerta } from "../alerta";
 import { BotonAbrirBalde } from "./BotonAbrirBalde";
 import { BotonAjustarBalde } from "./BotonAjustarBalde";
+import { BotonBorrarBalde } from "./BotonBorrarBalde";
 import { FormularioBalde } from "./FormularioBalde";
 import { FormularioStockMinimoDefault } from "./FormularioStockMinimoDefault";
 
@@ -76,7 +77,12 @@ export async function SeccionBaldes({ esDuenio }: { esDuenio: boolean }) {
                           {ETIQUETA_ESTADO[balde.estado]}
                         </Insignia>
                         <span className="numero">{balde.kgRestante} kg</span>
-                        {balde.estado === "cerrado" && <BotonAbrirBalde baldeId={balde.id} />}
+                        {balde.estado === "cerrado" && (
+                          <>
+                            <BotonAbrirBalde baldeId={balde.id} />
+                            <BotonBorrarBalde baldeId={balde.id} codigo={balde.codigo} />
+                          </>
+                        )}
                         {balde.estado === "abierto" && <BotonAjustarBalde baldeId={balde.id} />}
                       </li>
                     ))}
