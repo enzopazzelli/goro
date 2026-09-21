@@ -293,4 +293,36 @@ describe("RLS: inventario", () => {
       .single();
     expect(Number(data!.stock_minimo_default)).not.toBe(99);
   });
+
+  it("un colaborador puede registrar un ajuste de balde", async () => {
+    const { data: balde } = await servicio
+      .from("baldes")
+      .insert({
+        codigo: `GB${String(Date.now()).slice(-7)}`,
+        sabor_id: saborId,
+        kg_inicial: 9,
+        kg_restante: 9,
+        estado: "abierto",
+        costo: 1000,
+        costo_envase: 500,
+      })
+      .select("id")
+      .single();
+
+    const { error } = await colaborador.cliente.rpc("registrar_ajuste_balde", {
+      p_balde_id: balde!.id,
+      p_kg: -0.5,
+    });
+    expect(error).toBeNull();
+
+    const { data: trasAjuste } = await servicio
+      .from("baldes")
+      .select("kg_restante")
+      .eq("id", balde!.id)
+      .single();
+    expect(Number(trasAjuste!.kg_restante)).toBeCloseTo(8.5);
+
+    await servicio.from("movimientos_balde").delete().eq("balde_id", balde!.id);
+    await servicio.from("baldes").delete().eq("id", balde!.id);
+  });
 });
