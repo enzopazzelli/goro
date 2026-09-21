@@ -280,9 +280,12 @@ líneas de AGENTS.md).
   enum de movimientos (Fase 4).
 - Transiciones de balde más allá de abrir (`vendido`, `vacio`, `canjeado`) y
   su columna `venta_id` (Fase 4/9).
-- Pantalla para editar `config_comercio.stock_minimo_default` desde la UI —
-  por ahora se siembra y se ajusta por SQL, igual que la promoción a dueño de
-  Fase 1.
+- ~~Pantalla para editar `config_comercio.stock_minimo_default` desde la UI~~
+  — por ahora se siembra y se ajusta por SQL, igual que la promoción a dueño
+  de Fase 1. **Resuelto el 2026-09-21**: `FormularioStockMinimoDefault` en el
+  header de `SeccionBaldes`, con la Server Action `editarStockMinimoDefault`
+  en `src/lib/accionesConfigComercio.ts` (junto a la lectura, no dentro de
+  `inventario/`, porque `config_comercio` es compartido entre módulos).
 - `precio_balde` por sabor (Fase 2b, Catálogo).
 - ~~**Activar/desactivar un sabor desde la UI.**~~ Encontrado en la revisión
   final de la rama (2026-09-19), no estaba en el entregable verificable de
