@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { CargandoSeccion } from "@/componentes/CargandoSeccion";
 import { exigirPerfil } from "@/modulos/auth/consultas/perfil";
 import { SeccionBaldes } from "@/modulos/inventario/componentes/SeccionBaldes";
 import { SeccionFormatos } from "@/modulos/inventario/componentes/SeccionFormatos";
@@ -17,10 +19,18 @@ export default async function Inventario() {
         <p className="text-texto-suave">Sabores, baldes, insumos y formatos.</p>
       </header>
 
-      <SeccionSabores esDuenio={esDuenio} />
-      <SeccionBaldes esDuenio={esDuenio} />
-      <SeccionInsumos esDuenio={esDuenio} />
-      <SeccionFormatos esDuenio={esDuenio} />
+      <Suspense fallback={<CargandoSeccion titulo="Sabores" />}>
+        <SeccionSabores esDuenio={esDuenio} />
+      </Suspense>
+      <Suspense fallback={<CargandoSeccion titulo="Baldes" />}>
+        <SeccionBaldes esDuenio={esDuenio} />
+      </Suspense>
+      <Suspense fallback={<CargandoSeccion titulo="Insumos" />}>
+        <SeccionInsumos esDuenio={esDuenio} />
+      </Suspense>
+      <Suspense fallback={<CargandoSeccion titulo="Formatos" />}>
+        <SeccionFormatos esDuenio={esDuenio} />
+      </Suspense>
     </div>
   );
 }
