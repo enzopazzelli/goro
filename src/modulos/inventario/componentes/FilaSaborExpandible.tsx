@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { Cubeta } from "@/componentes/Cubeta";
 import { Insignia } from "@/componentes/Insignia";
 import type { Balde } from "@/lib/baldes";
@@ -48,13 +49,14 @@ export function FilaSaborExpandible({
           <Insignia variante={insignia.variante}>{insignia.texto}</Insignia>
         </td>
         <td className="px-2 py-[var(--fila-y)]">
-          <button
+          <Boton
             type="button"
+            variante="suave"
             onClick={() => setModalAbierto(true)}
-            className="text-xs underline opacity-70"
+            className="px-3 py-1.5 text-xs"
           >
             Reponer
-          </button>
+          </Boton>
         </td>
         <td className="px-2 py-[var(--fila-y)]">
           <button
