@@ -31,11 +31,22 @@ export function TablaInsumos({ insumos, esDuenio }: { insumos: Insumo[]; esDueni
       {filtrados.length === 0 ? (
         <p className="text-sm text-texto-suave">Ningún insumo con ese nombre.</p>
       ) : (
-        <div className="flex flex-col gap-1.5">
-          {filtrados.map((insumo) => (
-            <FilaInsumoExpandible key={insumo.id} insumo={insumo} esDuenio={esDuenio} />
-          ))}
-        </div>
+        <table className="w-full text-left text-sm">
+          <thead className="border-b border-linea font-mono text-xs text-texto-suave uppercase">
+            <tr>
+              <th className="p-2 font-normal">Insumo</th>
+              <th className="p-2 font-normal">Código</th>
+              <th className="p-2 font-normal">Cantidad</th>
+              <th className="p-2 font-normal">Estado</th>
+              <th className="p-2 font-normal" colSpan={2}></th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtrados.map((insumo) => (
+              <FilaInsumoExpandible key={insumo.id} insumo={insumo} esDuenio={esDuenio} />
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );

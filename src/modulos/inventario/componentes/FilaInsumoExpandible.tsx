@@ -14,39 +14,47 @@ export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esD
   const bajoMinimo = insumo.cantidad <= insumo.minimo;
 
   return (
-    <div className="rounded-(--r) border border-linea">
-      <div className="flex flex-wrap items-center gap-3 p-2">
-        <span className="min-w-[8ch] flex-1 font-semibold">{insumo.nombre}</span>
-        <span className="numero text-xs text-texto-suave">{insumo.codigo}</span>
-        <span className="numero">
+    <>
+      <tr className="border-b border-linea last:border-0">
+        <td className="p-2 font-semibold">{insumo.nombre}</td>
+        <td className="numero p-2 text-texto-suave">{insumo.codigo}</td>
+        <td className="numero p-2">
           {insumo.cantidad} {ETIQUETA_UNIDAD[insumo.unidad]}
-        </span>
-        <Insignia variante={bajoMinimo ? "advertencia" : "ok"}>
-          {bajoMinimo ? "Reponer" : "Ok"}
-        </Insignia>
-        <button
-          type="button"
-          onClick={() => setModalAbierto(true)}
-          className="text-xs underline opacity-70"
-        >
-          Cargar
-        </button>
-        {esDuenio && (
+        </td>
+        <td className="p-2">
+          <Insignia variante={bajoMinimo ? "advertencia" : "ok"}>
+            {bajoMinimo ? "Reponer" : "Ok"}
+          </Insignia>
+        </td>
+        <td className="p-2">
           <button
             type="button"
-            onClick={() => setExpandida((actual) => !actual)}
-            aria-expanded={expandida}
-            className="text-xs text-texto-suave"
+            onClick={() => setModalAbierto(true)}
+            className="text-xs underline opacity-70"
           >
-            {expandida ? "▲" : "▼"}
+            Cargar
           </button>
-        )}
-      </div>
+        </td>
+        <td className="p-2">
+          {esDuenio && (
+            <button
+              type="button"
+              onClick={() => setExpandida((actual) => !actual)}
+              aria-expanded={expandida}
+              className="text-xs text-texto-suave"
+            >
+              {expandida ? "▲" : "▼"}
+            </button>
+          )}
+        </td>
+      </tr>
 
       {expandida && esDuenio && (
-        <div className="border-t border-linea bg-superficie-honda p-2">
-          <FormularioEdicionInsumo insumo={insumo} />
-        </div>
+        <tr className="border-b border-linea bg-superficie-honda last:border-0">
+          <td colSpan={6} className="p-2">
+            <FormularioEdicionInsumo insumo={insumo} />
+          </td>
+        </tr>
       )}
 
       <ModalCargarInsumo
@@ -55,6 +63,6 @@ export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esD
         insumoId={insumo.id}
         insumoNombre={insumo.nombre}
       />
-    </div>
+    </>
   );
 }

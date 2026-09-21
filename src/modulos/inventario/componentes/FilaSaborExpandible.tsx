@@ -35,44 +35,54 @@ export function FilaSaborExpandible({
   const baldeAbierto = baldes.find((balde) => balde.id === baldeAbiertoId) ?? null;
 
   return (
-    <div className="rounded-(--r) border border-linea">
-      <div className="flex flex-wrap items-center gap-3 p-2">
-        <Cubeta pct={pct} color={sabor.color} bajo={insignia.variante !== "ok"} />
-        <span className="min-w-[8ch] flex-1 font-semibold">{sabor.nombre}</span>
-        <span className="numero text-xs text-texto-suave">
-          {sabor.stockMinimo ?? "default"} kg mín.
-        </span>
-        <Insignia variante={insignia.variante}>{insignia.texto}</Insignia>
-        <button
-          type="button"
-          onClick={() => setModalAbierto(true)}
-          className="text-xs underline opacity-70"
-        >
-          Reponer
-        </button>
-        <button
-          type="button"
-          onClick={() => setExpandida((actual) => !actual)}
-          aria-expanded={expandida}
-          className="text-xs text-texto-suave"
-        >
-          {expandida ? "▲" : "▼"}
-        </button>
-      </div>
+    <>
+      <tr className="border-b border-linea last:border-0">
+        <td className="p-2">
+          <Cubeta pct={pct} color={sabor.color} bajo={insignia.variante !== "ok"} />
+        </td>
+        <td className="p-2 font-semibold">{sabor.nombre}</td>
+        <td className="numero p-2">{sabor.stockMinimo ?? "default"}</td>
+        <td className="p-2">
+          <Insignia variante={insignia.variante}>{insignia.texto}</Insignia>
+        </td>
+        <td className="p-2">
+          <button
+            type="button"
+            onClick={() => setModalAbierto(true)}
+            className="text-xs underline opacity-70"
+          >
+            Reponer
+          </button>
+        </td>
+        <td className="p-2">
+          <button
+            type="button"
+            onClick={() => setExpandida((actual) => !actual)}
+            aria-expanded={expandida}
+            className="text-xs text-texto-suave"
+          >
+            {expandida ? "▲" : "▼"}
+          </button>
+        </td>
+      </tr>
 
       {expandida && (
-        <div className="flex flex-col gap-2 border-t border-linea bg-superficie-honda p-2">
-          {esDuenio && (
-            <div className="flex flex-wrap items-center gap-2">
-              <EditorColorSabor saborId={sabor.id} colorActual={sabor.color} />
-              <EditorNombreSabor saborId={sabor.id} nombreActual={sabor.nombre} />
-              <FormularioMinimo saborId={sabor.id} valorActual={sabor.stockMinimo} />
-              <BotonActivoSabor saborId={sabor.id} activo={sabor.activo} />
-              <BotonBorrarSabor saborId={sabor.id} nombre={sabor.nombre} />
+        <tr className="border-b border-linea bg-superficie-honda last:border-0">
+          <td colSpan={6} className="p-2">
+            <div className="flex flex-col gap-2">
+              {esDuenio && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <EditorColorSabor saborId={sabor.id} colorActual={sabor.color} />
+                  <EditorNombreSabor saborId={sabor.id} nombreActual={sabor.nombre} />
+                  <FormularioMinimo saborId={sabor.id} valorActual={sabor.stockMinimo} />
+                  <BotonActivoSabor saborId={sabor.id} activo={sabor.activo} />
+                  <BotonBorrarSabor saborId={sabor.id} nombre={sabor.nombre} />
+                </div>
+              )}
+              <DetalleBaldes baldes={baldes} esDuenio={esDuenio} />
             </div>
-          )}
-          <DetalleBaldes baldes={baldes} esDuenio={esDuenio} />
-        </div>
+          </td>
+        </tr>
       )}
 
       <ModalReponerBalde
@@ -82,6 +92,6 @@ export function FilaSaborExpandible({
         saborNombre={sabor.nombre}
         kgRestante={baldeAbierto?.kgRestante ?? 0}
       />
-    </div>
+    </>
   );
 }
