@@ -14,7 +14,7 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
 
   if (!esDuenio) {
     return (
-      <div className="flex flex-wrap items-center gap-3 rounded-(--r) border border-linea p-3 text-sm">
+      <div className="flex flex-wrap items-center gap-2 rounded-(--r) border border-linea p-2 text-sm">
         <span className="font-semibold">{formato.nombre}</span>
         <span className="text-texto-suave">{formato.gramos} g</span>
         <span className="text-texto-suave">{formato.cantidadSabores} sabores</span>
@@ -25,7 +25,7 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-(--r) border border-linea p-3">
+    <div className="flex flex-col gap-1.5 rounded-(--r) border border-linea p-2">
       <form action={accionEditar} className="flex flex-wrap items-end gap-2">
         <input type="hidden" name="formatoId" value={formato.id} />
         <input

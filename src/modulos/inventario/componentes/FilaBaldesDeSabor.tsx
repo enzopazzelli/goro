@@ -37,10 +37,10 @@ export function FilaBaldesDeSabor({
   }
 
   return (
-    <div className="flex items-start gap-3 rounded-(--r) border border-linea p-3">
+    <div className="flex items-start gap-2 rounded-(--r) border border-linea p-2">
       <Cubeta pct={pct} color={sabor.color} bajo={insignia.variante !== "ok"} />
 
-      <div className="flex flex-1 flex-col gap-2">
+      <div className="flex flex-1 flex-col gap-1">
         <div className="flex items-center gap-2">
           <span className="font-semibold">{sabor.nombre}</span>
           <Insignia variante={insignia.variante}>{insignia.texto}</Insignia>
@@ -49,7 +49,7 @@ export function FilaBaldesDeSabor({
         {baldes.length === 0 ? (
           <p className="text-sm text-texto-suave">Sin baldes en stock.</p>
         ) : (
-          <ul className="flex flex-col gap-1 text-sm">
+          <ul className="flex flex-col gap-0.5 text-sm">
             {baldes.map((balde) => (
               <li key={balde.id} className="flex items-center gap-3">
                 <span className="numero">{balde.codigo}</span>
