@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
+import { Insignia } from "@/componentes/Insignia";
 import type { Formato } from "@/lib/formatos";
 import { editarFormato, eliminarFormato } from "../consultas/accionesFormatos";
 
@@ -17,7 +19,7 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
         <span className="text-texto-suave">{formato.gramos} g</span>
         <span className="text-texto-suave">{formato.cantidadSabores} sabores</span>
         <span className="numero">${formato.precio}</span>
-        {!formato.activo && <span className="text-xs text-texto-suave">(inactivo)</span>}
+        {!formato.activo && <Insignia variante="neutra">Inactivo</Insignia>}
       </div>
     );
   }
@@ -88,9 +90,9 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
         className="flex items-center gap-2"
       >
         <input type="hidden" name="formatoId" value={formato.id} />
-        <button type="submit" disabled={borrando} className="text-xs text-alerta underline">
+        <Boton type="submit" variante="peligro" disabled={borrando}>
           {borrando ? "Borrando…" : "Borrar"}
-        </button>
+        </Boton>
         {estadoBorrado.error && (
           <span role="alert" className="text-xs text-alerta">
             {estadoBorrado.error}

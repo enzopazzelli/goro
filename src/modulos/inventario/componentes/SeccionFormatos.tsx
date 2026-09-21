@@ -1,4 +1,5 @@
 import { listarFormatos } from "@/lib/formatos";
+import { Tarjeta } from "@/componentes/Tarjeta";
 import { FilaFormato } from "./FilaFormato";
 import { FormularioFormato } from "./FormularioFormato";
 
@@ -6,7 +7,7 @@ export async function SeccionFormatos({ esDuenio }: { esDuenio: boolean }) {
   const formatos = await listarFormatos();
 
   return (
-    <section className="flex flex-col gap-4 rounded-(--r-grande) border border-linea bg-superficie p-6">
+    <Tarjeta>
       <header>
         <h2 className="font-display text-lg font-semibold">Formatos</h2>
         <p className="text-sm text-texto-suave">
@@ -25,6 +26,6 @@ export async function SeccionFormatos({ esDuenio }: { esDuenio: boolean }) {
       )}
 
       {esDuenio && <FormularioFormato />}
-    </section>
+    </Tarjeta>
   );
 }
