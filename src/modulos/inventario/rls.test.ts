@@ -201,4 +201,77 @@ describe("RLS: inventario", () => {
 
     await servicio.from("baldes").delete().in("id", [baldeA!.id, baldeB!.id]);
   });
+
+  it("un colaborador no puede crear un formato", async () => {
+    const { error } = await colaborador.cliente
+      .from("formatos")
+      .insert({ nombre: "Formato de colaborador", gramos: 250, cantidad_sabores: 1, precio: 1000 });
+    expect(error).not.toBeNull();
+  });
+
+  it("un colaborador no puede editar ni borrar un formato existente", async () => {
+    const { data: formato } = await servicio
+      .from("formatos")
+      .insert({
+        nombre: `Formato ajeno ${Date.now()}`,
+        gramos: 250,
+        cantidad_sabores: 1,
+        precio: 1000,
+      })
+      .select("id")
+      .single();
+
+    // RLS filtra por `using`, no tira error: la fila simplemente no matchea
+    // y la operación "tiene éxito" sin tocar nada (mismo criterio que el
+    // caso de insumos.costo más arriba en este archivo).
+    await colaborador.cliente.from("formatos").update({ precio: 1 }).eq("id", formato!.id);
+    const { data: trasEditar } = await servicio
+      .from("formatos")
+      .select("precio")
+      .eq("id", formato!.id)
+      .single();
+    expect(trasEditar!.precio).toBe(1000);
+
+    await colaborador.cliente.from("formatos").delete().eq("id", formato!.id);
+    const { data: trasBorrar } = await servicio
+      .from("formatos")
+      .select("id")
+      .eq("id", formato!.id)
+      .maybeSingle();
+    expect(trasBorrar).not.toBeNull();
+
+    await servicio.from("formatos").delete().eq("id", formato!.id);
+  });
+
+  it("el dueño puede crear, editar y borrar un formato", async () => {
+    const { data, error: errorAlta } = await duenio.cliente
+      .from("formatos")
+      .insert({
+        nombre: `Formato de prueba ${Date.now()}`,
+        gramos: 250,
+        cantidad_sabores: 1,
+        precio: 1000,
+      })
+      .select("id")
+      .single();
+    expect(errorAlta).toBeNull();
+
+    const { error: errorEdicion } = await duenio.cliente
+      .from("formatos")
+      .update({ precio: 1200 })
+      .eq("id", data!.id);
+    expect(errorEdicion).toBeNull();
+
+    const { error: errorBorrado } = await duenio.cliente
+      .from("formatos")
+      .delete()
+      .eq("id", data!.id);
+    expect(errorBorrado).toBeNull();
+  });
+
+  it("sin sesión no se puede leer formatos", async () => {
+    const { data, error } = await anonimo.from("formatos").select("id");
+    expect(data).toEqual([]);
+    expect(error).toBeNull();
+  });
 });
