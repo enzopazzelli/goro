@@ -1,6 +1,12 @@
 export type MedioPago = "efectivo" | "tarjeta" | "transferencia";
 export type EstadoVenta = "cobrada" | "anulada";
 
+export const ETIQUETA_MEDIO_PAGO: Record<MedioPago, string> = {
+  efectivo: "Efectivo",
+  tarjeta: "Tarjeta",
+  transferencia: "Transferencia",
+};
+
 /** Lo mínimo que necesita el servidor para registrar un item. */
 export type ItemDeTicket = {
   formatoId: number;
