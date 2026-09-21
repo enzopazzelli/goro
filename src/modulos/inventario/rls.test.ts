@@ -325,4 +325,11 @@ describe("RLS: inventario", () => {
     await servicio.from("movimientos_balde").delete().eq("balde_id", balde!.id);
     await servicio.from("baldes").delete().eq("id", balde!.id);
   });
+
+  it("no se puede insertar un sabor con color mal formado", async () => {
+    const { error } = await servicio
+      .from("sabores")
+      .insert({ nombre: `Sabor con color trucho ${Date.now()}`, color: "no-es-un-color" });
+    expect(error).not.toBeNull();
+  });
 });
