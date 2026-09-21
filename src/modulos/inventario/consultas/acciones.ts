@@ -8,16 +8,20 @@ export type EstadoFormulario = { error: string | null };
 
 const SIN_ERROR: EstadoFormulario = { error: null };
 
+const COLOR_HEX = /^#[0-9a-fA-F]{6}$/;
+
 /** RLS es la barrera real (solo dueño); acá solo se arma un mensaje si falla. */
 export async function crearSabor(
   _previo: EstadoFormulario,
   datos: FormData,
 ): Promise<EstadoFormulario> {
   const nombre = String(datos.get("nombre") ?? "").trim();
+  const color = String(datos.get("color") ?? "").trim();
   if (!nombre) return { error: "Escribí un nombre." };
+  if (!COLOR_HEX.test(color)) return { error: "Elegí un color." };
 
   const supabase = await clienteServidor();
-  const { error } = await supabase.from("sabores").insert({ nombre });
+  const { error } = await supabase.from("sabores").insert({ nombre, color });
 
   if (error) {
     if (error.code === "23505") return { error: `Ya existe un sabor "${nombre}".` };
@@ -202,5 +206,25 @@ export async function registrarAjusteBalde(
   }
 
   revalidatePath("/inventario");
+  return SIN_ERROR;
+}
+
+export async function editarColorSabor(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const saborId = Number(datos.get("saborId"));
+  const color = String(datos.get("color") ?? "").trim();
+
+  if (!Number.isInteger(saborId) || saborId <= 0) return { error: "Sabor inválido." };
+  if (!COLOR_HEX.test(color)) return { error: "Color inválido." };
+
+  const supabase = await clienteServidor();
+  const { error } = await supabase.from("sabores").update({ color }).eq("id", saborId);
+
+  if (error) return { error: "No se pudo guardar el color." };
+
+  revalidatePath("/inventario");
+  revalidatePath("/ventas");
   return SIN_ERROR;
 }
