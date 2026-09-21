@@ -19,6 +19,7 @@ acá abajo cuál fue la última aplicada.
 | `20260919130000_inventario.sql`| ✅       |
 | `20260921090000_catalogo.sql`  | ✅       |
 | `20260921120000_ventas.sql`    | ⬜       |
+| `20260921150000_color_sabor.sql`| ⬜       |
 
 ## Después de la primera migración: hacerte dueño
 
