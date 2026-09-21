@@ -1,4 +1,5 @@
 import { listarSabores } from "@/lib/sabores";
+import { Tarjeta } from "@/componentes/Tarjeta";
 import { listarVentasRecientes } from "../consultas/ventas";
 import { FilaVentaReciente } from "./FilaVentaReciente";
 
@@ -6,7 +7,7 @@ export async function SeccionUltimasVentas() {
   const [ventas, sabores] = await Promise.all([listarVentasRecientes(), listarSabores()]);
 
   return (
-    <section className="flex flex-col gap-4 rounded-(--r-grande) border border-linea bg-superficie p-6">
+    <Tarjeta>
       <header>
         <h2 className="font-display text-lg font-semibold">Últimas ventas</h2>
         <p className="text-sm text-texto-suave">
@@ -23,6 +24,6 @@ export async function SeccionUltimasVentas() {
           ))}
         </div>
       )}
-    </section>
+    </Tarjeta>
   );
 }
