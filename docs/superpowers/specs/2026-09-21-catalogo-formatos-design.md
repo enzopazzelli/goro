@@ -151,12 +151,11 @@ secciones existentes.
 - El borrado pide confirmación con un `onSubmit` que llama a `confirm()` del
   navegador (`if (!confirm(...)) event.preventDefault()`) — sin librería de
   modal, es la primera acción destructiva del módulo.
-- **Fuera de esta fase**: envolver cada sección de `/inventario` en
-  `<Suspense>` para que la página haga streaming en vez de esperar a las
-  cuatro secciones juntas. Sería una mejora real, pero hoy ninguna de las
-  tres secciones existentes la tiene — mezclarla acá sale del alcance de
-  "agregar Formatos" y conviene tratarla como una mejora de página completa,
-  aparte.
+- ~~**Fuera de esta fase**: envolver cada sección de `/inventario` en
+  `<Suspense>`~~ — mezclarla acá salía del alcance de "agregar Formatos".
+  **Resuelto el 2026-09-21**, como cambio aparte: cada `<SeccionX />` de
+  `page.tsx` quedó en su propio `<Suspense>`, con `CargandoSeccion` (nuevo,
+  en `src/componentes/`) como fallback compartido.
 
 ## Testing
 
@@ -181,8 +180,8 @@ secciones existentes.
 - `sabores.precio_balde` y la venta de balde entero (Fase 4/9).
 - Cualquier pantalla de venta/mostrador (Fase 3/4) — esta fase termina en un
   catálogo editable, no en algo que cobre.
-- `<Suspense>` por sección en `/inventario` (mejora de página completa,
-  fuera de este cambio).
+- ~~`<Suspense>` por sección en `/inventario`~~ — **resuelto el 2026-09-21**,
+  como cambio aparte (ver nota arriba).
 
 ## Migración
 
