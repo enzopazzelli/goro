@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { cambiarActivoSabor } from "../consultas/acciones";
+import { cambiarActivoSabor } from "../consultas/accionesSabores";
 
 const INICIAL = { error: null };
 

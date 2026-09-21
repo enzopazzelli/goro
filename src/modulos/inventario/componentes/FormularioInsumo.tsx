@@ -3,7 +3,7 @@
 import { Boton } from "@/componentes/Boton";
 import { Campo } from "@/componentes/Campo";
 import { useAccionConReset } from "@/lib/useAccionConReset";
-import { crearInsumo } from "../consultas/acciones";
+import { crearInsumo } from "../consultas/accionesInsumos";
 
 const INICIAL = { error: null };
 

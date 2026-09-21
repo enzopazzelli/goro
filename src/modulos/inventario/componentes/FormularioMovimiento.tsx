@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccionConReset } from "@/lib/useAccionConReset";
-import { registrarMovimiento } from "../consultas/acciones";
+import { registrarMovimiento } from "../consultas/accionesInsumos";
 
 const INICIAL = { error: null };
 

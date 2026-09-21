@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { editarColorSabor } from "../consultas/acciones";
+import { editarColorSabor } from "../consultas/accionesSabores";
 
 const INICIAL = { error: null };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { editarStockMinimo } from "../consultas/acciones";
+import { editarStockMinimo } from "../consultas/accionesSabores";
 
 const INICIAL = { error: null };
 
