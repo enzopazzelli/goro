@@ -284,12 +284,11 @@ líneas de AGENTS.md).
   por ahora se siembra y se ajusta por SQL, igual que la promoción a dueño de
   Fase 1.
 - `precio_balde` por sabor (Fase 2b, Catálogo).
-- **Activar/desactivar un sabor desde la UI.** La columna `sabores.activo`
-  existe (y `listarSabores`/`SeccionBaldes` ya la usan para ordenar/filtrar),
-  pero no hay botón para cambiarla — todo sabor nace `activo = true` y así
-  se queda en esta fase. Encontrado en la revisión final de la rama (2026-09-19):
-  no estaba en el entregable verificable de Fase 2, así que se deja anotado
-  acá para que Fase 2b/8 lo retome explícitamente, en vez de perderse.
+- ~~**Activar/desactivar un sabor desde la UI.**~~ Encontrado en la revisión
+  final de la rama (2026-09-19), no estaba en el entregable verificable de
+  Fase 2. **Resuelto el 2026-09-21**, después de cerrar Fase 2b: botón
+  `BotonActivoSabor` en `SeccionSabores`, sin migración nueva (el `grant
+  update` de `sabores` ya cubría `activo` desde Fase 2).
 
 ## Nota para Fase 4 (no bloquea esta fase)
 
