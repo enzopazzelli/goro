@@ -32,3 +32,12 @@ export type Balde = {
   costo: number;
   costoEnvase: number;
 };
+
+export type Formato = {
+  id: number;
+  nombre: string;
+  gramos: number;
+  cantidadSabores: number;
+  precio: number;
+  activo: boolean;
+};
