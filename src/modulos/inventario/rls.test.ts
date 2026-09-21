@@ -280,4 +280,17 @@ describe("RLS: inventario", () => {
     const { data } = await servicio.from("sabores").select("activo").eq("id", saborId).single();
     expect(data!.activo).toBe(true);
   });
+
+  it("un colaborador no puede editar config_comercio", async () => {
+    await colaborador.cliente
+      .from("config_comercio")
+      .update({ stock_minimo_default: 99 })
+      .eq("id", true);
+    const { data } = await servicio
+      .from("config_comercio")
+      .select("stock_minimo_default")
+      .eq("id", true)
+      .single();
+    expect(Number(data!.stock_minimo_default)).not.toBe(99);
+  });
 });

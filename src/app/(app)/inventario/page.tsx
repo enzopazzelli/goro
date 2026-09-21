@@ -18,7 +18,7 @@ export default async function Inventario() {
       </header>
 
       <SeccionSabores esDuenio={esDuenio} />
-      <SeccionBaldes />
+      <SeccionBaldes esDuenio={esDuenio} />
       <SeccionInsumos esDuenio={esDuenio} />
       <SeccionFormatos esDuenio={esDuenio} />
     </div>

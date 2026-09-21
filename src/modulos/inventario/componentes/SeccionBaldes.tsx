@@ -4,13 +4,14 @@ import { listarBaldes } from "../consultas/baldes";
 import { listarSabores } from "../consultas/sabores";
 import { BotonAbrirBalde } from "./BotonAbrirBalde";
 import { FormularioBalde } from "./FormularioBalde";
+import { FormularioStockMinimoDefault } from "./FormularioStockMinimoDefault";
 
 const ETIQUETA_ESTADO: Record<string, string> = {
   cerrado: "Cerrado",
   abierto: "Abierto",
 };
 
-export async function SeccionBaldes() {
+export async function SeccionBaldes({ esDuenio }: { esDuenio: boolean }) {
   const [sabores, baldes, config] = await Promise.all([
     listarSabores(),
     listarBaldes(),
@@ -20,11 +21,12 @@ export async function SeccionBaldes() {
 
   return (
     <section className="flex flex-col gap-4 rounded-(--r-grande) border border-linea bg-superficie p-6">
-      <header>
+      <header className="flex flex-col gap-2">
         <h2 className="font-display text-lg font-semibold">Baldes</h2>
         <p className="text-sm text-texto-suave">
           Cada balde es una unidad: puede haber varios del mismo sabor a la vez.
         </p>
+        {esDuenio && <FormularioStockMinimoDefault valorActual={config.stockMinimoDefault} />}
       </header>
 
       <div className="flex flex-col gap-4">
