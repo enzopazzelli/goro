@@ -20,8 +20,15 @@ export default async function Inventario() {
       </header>
 
       <Pestanas
-        ver={<SeccionVerInventario esDuenio={esDuenio} />}
-        cargar={<SeccionCargarInventario esDuenio={esDuenio} saboresActivos={saboresActivos} />}
+        tabs={[
+          { etiqueta: "Ver", contenido: <SeccionVerInventario esDuenio={esDuenio} /> },
+          {
+            etiqueta: "Cargar",
+            contenido: (
+              <SeccionCargarInventario esDuenio={esDuenio} saboresActivos={saboresActivos} />
+            ),
+          },
+        ]}
       />
     </div>
   );

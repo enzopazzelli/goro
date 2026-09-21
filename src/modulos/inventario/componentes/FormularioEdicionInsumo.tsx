@@ -2,46 +2,17 @@
 
 import { useActionState } from "react";
 import { Boton } from "@/componentes/Boton";
-import { Insignia } from "@/componentes/Insignia";
 import type { Insumo } from "../tipos";
 import { editarInsumo, eliminarInsumo } from "../consultas/accionesInsumos";
-import { FormularioMovimiento } from "./FormularioMovimiento";
 
 const INICIAL = { error: null };
 
-const ETIQUETA_UNIDAD: Record<string, string> = { u: "u", kg: "kg" };
-
-function EstadoInsumo({ insumo }: { insumo: Insumo }) {
-  const bajoMinimo = insumo.cantidad <= insumo.minimo;
-  return (
-    <>
-      <span className="numero text-texto-suave">{insumo.codigo}</span>
-      <span className="numero">
-        {insumo.cantidad} {ETIQUETA_UNIDAD[insumo.unidad]}
-      </span>
-      <Insignia variante={bajoMinimo ? "advertencia" : "ok"}>
-        {bajoMinimo ? "Reponer" : "Ok"}
-      </Insignia>
-      <FormularioMovimiento insumoId={insumo.id} />
-    </>
-  );
-}
-
-export function FilaInsumo({ insumo, esDuenio }: { insumo: Insumo; esDuenio: boolean }) {
+export function FormularioEdicionInsumo({ insumo }: { insumo: Insumo }) {
   const [estadoEdicion, accionEditar, editando] = useActionState(editarInsumo, INICIAL);
   const [estadoBorrado, accionBorrar, borrando] = useActionState(eliminarInsumo, INICIAL);
 
-  if (!esDuenio) {
-    return (
-      <div className="flex flex-wrap items-center gap-2 rounded-(--r) border border-linea p-2 text-sm">
-        <span className="font-semibold">{insumo.nombre}</span>
-        <EstadoInsumo insumo={insumo} />
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col gap-1.5 rounded-(--r) border border-linea p-2">
+    <div className="flex flex-col gap-2">
       <form action={accionEditar} className="flex flex-wrap items-end gap-2">
         <input type="hidden" name="insumoId" value={insumo.id} />
         <input
@@ -88,10 +59,6 @@ export function FilaInsumo({ insumo, esDuenio }: { insumo: Insumo; esDuenio: boo
           </span>
         )}
       </form>
-
-      <div className="flex flex-wrap items-center gap-3 text-sm">
-        <EstadoInsumo insumo={insumo} />
-      </div>
 
       <form
         action={accionBorrar}
