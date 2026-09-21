@@ -7,6 +7,43 @@ import type { EstadoFormulario } from "./acciones";
 
 const SIN_ERROR: EstadoFormulario = { error: null };
 
+/**
+ * La RLS de alta exige cantidad = 0: el stock, aunque sea el primero, entra
+ * siempre por registrar_movimiento_insumo, no por el insert. Separada de
+ * crearInsumo para no pasar el límite de complejidad del linter.
+ */
+async function cargarCantidadInicial(
+  supabase: Awaited<ReturnType<typeof clienteServidor>>,
+  insumoId: number,
+  cantidadInicial: number,
+): Promise<string | null> {
+  if (cantidadInicial <= 0) return null;
+
+  const { error } = await supabase.rpc("registrar_movimiento_insumo", {
+    p_insumo_id: insumoId,
+    p_tipo: "entrada",
+    p_cantidad: cantidadInicial,
+    p_motivo: "Carga inicial",
+  });
+
+  if (error)
+    return "El insumo se creó, pero no se pudo cargar la cantidad inicial. Registrala aparte.";
+  return null;
+}
+
+/** Vacío = arrancar en cero. Separada de crearInsumo por el límite de complejidad del linter. */
+function parsearCantidadInicial(datos: FormData): { valor: number; error?: string } {
+  const cruda = String(datos.get("cantidadInicial") ?? "").trim();
+  const valor = cruda === "" ? 0 : Number(cruda);
+  if (!Number.isFinite(valor) || valor < 0) {
+    return {
+      valor: 0,
+      error: "La cantidad inicial tiene que ser un número positivo, o vacía para arrancar en cero.",
+    };
+  }
+  return { valor };
+}
+
 /** Validaciones compartidas por crear y editar, separadas para no pasar el límite de complejidad del linter. */
 function validarDatosInsumo(
   nombre: string,
@@ -34,17 +71,24 @@ export async function crearInsumo(
 
   const errorValidacion = validarDatosInsumo(nombre, unidad, minimo, costo);
   if (errorValidacion) return { error: errorValidacion };
+  const { valor: cantidadInicial, error: errorCantidad } = parsearCantidadInicial(datos);
+  if (errorCantidad) return { error: errorCantidad };
 
   const supabase = await clienteServidor();
   const { data: numero, error: errorSecuencia } = await supabase.rpc("siguiente_numero_insumo");
   if (errorSecuencia || numero === null) return { error: "No se pudo generar el código." };
 
   const codigo = generarCodigo("A", numero);
-  const { error } = await supabase
+  const { data: insumo, error } = await supabase
     .from("insumos")
-    .insert({ nombre, codigo, unidad, minimo, costo });
+    .insert({ nombre, codigo, unidad, minimo, costo })
+    .select("id")
+    .single();
 
-  if (error) return { error: "No se pudo crear el insumo." };
+  if (error || !insumo) return { error: "No se pudo crear el insumo." };
+
+  const errorCarga = await cargarCantidadInicial(supabase, insumo.id, cantidadInicial);
+  if (errorCarga) return { error: errorCarga };
 
   revalidatePath("/inventario");
   return SIN_ERROR;

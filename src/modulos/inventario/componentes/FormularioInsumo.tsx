@@ -30,6 +30,14 @@ export function FormularioInsumo() {
           <option value="kg">Kilo</option>
         </select>
       </label>
+      <Campo
+        id="cantidad-inicial-insumo"
+        name="cantidadInicial"
+        etiqueta="Cantidad actual"
+        type="number"
+        min="0"
+        placeholder="0"
+      />
       <Campo id="minimo-insumo" name="minimo" etiqueta="Mínimo" type="number" min="0" required />
       <Campo id="costo-insumo" name="costo" etiqueta="Costo" type="number" min="0" required />
       <Boton type="submit" disabled={enviando}>
