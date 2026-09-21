@@ -52,4 +52,20 @@
   /* --- Forma --- */
   --r: 10px; /* radio base */
   --r-grande: 18px; /* tarjetas y contenedores */
+
+  /* El arco es el gesto estructural del mockup: píldora arriba, radio
+     chico abajo. Va separado de --r porque son dos roles distintos, no
+     el mismo radio en dos tamaños. */
+  --radio-chico: 10px;
+  --arco: 999px 999px var(--radio-chico) var(--radio-chico);
+
+  /* Sombra: la única forma no-color que el mockup usa para dar
+     profundidad. Un solo token, mismo criterio que los colores. */
+  --sombra: 0 1px 0 rgba(42, 27, 18, 0.04), 0 8px 24px -18px rgba(42, 27, 18, 0.5);
+
+  /* --- Advertencia: nivel intermedio entre "ok" y "alerta" — "reponer
+     pronto", no "bloquea una venta ahora". Rol distinto de --destacado
+     (que es para totales), aunque comparta el mismo color. --- */
+  --advertencia: #c97b34;
+  --advertencia-fondo: #f8ecd9;
 }
