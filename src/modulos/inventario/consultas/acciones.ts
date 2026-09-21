@@ -181,3 +181,26 @@ export async function darDeAltaBalde(
   revalidatePath("/inventario");
   return SIN_ERROR;
 }
+
+/** Corrige kg_restante a fin de día, cuando la estimación de una venta no coincidió con la realidad. */
+export async function registrarAjusteBalde(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const baldeId = Number(datos.get("baldeId"));
+  const kg = Number(datos.get("kg"));
+
+  if (!Number.isInteger(baldeId) || baldeId <= 0) return { error: "Balde inválido." };
+  if (!Number.isFinite(kg) || kg === 0) return { error: "El ajuste no puede ser cero." };
+
+  const supabase = await clienteServidor();
+  const { error } = await supabase.rpc("registrar_ajuste_balde", { p_balde_id: baldeId, p_kg: kg });
+
+  if (error) {
+    if (error.code === "23514") return { error: "Ese ajuste deja el balde fuera de rango." };
+    return { error: "No se pudo ajustar el balde." };
+  }
+
+  revalidatePath("/inventario");
+  return SIN_ERROR;
+}

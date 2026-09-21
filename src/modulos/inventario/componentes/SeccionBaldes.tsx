@@ -3,6 +3,7 @@ import { listarBaldes } from "@/lib/baldes";
 import { listarSabores } from "@/lib/sabores";
 import { saborEnAlerta } from "../alerta";
 import { BotonAbrirBalde } from "./BotonAbrirBalde";
+import { BotonAjustarBalde } from "./BotonAjustarBalde";
 import { FormularioBalde } from "./FormularioBalde";
 import { FormularioStockMinimoDefault } from "./FormularioStockMinimoDefault";
 
@@ -56,6 +57,7 @@ export async function SeccionBaldes({ esDuenio }: { esDuenio: boolean }) {
                       <span>{ETIQUETA_ESTADO[balde.estado]}</span>
                       <span className="numero">{balde.kgRestante} kg</span>
                       {balde.estado === "cerrado" && <BotonAbrirBalde baldeId={balde.id} />}
+                      {balde.estado === "abierto" && <BotonAjustarBalde baldeId={balde.id} />}
                     </li>
                   ))}
                 </ul>
