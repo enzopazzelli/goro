@@ -1,6 +1,18 @@
 import "server-only";
 import { clienteServidor } from "@/lib/supabase/servidor";
-import type { Balde, EstadoBalde } from "../tipos";
+
+export type EstadoBalde = "cerrado" | "abierto" | "vendido" | "vacio" | "canjeado";
+
+export type Balde = {
+  id: number;
+  codigo: string;
+  saborId: number;
+  kgInicial: number;
+  kgRestante: number;
+  estado: EstadoBalde;
+  costo: number;
+  costoEnvase: number;
+};
 
 type FilaBalde = {
   id: number;

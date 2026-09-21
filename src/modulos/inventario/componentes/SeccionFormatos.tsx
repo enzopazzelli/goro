@@ -1,4 +1,4 @@
-import { listarFormatos } from "../consultas/formatos";
+import { listarFormatos } from "@/lib/formatos";
 import { FilaFormato } from "./FilaFormato";
 import { FormularioFormato } from "./FormularioFormato";
 

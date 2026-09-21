@@ -3,7 +3,7 @@
 import { Boton } from "@/componentes/Boton";
 import { Campo } from "@/componentes/Campo";
 import { useAccionConReset } from "@/lib/useAccionConReset";
-import type { Sabor } from "../tipos";
+import type { Sabor } from "@/lib/sabores";
 import { darDeAltaBalde } from "../consultas/acciones";
 
 const INICIAL = { error: null };

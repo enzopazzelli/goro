@@ -1,6 +1,14 @@
 import "server-only";
 import { clienteServidor } from "@/lib/supabase/servidor";
-import type { Formato } from "../tipos";
+
+export type Formato = {
+  id: number;
+  nombre: string;
+  gramos: number;
+  cantidadSabores: number;
+  precio: number;
+  activo: boolean;
+};
 
 type FilaFormato = {
   id: number;

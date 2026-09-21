@@ -1,6 +1,12 @@
 import "server-only";
 import { clienteServidor } from "@/lib/supabase/servidor";
-import type { Sabor } from "../tipos";
+
+export type Sabor = {
+  id: number;
+  nombre: string;
+  activo: boolean;
+  stockMinimo: number | null;
+};
 
 type FilaSabor = {
   id: number;

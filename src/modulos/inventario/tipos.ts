@@ -1,10 +1,3 @@
-export type Sabor = {
-  id: number;
-  nombre: string;
-  activo: boolean;
-  stockMinimo: number | null;
-};
-
 export type UnidadInsumo = "u" | "kg";
 
 export type Insumo = {
@@ -19,25 +12,3 @@ export type Insumo = {
 };
 
 export type TipoMovimientoInsumo = "entrada" | "ajuste";
-
-export type EstadoBalde = "cerrado" | "abierto" | "vendido" | "vacio" | "canjeado";
-
-export type Balde = {
-  id: number;
-  codigo: string;
-  saborId: number;
-  kgInicial: number;
-  kgRestante: number;
-  estado: EstadoBalde;
-  costo: number;
-  costoEnvase: number;
-};
-
-export type Formato = {
-  id: number;
-  nombre: string;
-  gramos: number;
-  cantidadSabores: number;
-  precio: number;
-  activo: boolean;
-};

@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import type { Formato } from "../tipos";
+import type { Formato } from "@/lib/formatos";
 import { editarFormato, eliminarFormato } from "../consultas/accionesFormatos";
 
 const INICIAL = { error: null };

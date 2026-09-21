@@ -1,4 +1,4 @@
-import { listarSabores } from "../consultas/sabores";
+import { listarSabores } from "@/lib/sabores";
 import { BotonActivoSabor } from "./BotonActivoSabor";
 import { FormularioMinimo } from "./FormularioMinimo";
 import { FormularioSabor } from "./FormularioSabor";

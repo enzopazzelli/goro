@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { abrirBalde } from "../consultas/acciones";
+import { abrirBalde } from "@/lib/accionesBaldes";
 
 const INICIAL = { error: null };
 

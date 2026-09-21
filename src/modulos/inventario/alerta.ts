@@ -1,4 +1,5 @@
-import type { Balde, Sabor } from "./tipos";
+import type { Balde } from "@/lib/baldes";
+import type { Sabor } from "@/lib/sabores";
 
 /**
  * El mínimo compara contra el balde ABIERTO de ese sabor (el que se está

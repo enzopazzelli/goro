@@ -1,7 +1,7 @@
 import { obtenerConfigComercio } from "@/lib/configComercio";
+import { listarBaldes } from "@/lib/baldes";
+import { listarSabores } from "@/lib/sabores";
 import { saborEnAlerta } from "../alerta";
-import { listarBaldes } from "../consultas/baldes";
-import { listarSabores } from "../consultas/sabores";
 import { BotonAbrirBalde } from "./BotonAbrirBalde";
 import { FormularioBalde } from "./FormularioBalde";
 import { FormularioStockMinimoDefault } from "./FormularioStockMinimoDefault";
