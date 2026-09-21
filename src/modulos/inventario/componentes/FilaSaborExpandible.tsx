@@ -5,6 +5,7 @@ import { Cubeta } from "@/componentes/Cubeta";
 import { Insignia } from "@/componentes/Insignia";
 import type { Balde } from "@/lib/baldes";
 import type { Sabor } from "@/lib/sabores";
+import type { InsigniaSabor } from "../tipos";
 import { BotonActivoSabor } from "./BotonActivoSabor";
 import { BotonBorrarSabor } from "./BotonBorrarSabor";
 import { DetalleBaldes } from "./DetalleBaldes";
@@ -12,8 +13,6 @@ import { EditorColorSabor } from "./EditorColorSabor";
 import { EditorNombreSabor } from "./EditorNombreSabor";
 import { FormularioMinimo } from "./FormularioMinimo";
 import { ModalReponerBalde } from "./ModalReponerBalde";
-
-export type InsigniaSabor = { variante: "ok" | "advertencia" | "alerta"; texto: string };
 
 export function FilaSaborExpandible({
   sabor,
@@ -37,15 +36,18 @@ export function FilaSaborExpandible({
   return (
     <>
       <tr className="border-b border-linea last:border-0">
-        <td className="p-2">
+        <td className="px-2 py-[var(--fila-y)]">
           <Cubeta pct={pct} color={sabor.color} bajo={insignia.variante !== "ok"} />
         </td>
-        <td className="p-2 font-semibold">{sabor.nombre}</td>
-        <td className="numero p-2">{sabor.stockMinimo ?? "default"}</td>
-        <td className="p-2">
+        <td className="px-2 py-[var(--fila-y)] font-semibold">{sabor.nombre}</td>
+        <td className="numero px-2 py-[var(--fila-y)]">
+          {baldeAbierto ? `${baldeAbierto.kgRestante} kg` : "—"}
+        </td>
+        <td className="numero px-2 py-[var(--fila-y)]">{sabor.stockMinimo ?? "default"}</td>
+        <td className="px-2 py-[var(--fila-y)]">
           <Insignia variante={insignia.variante}>{insignia.texto}</Insignia>
         </td>
-        <td className="p-2">
+        <td className="px-2 py-[var(--fila-y)]">
           <button
             type="button"
             onClick={() => setModalAbierto(true)}
@@ -54,7 +56,7 @@ export function FilaSaborExpandible({
             Reponer
           </button>
         </td>
-        <td className="p-2">
+        <td className="px-2 py-[var(--fila-y)]">
           <button
             type="button"
             onClick={() => setExpandida((actual) => !actual)}
@@ -68,7 +70,7 @@ export function FilaSaborExpandible({
 
       {expandida && (
         <tr className="border-b border-linea bg-superficie-honda last:border-0">
-          <td colSpan={6} className="p-2">
+          <td colSpan={7} className="p-2">
             <div className="flex flex-col gap-2">
               {esDuenio && (
                 <div className="flex flex-wrap items-center gap-2">

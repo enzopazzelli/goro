@@ -3,9 +3,9 @@ import { listarBaldes } from "@/lib/baldes";
 import { kgPorSabor } from "@/lib/kgPorSabor";
 import { listarSabores } from "@/lib/sabores";
 import { saborEnAlerta } from "../alerta";
-import { TablaSabores, type FilaSaborVista } from "./TablaSabores";
+import type { FilaSaborVista } from "../tipos";
 
-export async function SeccionStockSabores({ esDuenio }: { esDuenio: boolean }) {
+export async function obtenerFilasSabores(): Promise<FilaSaborVista[]> {
   const [sabores, baldes, config] = await Promise.all([
     listarSabores(),
     listarBaldes(),
@@ -13,7 +13,7 @@ export async function SeccionStockSabores({ esDuenio }: { esDuenio: boolean }) {
   ]);
   const kgPorSaborId = kgPorSabor(baldes);
 
-  const filas: FilaSaborVista[] = sabores
+  return sabores
     .filter((sabor) => sabor.activo)
     .map((sabor) => {
       const deEsteSabor = baldes.filter((balde) => balde.saborId === sabor.id);
@@ -33,6 +33,4 @@ export async function SeccionStockSabores({ esDuenio }: { esDuenio: boolean }) {
 
       return { sabor, baldes: deEsteSabor, pct, insignia, baldeAbiertoId: abierto?.id ?? null };
     });
-
-  return <TablaSabores filas={filas} esDuenio={esDuenio} />;
 }

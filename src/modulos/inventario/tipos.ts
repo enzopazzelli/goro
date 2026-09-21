@@ -1,3 +1,6 @@
+import type { Balde } from "@/lib/baldes";
+import type { Sabor } from "@/lib/sabores";
+
 export type UnidadInsumo = "u" | "kg";
 
 export type Insumo = {
@@ -12,3 +15,13 @@ export type Insumo = {
 };
 
 export type TipoMovimientoInsumo = "entrada" | "ajuste";
+
+export type InsigniaSabor = { variante: "ok" | "advertencia" | "alerta"; texto: string };
+
+export type FilaSaborVista = {
+  sabor: Sabor;
+  baldes: Balde[];
+  pct: number;
+  insignia: InsigniaSabor;
+  baldeAbiertoId: number | null;
+};

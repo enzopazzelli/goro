@@ -16,17 +16,17 @@ export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esD
   return (
     <>
       <tr className="border-b border-linea last:border-0">
-        <td className="p-2 font-semibold">{insumo.nombre}</td>
-        <td className="numero p-2 text-texto-suave">{insumo.codigo}</td>
-        <td className="numero p-2">
+        <td className="px-2 py-[var(--fila-y)] font-semibold">{insumo.nombre}</td>
+        <td className="numero px-2 py-[var(--fila-y)] text-texto-suave">{insumo.codigo}</td>
+        <td className="numero px-2 py-[var(--fila-y)]">
           {insumo.cantidad} {ETIQUETA_UNIDAD[insumo.unidad]}
         </td>
-        <td className="p-2">
+        <td className="px-2 py-[var(--fila-y)]">
           <Insignia variante={bajoMinimo ? "advertencia" : "ok"}>
             {bajoMinimo ? "Reponer" : "Ok"}
           </Insignia>
         </td>
-        <td className="p-2">
+        <td className="px-2 py-[var(--fila-y)]">
           <button
             type="button"
             onClick={() => setModalAbierto(true)}
@@ -35,7 +35,7 @@ export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esD
             Cargar
           </button>
         </td>
-        <td className="p-2">
+        <td className="px-2 py-[var(--fila-y)]">
           {esDuenio && (
             <button
               type="button"

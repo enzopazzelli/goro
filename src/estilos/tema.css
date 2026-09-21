@@ -68,4 +68,14 @@
      (que es para totales), aunque comparta el mismo color. --- */
   --advertencia: #c97b34;
   --advertencia-fondo: #f8ecd9;
+
+  /* --- Densidad de listas. El mostrador en hora pico quiere ver más
+     filas; la oficina quiere leer cómodo. No es un color, pero vive acá
+     por el mismo motivo que --r y --sombra: un solo lugar para los
+     tokens visuales. --- */
+  --fila-y: 0.7rem;
+}
+
+[data-densidad="compacta"] {
+  --fila-y: 0.35rem;
 }
