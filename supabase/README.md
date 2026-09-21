@@ -20,8 +20,8 @@ acá abajo cuál fue la última aplicada.
 | `20260921090000_catalogo.sql`  | ✅       |
 | `20260921120000_ventas.sql`    | ✅       |
 | `20260921150000_color_sabor.sql`| ✅       |
-| `20260921160000_borrar_sabores_insumos.sql`| ⬜       |
-| `20260921170000_borrar_baldes.sql`| ⬜       |
+| `20260921160000_borrar_sabores_insumos.sql`| ✅       |
+| `20260921170000_borrar_baldes.sql`| ✅       |
 
 ## Después de la primera migración: hacerte dueño
 
