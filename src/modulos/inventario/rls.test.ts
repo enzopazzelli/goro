@@ -274,4 +274,10 @@ describe("RLS: inventario", () => {
     expect(data).toEqual([]);
     expect(error).toBeNull();
   });
+
+  it("un colaborador no puede cambiar el estado de un sabor", async () => {
+    await colaborador.cliente.from("sabores").update({ activo: false }).eq("id", saborId);
+    const { data } = await servicio.from("sabores").select("activo").eq("id", saborId).single();
+    expect(data!.activo).toBe(true);
+  });
 });

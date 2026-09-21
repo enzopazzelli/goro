@@ -52,6 +52,24 @@ export async function editarStockMinimo(
   return SIN_ERROR;
 }
 
+/** No se borra un sabor, se desactiva — mismo criterio que insumos y formatos. */
+export async function cambiarActivoSabor(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const saborId = Number(datos.get("saborId"));
+  const activo = datos.get("activo") === "true";
+  if (!Number.isInteger(saborId) || saborId <= 0) return { error: "Sabor inválido." };
+
+  const supabase = await clienteServidor();
+  const { error } = await supabase.from("sabores").update({ activo }).eq("id", saborId);
+
+  if (error) return { error: "No se pudo cambiar el estado del sabor." };
+
+  revalidatePath("/inventario");
+  return SIN_ERROR;
+}
+
 /** Validaciones de `crearInsumo`, separadas para no pasar el límite de complejidad del linter. */
 function validarDatosInsumo(
   nombre: string,

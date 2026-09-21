@@ -1,4 +1,5 @@
 import { listarSabores } from "../consultas/sabores";
+import { BotonActivoSabor } from "./BotonActivoSabor";
 import { FormularioMinimo } from "./FormularioMinimo";
 import { FormularioSabor } from "./FormularioSabor";
 
@@ -17,6 +18,7 @@ export async function SeccionSabores({ esDuenio }: { esDuenio: boolean }) {
           <tr>
             <th className="p-2">Sabor</th>
             <th className="p-2">Mínimo (kg)</th>
+            <th className="p-2">Estado</th>
           </tr>
         </thead>
         <tbody>
@@ -28,6 +30,15 @@ export async function SeccionSabores({ esDuenio }: { esDuenio: boolean }) {
                   <FormularioMinimo saborId={sabor.id} valorActual={sabor.stockMinimo} />
                 ) : (
                   (sabor.stockMinimo ?? "default")
+                )}
+              </td>
+              <td className="p-2">
+                {esDuenio ? (
+                  <BotonActivoSabor saborId={sabor.id} activo={sabor.activo} />
+                ) : sabor.activo ? (
+                  "Activo"
+                ) : (
+                  "Inactivo"
                 )}
               </td>
             </tr>
