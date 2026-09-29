@@ -1,7 +1,16 @@
+import type { Presentacion } from "@/lib/presentaciones";
 import type { Insumo } from "../tipos";
 import { FilaInsumoExpandible } from "./FilaInsumoExpandible";
 
-export function TablaInsumos({ insumos, esDuenio }: { insumos: Insumo[]; esDuenio: boolean }) {
+export function TablaInsumos({
+  insumos,
+  presentaciones,
+  esDuenio,
+}: {
+  insumos: Insumo[];
+  presentaciones: Presentacion[];
+  esDuenio: boolean;
+}) {
   if (insumos.length === 0) {
     return <p className="text-sm text-texto-suave">Ningún insumo con ese nombre.</p>;
   }
@@ -19,7 +28,14 @@ export function TablaInsumos({ insumos, esDuenio }: { insumos: Insumo[]; esDueni
       </thead>
       <tbody>
         {insumos.map((insumo) => (
-          <FilaInsumoExpandible key={insumo.id} insumo={insumo} esDuenio={esDuenio} />
+          <FilaInsumoExpandible
+            key={insumo.id}
+            insumo={insumo}
+            presentaciones={presentaciones.filter(
+              (presentacion) => presentacion.insumoId === insumo.id,
+            )}
+            esDuenio={esDuenio}
+          />
         ))}
       </tbody>
     </table>

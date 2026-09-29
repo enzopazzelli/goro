@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Boton } from "@/componentes/Boton";
 import { Insignia } from "@/componentes/Insignia";
 import { Pildora } from "@/componentes/Pildora";
+import type { Presentacion } from "@/lib/presentaciones";
 import type { FilaSaborVista, Insumo } from "../tipos";
 import { TablaInsumos } from "./TablaInsumos";
 import { TablaSabores } from "./TablaSabores";
@@ -13,10 +14,12 @@ type Pestana = "sabores" | "insumos";
 export function PanelStock({
   filasSabores,
   insumos,
+  presentaciones,
   esDuenio,
 }: {
   filasSabores: FilaSaborVista[];
   insumos: Insumo[];
+  presentaciones: Presentacion[];
   esDuenio: boolean;
 }) {
   const [pestana, setPestana] = useState<Pestana>("sabores");
@@ -75,7 +78,11 @@ export function PanelStock({
       {pestana === "sabores" ? (
         <TablaSabores filas={filasFiltradas} esDuenio={esDuenio} />
       ) : (
-        <TablaInsumos insumos={insumosFiltrados} esDuenio={esDuenio} />
+        <TablaInsumos
+          insumos={insumosFiltrados}
+          presentaciones={presentaciones}
+          esDuenio={esDuenio}
+        />
       )}
     </div>
   );
