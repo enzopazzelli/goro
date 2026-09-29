@@ -1,5 +1,6 @@
 import "server-only";
 import { clienteServidor } from "@/lib/supabase/servidor";
+import { nombreDeItem } from "../nombreItem";
 import type { EstadoVenta, ItemVentaReciente, MedioPago, VentaReciente } from "../tipos";
 
 type FilaMovimiento = {
@@ -11,6 +12,7 @@ type FilaItem = {
   id: number;
   precio: number;
   formatos: { nombre: string } | null;
+  presentaciones_insumo: { nombre: string; insumos: { nombre: string } | null } | null;
   movimientos_balde: FilaMovimiento[];
 };
 
@@ -44,7 +46,7 @@ function mapearItem(fila: FilaItem): ItemVentaReciente {
 
   return {
     id: fila.id,
-    formatoNombre: fila.formatos?.nombre ?? "",
+    nombre: nombreDeItem(fila),
     precio: fila.precio,
     sabores,
   };
@@ -71,6 +73,7 @@ export async function listarVentasRecientes(): Promise<VentaReciente[]> {
        venta_items (
          id, precio,
          formatos ( nombre ),
+         presentaciones_insumo ( nombre, insumos ( nombre ) ),
          movimientos_balde ( kg, baldes ( sabores ( id, nombre ) ) )
        )`,
     )

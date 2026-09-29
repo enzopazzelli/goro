@@ -31,9 +31,10 @@ export function SelectorFormatoYSabores({
       (id) => sabores.find((sabor) => sabor.id === id)?.nombre ?? "",
     );
     onAgregar({
+      tipo: "formato",
       formatoId: formato.id,
       saborIds: idsFinal,
-      formatoNombre: formato.nombre,
+      nombre: formato.nombre,
       precio: formato.precio,
       saboresNombres,
     });

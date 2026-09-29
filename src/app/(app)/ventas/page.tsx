@@ -1,5 +1,6 @@
 import { listarBaldes } from "@/lib/baldes";
 import { listarFormatos } from "@/lib/formatos";
+import { listarPresentaciones } from "@/lib/presentaciones";
 import { listarSabores } from "@/lib/sabores";
 import { FormularioTicket } from "@/modulos/ventas/componentes/FormularioTicket";
 import { SeccionUltimasVentas } from "@/modulos/ventas/componentes/SeccionUltimasVentas";
@@ -7,10 +8,11 @@ import { SeccionUltimasVentas } from "@/modulos/ventas/componentes/SeccionUltima
 export const metadata = { title: "Ventas" };
 
 export default async function Ventas() {
-  const [formatos, sabores, baldes] = await Promise.all([
+  const [formatos, sabores, baldes, presentaciones] = await Promise.all([
     listarFormatos(),
     listarSabores(),
     listarBaldes(),
+    listarPresentaciones(),
   ]);
 
   return (
@@ -20,7 +22,12 @@ export default async function Ventas() {
         <p className="text-texto-suave">Armá el ticket y cobrá.</p>
       </header>
 
-      <FormularioTicket formatos={formatos} sabores={sabores} baldes={baldes} />
+      <FormularioTicket
+        formatos={formatos}
+        sabores={sabores}
+        baldes={baldes}
+        presentaciones={presentaciones}
+      />
 
       <SeccionUltimasVentas />
     </div>

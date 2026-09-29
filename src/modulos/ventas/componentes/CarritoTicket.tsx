@@ -4,7 +4,8 @@ import { ArcoCab } from "@/componentes/ArcoCab";
 import { Boton } from "@/componentes/Boton";
 import type { Sabor } from "@/lib/sabores";
 import type { EstadoTicket } from "../consultas/acciones";
-import type { ItemDeTicket, ItemEnCarrito, MedioPago } from "../tipos";
+import { totalDelCarrito } from "../ticket";
+import type { ItemEnCarrito, MedioPago } from "../tipos";
 import { BotonAbrirBaldeFaltante } from "./BotonAbrirBaldeFaltante";
 import { LineasDeCarrito } from "./LineasDeCarrito";
 
@@ -27,11 +28,7 @@ export function CarritoTicket({
   estado: EstadoTicket;
   enviando: boolean;
 }) {
-  const total = carrito.reduce((suma, item) => suma + item.precio, 0);
-  const itemsParaEnviar: ItemDeTicket[] = carrito.map((item) => ({
-    formatoId: item.formatoId,
-    saborIds: item.saborIds,
-  }));
+  const total = totalDelCarrito(carrito);
 
   return (
     <div className="flex flex-col lg:sticky lg:top-4 lg:self-start">
@@ -41,7 +38,9 @@ export function CarritoTicket({
       />
       <div className="flex flex-col gap-3 rounded-b-(--r-grande) border border-t-0 border-linea bg-superficie p-4 shadow-(--shadow-tarjeta)">
         {carrito.length === 0 ? (
-          <p className="text-sm text-texto-suave">Elegí un formato y después los sabores.</p>
+          <p className="text-sm text-texto-suave">
+            Elegí un formato (y sus sabores) o un producto.
+          </p>
         ) : (
           <LineasDeCarrito carrito={carrito} sabores={sabores} onQuitar={onQuitar} />
         )}
@@ -58,7 +57,7 @@ export function CarritoTicket({
           </div>
 
           <form action={accion} className="mt-3 flex flex-col gap-2">
-            <input type="hidden" name="items" value={JSON.stringify(itemsParaEnviar)} />
+            <input type="hidden" name="items" value={JSON.stringify(carrito)} />
             <select
               name="medioPago"
               value={medioPago}
