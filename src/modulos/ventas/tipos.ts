@@ -8,14 +8,13 @@ export const ETIQUETA_MEDIO_PAGO: Record<MedioPago, string> = {
 };
 
 /** Lo mínimo que necesita el servidor para registrar un item. */
-export type ItemDeTicket = {
-  formatoId: number;
-  saborIds: number[];
-};
+export type ItemDeTicket =
+  | { tipo: "formato"; formatoId: number; saborIds: number[] }
+  | { tipo: "producto"; presentacionId: number };
 
 /** Lo que necesita la pantalla para mostrar el ticket en construcción. */
 export type ItemEnCarrito = ItemDeTicket & {
-  formatoNombre: string;
+  nombre: string;
   precio: number;
   saboresNombres: string[];
 };
@@ -27,7 +26,7 @@ export type SaborDeItem = {
 
 export type ItemVentaReciente = {
   id: number;
-  formatoNombre: string;
+  nombre: string;
   precio: number;
   sabores: SaborDeItem[];
 };
