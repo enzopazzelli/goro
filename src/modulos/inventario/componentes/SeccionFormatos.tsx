@@ -1,9 +1,16 @@
 import { listarFormatos } from "@/lib/formatos";
 import { Tarjeta } from "@/componentes/Tarjeta";
+import { listarConsumosDeFormatos } from "../consultas/consumos";
+import { listarInsumos } from "../consultas/insumos";
+import { ConsumoFormato } from "./ConsumoFormato";
 import { FilaFormato } from "./FilaFormato";
 
 export async function SeccionFormatos({ esDuenio }: { esDuenio: boolean }) {
-  const formatos = await listarFormatos();
+  const [formatos, consumos, insumos] = await Promise.all([
+    listarFormatos(),
+    listarConsumosDeFormatos(),
+    listarInsumos(),
+  ]);
 
   return (
     <Tarjeta compacta>
@@ -19,7 +26,15 @@ export async function SeccionFormatos({ esDuenio }: { esDuenio: boolean }) {
       ) : (
         <div className="flex flex-col gap-1.5">
           {formatos.map((formato) => (
-            <FilaFormato key={formato.id} formato={formato} esDuenio={esDuenio} />
+            <div key={formato.id} className="flex flex-col gap-1">
+              <FilaFormato formato={formato} esDuenio={esDuenio} />
+              <ConsumoFormato
+                formatoId={formato.id}
+                consumos={consumos.filter((consumo) => consumo.formatoId === formato.id)}
+                insumos={insumos}
+                esDuenio={esDuenio}
+              />
+            </div>
           ))}
         </div>
       )}

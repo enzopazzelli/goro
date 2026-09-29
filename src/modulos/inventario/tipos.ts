@@ -25,3 +25,11 @@ export type FilaSaborVista = {
   insignia: InsigniaSabor;
   baldeAbiertoId: number | null;
 };
+
+/** Cuánto de un insumo se lleva un formato al venderse con helado (ej. Cucurucho doble → Cono doble × 1). */
+export type ConsumoDeFormato = {
+  formatoId: number;
+  insumoId: number;
+  insumoNombre: string;
+  cantidad: number;
+};
