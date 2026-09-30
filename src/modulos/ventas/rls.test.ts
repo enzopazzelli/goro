@@ -113,10 +113,12 @@ describe("RLS: ventas", () => {
     const { error } = await colaborador.cliente.rpc("aplicar_movimiento_balde", {
       p_balde_id: baldeId,
       p_tipo: "ajuste",
-      p_kg: 1,
+      // Un delta chico y válido: si falla tiene que ser por falta de permiso,
+      // no porque el balde ya está lleno (con +1 kg fallaba por el check de rango).
+      p_kg: -0.01,
       p_venta_item_id: null,
     });
-    expect(error).not.toBeNull();
+    expect(error?.code).toBe("42501");
   });
 
   it("un colaborador puede registrar una venta, y anularla revierte el balde", async () => {
@@ -436,5 +438,18 @@ describe("Ventas: productos por unidad y conos", () => {
     expect(ambos?.code).toBe("23514");
 
     await servicio.from("ventas").delete().eq("id", venta!.id);
+  });
+
+  it("registrar_movimiento_insumo no acepta los tipos que son solo de venta", async () => {
+    for (const tipo of ["venta", "anulacion"]) {
+      const { error } = await colaborador.cliente.rpc("registrar_movimiento_insumo", {
+        p_insumo_id: bombonId,
+        p_tipo: tipo,
+        p_cantidad: 1,
+        p_motivo: "movimiento falso",
+      });
+      expect(error?.message).toMatch(/tipo de movimiento/i);
+    }
+    expect(await stockDe(bombonId)).toBe(20);
   });
 });
