@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { clienteServidor } from "@/lib/supabase/servidor";
+import { itemsParaServidor } from "../ticket";
 import type { ItemDeTicket, MedioPago } from "../tipos";
 
 export type EstadoTicket = {
@@ -61,7 +62,7 @@ export async function registrarVenta(
 
   const supabase = await clienteServidor();
   const { error } = await supabase.rpc("registrar_venta", {
-    p_items: items.map((item) => ({ formato_id: item.formatoId, sabor_ids: item.saborIds })),
+    p_items: itemsParaServidor(items),
     p_medio_pago: medioPago,
   });
 

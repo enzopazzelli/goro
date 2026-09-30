@@ -77,7 +77,7 @@ Ese recorrido es el que contesta la pregunta real del cliente, que no es
 ### De dónde salen las decisiones de diseño
 
 Están escritas en el comentario del encabezado de `index.html` y registradas
-en `../bitacora-disenos.md`. Resumen: dirección **setentoso cálido** (la que
+en `../_metodo/bitacora-disenos.md`. Resumen: dirección **setentoso cálido** (la que
 le corresponde al rubro), con la paleta corrida a pistacho y dulce de leche
 para no caer en el naranja quemado de manual; el arco como único gesto
 estructural repetido; y el color real del sabor usado como dato del sistema
@@ -87,7 +87,7 @@ en todas las pantallas.
 
 El mockup es HTML plano a propósito: sirve para vender, no para crecer. Dos
 cosas que ahí están simplificadas y en producción **no** pueden estarlo, ambas
-anotadas en `../lecciones-ciro-polirrubro.md` y ya escritas como regla en
+anotadas en `../_metodo/reglas.md` y ya escritas como regla en
 `AGENTS.md`:
 
 1. Registrar una venta toca cuatro cosas a la vez (kilos, insumos, caja,

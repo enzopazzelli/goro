@@ -2,6 +2,7 @@ import { ArcoCab } from "@/componentes/ArcoCab";
 import { Boton } from "@/componentes/Boton";
 import { Punto } from "@/componentes/Punto";
 import type { Sabor } from "@/lib/sabores";
+import { saborIdsDe } from "../ticket";
 import type { ItemEnCarrito, MedioPago } from "../tipos";
 import { DetalleTicket, type ItemParaDetalle } from "./DetalleTicket";
 
@@ -20,9 +21,9 @@ export function TicketConfirmado({
 }) {
   const itemsParaDetalle: ItemParaDetalle[] = items.map((item, indice) => ({
     key: indice,
-    formatoNombre: item.formatoNombre,
+    nombre: item.nombre,
     precio: item.precio,
-    sabores: item.saborIds.map((saborId) => {
+    sabores: saborIdsDe(item).map((saborId) => {
       const sabor = sabores.find((s) => s.id === saborId);
       return (
         <span key={saborId} className="flex items-center gap-1">

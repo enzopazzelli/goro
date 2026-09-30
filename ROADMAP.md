@@ -6,11 +6,12 @@ el local lleno.
 
 Se apoya en dos documentos que ya existen y no se rediscuten acá:
 
-- `../sistema de gestion/prompt-base-sistemas-gestion.md` — cómo se arma un
-  sistema de gestión por módulos, qué va en el núcleo y qué se cotiza aparte.
-- `../lecciones-ciro-polirrubro.md` — los seis errores reales que aparecieron
-  en el proyecto anterior. Se repasan **antes** de escribir cada función, no
+- `../_metodo/reglas.md` — el núcleo: las ocho reglas que no se negocian (cada
+  una con el error real del que salió), el sistema de diseño, las convenciones
+  y el plan de testing. Se repasan **antes** de escribir cada función, no
   después.
+- `../_metodo/prompt-base-web.md` — cómo se arma un sistema de gestión por
+  módulos, qué va en el núcleo y qué se cotiza aparte.
 
 ---
 
@@ -355,7 +356,7 @@ Cada fase termina en algo que Goro puede tocar y verificar. Ninguna termina en
 | **2**  | **Inventario** — baldes identificados, insumos, movimientos, y **edición del producto** ← _aplicado_ | Entran dos baldes de Frutilla; se abre uno y el otro queda entero. Goro le pone a Frutilla un mínimo distinto que al resto y la alerta salta antes solo ahí                                                                    |
 | **2b** | **Catálogo** — formatos y precios editables ← _aplicado_                                       | Goro crea el formato "Pote 2 kg, 6 sabores", le pone precio, y esa misma tarde aparece en el mostrador sin que nadie toque código                                                                                              |
 | **3**  | **Etiquetas y códigos de barras** — el pedido de Goro                                          | Tres cosas: (a) se arma un pote, se pesa, se imprime su etiqueta y la pistola la lee trayendo sabor + peso + precio; (b) se imprime la hoja de códigos de insumos y escanear uno trae el insumo; (c) cada balde recibe su código al entrar |
-| **4**  | **Ventas / TPV** — mostrador, **baldes enteros e insumos sueltos**, pistola, anulación ← _recorte "cobrar a dedo" aplicado; falta escaneo, insumo suelto y balde entero_ | Se cobra un pote escaneándolo, un cucurucho a dedo y un balde entero, en la misma pantalla y sin cambiar de modo                                                                                                                |
+| **4**  | **Ventas / TPV** — mostrador, **baldes enteros e insumos sueltos**, pistola, anulación ← _recorte "cobrar a dedo" aplicado, más productos por unidad y conos sueltos; falta escaneo y balde entero_ | Se cobra un pote escaneándolo, un cucurucho a dedo y un balde entero, en la misma pantalla y sin cambiar de modo                                                                                                                |
 | **5**  | **Caja** — apertura, gastos, cierre con arqueo                                                 | Se cierra el turno y la diferencia contra lo contado a mano da bien                                                                                                                                                            |
 | **6**  | **Historial** — ventas del turno, filtros, ticket, anulación                                   | Se busca la venta de hace dos horas, se abre el ticket y se anula: el stock vuelve solo                                                                                                                                        |
 | **7**  | **Panel** — vendido del día, ranking de sabores, ventas por hora                               | Goro mira el gráfico de ventas por hora y decide personal para el finde                                                                                                                                                        |
@@ -433,7 +434,7 @@ pantallas.
 suma de sus baldes `cerrado` y `abierto`. Un `select` derivado, no una columna
 que dos ventas simultáneas puedan pisarse.
 
-Cuatro reglas heredadas de `../lecciones-ciro-polirrubro.md`, aplicadas acá:
+Cuatro reglas heredadas de `../_metodo/reglas.md` §1, aplicadas acá:
 
 1. **`codigo` es `unique` a nivel de índice**, no un `select` previo que
    chequea si existe. Dos etiquetas impresas en el mismo segundo desde dos

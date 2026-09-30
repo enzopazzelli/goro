@@ -16,7 +16,7 @@ export function FilaVentaReciente({ venta, sabores }: { venta: VentaReciente; sa
 
   const itemsParaDetalle: ItemParaDetalle[] = venta.items.map((item) => ({
     key: item.id,
-    formatoNombre: item.formatoNombre,
+    nombre: item.nombre,
     precio: item.precio,
     sabores: item.sabores.map((sabor) => (
       <CorregirSaborItem

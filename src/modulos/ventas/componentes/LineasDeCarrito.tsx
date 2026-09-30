@@ -2,6 +2,7 @@
 
 import { Punto } from "@/componentes/Punto";
 import type { Sabor } from "@/lib/sabores";
+import { saborIdsDe } from "../ticket";
 import type { ItemEnCarrito } from "../tipos";
 
 export function LineasDeCarrito({
@@ -19,10 +20,10 @@ export function LineasDeCarrito({
         <li key={indice} className="flex items-start gap-2 border-b border-linea pb-2">
           <div className="min-w-0 flex-1">
             <div className="text-sm font-semibold">
-              {item.formatoNombre} · <span className="numero">${item.precio}</span>
+              {item.nombre} · <span className="numero">${item.precio}</span>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs text-texto-suave">
-              {item.saborIds.map((saborId) => {
+              {saborIdsDe(item).map((saborId) => {
                 const sabor = sabores.find((s) => s.id === saborId);
                 return (
                   <span key={saborId} className="flex items-center gap-1">
@@ -35,7 +36,7 @@ export function LineasDeCarrito({
           <button
             type="button"
             onClick={() => onQuitar(indice)}
-            aria-label={`Quitar ${item.formatoNombre}`}
+            aria-label={`Quitar ${item.nombre}`}
             className="text-texto-suave hover:text-alerta"
           >
             ✕

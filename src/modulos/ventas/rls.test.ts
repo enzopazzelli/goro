@@ -1,40 +1,10 @@
-import { createClient } from "@supabase/supabase-js";
+// @vitest-environment node
+// Sin jsdom: ahí los clientes de Supabase comparten localStorage y el cliente de servicio
+// termina actuando con la sesión de un usuario de prueba, sujeto a RLS.
+
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-
-/**
- * Corre contra un proyecto Supabase de PRUEBA, nunca el real — mismo
- * criterio que src/modulos/inventario/rls.test.ts. Excluido de
- * `npm run test:unit` por el glob de package.json.
- */
-
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const clavePublica = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const claveServicio = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-
-const servicio = createClient(url, claveServicio);
-
-async function crearUsuarioDePrueba(rol: "duenio" | "colaborador") {
-  const usuario = `test-${rol}-${Date.now()}`;
-  const email = `${usuario}@heladeria.local`;
-  const password = "prueba-123456";
-
-  const { data, error } = await servicio.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-  });
-  if (error || !data.user) throw error;
-
-  if (rol === "duenio") {
-    await servicio.from("perfiles").update({ rol: "duenio" }).eq("id", data.user.id);
-  }
-
-  const cliente = createClient(url, clavePublica);
-  const { error: errorIngreso } = await cliente.auth.signInWithPassword({ email, password });
-  if (errorIngreso) throw errorIngreso;
-
-  return { id: data.user.id, cliente };
-}
+import { clavePublica, crearUsuarioDePrueba, limpiarVentasDe, servicio, url } from "./utilesRls";
+import { createClient } from "@supabase/supabase-js";
 
 describe("RLS: ventas", () => {
   let colaborador: Awaited<ReturnType<typeof crearUsuarioDePrueba>>;
@@ -83,6 +53,10 @@ describe("RLS: ventas", () => {
   });
 
   afterAll(async () => {
+    // La anulación deja un movimiento sin venta_item_id que el test no borra
+    // solo, y sin sacarlo la foreign key impide borrar el balde y el usuario.
+    await limpiarVentasDe("formato_id", [formatoId]);
+    await servicio.from("movimientos_balde").delete().eq("balde_id", baldeId);
     await servicio.from("baldes").delete().eq("id", baldeId);
     await servicio.from("formatos").delete().eq("id", formatoId);
     await servicio.from("sabores").delete().eq("id", saborId);
@@ -90,9 +64,10 @@ describe("RLS: ventas", () => {
   });
 
   it("sin sesión no se puede leer ventas", async () => {
-    const { data, error } = await anonimo.from("ventas").select("id");
-    expect(data).toEqual([]);
-    expect(error).toBeNull();
+    const { data } = await anonimo.from("ventas").select("id");
+    // Sin privilegios sobre la tabla, PostgREST responde con error; con RLS a
+    // secas, con lista vacía. Las dos cosas significan "no se ve nada".
+    expect(data ?? []).toEqual([]);
   });
 
   it("un colaborador no puede insertar directo en ventas", async () => {
@@ -106,10 +81,12 @@ describe("RLS: ventas", () => {
     const { error } = await colaborador.cliente.rpc("aplicar_movimiento_balde", {
       p_balde_id: baldeId,
       p_tipo: "ajuste",
-      p_kg: 1,
+      // Un delta chico y válido: si falla tiene que ser por falta de permiso,
+      // no porque el balde ya está lleno (con +1 kg fallaba por el check de rango).
+      p_kg: -0.01,
       p_venta_item_id: null,
     });
-    expect(error).not.toBeNull();
+    expect(error?.code).toBe("42501");
   });
 
   it("un colaborador puede registrar una venta, y anularla revierte el balde", async () => {

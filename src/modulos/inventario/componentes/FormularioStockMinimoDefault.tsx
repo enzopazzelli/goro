@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { editarStockMinimoDefault } from "@/lib/accionesConfigComercio";
+import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -17,6 +18,7 @@ export function FormularioStockMinimoDefault({ valorActual }: { valorActual: num
         <input
           id="stock-minimo-default"
           type="number"
+          onFocus={seleccionarAlEnfocar}
           name="stockMinimoDefault"
           step="0.1"
           min="0"

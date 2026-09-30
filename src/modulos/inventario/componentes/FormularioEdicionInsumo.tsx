@@ -2,59 +2,78 @@
 
 import { useActionState } from "react";
 import { Boton } from "@/componentes/Boton";
+import { CampoChico } from "@/componentes/CampoChico";
 import type { Insumo } from "../tipos";
 import { editarInsumo, eliminarInsumo } from "../consultas/accionesInsumos";
 
 const INICIAL = { error: null };
 
-export function FormularioEdicionInsumo({ insumo }: { insumo: Insumo }) {
+/**
+ * `conUnidad` es falso para productos y envases: siempre se cuentan por
+ * unidad, así que no se ofrece cambiarla (se manda 'u' en un campo oculto).
+ */
+export function FormularioEdicionInsumo({
+  insumo,
+  conUnidad = true,
+}: {
+  insumo: Insumo;
+  conUnidad?: boolean;
+}) {
   const [estadoEdicion, accionEditar, editando] = useActionState(editarInsumo, INICIAL);
   const [estadoBorrado, accionBorrar, borrando] = useActionState(eliminarInsumo, INICIAL);
 
   return (
     <div className="flex flex-col gap-2">
-      <form action={accionEditar} className="flex flex-wrap items-end gap-2">
+      <form action={accionEditar} className="flex flex-wrap items-end gap-x-6 gap-y-3">
         <input type="hidden" name="insumoId" value={insumo.id} />
-        <input
-          type="text"
+        <CampoChico
+          etiqueta="Nombre"
           name="nombre"
           defaultValue={insumo.nombre}
-          aria-label="Nombre"
           disabled={editando}
-          className="rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+          className="w-44"
         />
-        <select
-          name="unidad"
-          defaultValue={insumo.unidad}
-          disabled={editando}
-          className="rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
-        >
-          <option value="u">Unidad</option>
-          <option value="kg">Kilo</option>
-        </select>
-        <input
+        {conUnidad ? (
+          <label className="flex flex-col gap-0.5">
+            <span className="font-mono text-xs tracking-wide text-texto-suave uppercase">
+              Se cuenta en
+            </span>
+            <select
+              name="unidad"
+              defaultValue={insumo.unidad}
+              disabled={editando}
+              className="rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+            >
+              <option value="u">Unidades</option>
+              <option value="kg">Kilos</option>
+            </select>
+          </label>
+        ) : (
+          <input type="hidden" name="unidad" value="u" />
+        )}
+        <CampoChico
+          etiqueta="Avisar al llegar a"
           type="number"
           name="minimo"
           min="0"
           defaultValue={insumo.minimo}
-          aria-label="Mínimo"
           disabled={editando}
-          className="numero w-20 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+          className="numero w-24"
         />
-        <input
+        <CampoChico
+          etiqueta="Costo por unidad (lo que pagás)"
           type="number"
           name="costo"
           min="0"
           defaultValue={insumo.costo}
-          aria-label="Costo"
           disabled={editando}
-          className="numero w-24 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+          className="numero w-28"
         />
-        <button type="submit" disabled={editando} className="text-xs underline opacity-70">
+        <button type="submit" disabled={editando} className="pb-1 text-xs underline opacity-70">
           {editando ? "Guardando…" : "Guardar"}
         </button>
         {estadoEdicion.error && (
-          <span role="alert" className="text-xs text-alerta">
+          <span role="alert" className="pb-1 text-xs text-alerta">
             {estadoEdicion.error}
           </span>
         )}
@@ -63,7 +82,7 @@ export function FormularioEdicionInsumo({ insumo }: { insumo: Insumo }) {
       <form
         action={accionBorrar}
         onSubmit={(evento) => {
-          if (!confirm(`¿Borrar el insumo "${insumo.nombre}"?`)) evento.preventDefault();
+          if (!confirm(`¿Borrar "${insumo.nombre}"?`)) evento.preventDefault();
         }}
         className="flex items-center gap-2"
       >

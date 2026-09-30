@@ -17,6 +17,12 @@ describe("generarCodigo", () => {
     expect(() => generarCodigo("P", 1_000_000)).toThrow(/fuera de rango/);
     expect(() => generarCodigo("P", 1.5)).toThrow(/fuera de rango/);
   });
+
+  it("códigos de artículo conocidos, los mismos que calcula el script de carga en SQL", () => {
+    expect(generarCodigo("A", 1)).toBe("GA0000014");
+    expect(generarCodigo("A", 12)).toBe("GA0000120");
+    expect(generarCodigo("A", 345)).toBe("GA0003459");
+  });
 });
 
 describe("leerCodigo", () => {

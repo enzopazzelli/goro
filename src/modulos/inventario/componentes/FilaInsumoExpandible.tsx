@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Insignia } from "@/componentes/Insignia";
 import type { Insumo } from "../tipos";
 import { FormularioEdicionInsumo } from "./FormularioEdicionInsumo";
+import { InsigniaStock } from "./InsigniaStock";
 import { ModalCargarInsumo } from "./ModalCargarInsumo";
 
 const ETIQUETA_UNIDAD: Record<string, string> = { u: "u", kg: "kg" };
@@ -11,7 +11,6 @@ const ETIQUETA_UNIDAD: Record<string, string> = { u: "u", kg: "kg" };
 export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esDuenio: boolean }) {
   const [expandida, setExpandida] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
-  const bajoMinimo = insumo.cantidad <= insumo.minimo;
 
   return (
     <>
@@ -22,9 +21,7 @@ export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esD
           {insumo.cantidad} {ETIQUETA_UNIDAD[insumo.unidad]}
         </td>
         <td className="px-2 py-[var(--fila-y)]">
-          <Insignia variante={bajoMinimo ? "advertencia" : "ok"}>
-            {bajoMinimo ? "Reponer" : "Ok"}
-          </Insignia>
+          <InsigniaStock cantidad={insumo.cantidad} minimo={insumo.minimo} />
         </td>
         <td className="px-2 py-[var(--fila-y)]">
           <button

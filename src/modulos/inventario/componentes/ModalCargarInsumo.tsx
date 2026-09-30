@@ -1,9 +1,11 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { Boton } from "@/componentes/Boton";
 import { Modal } from "@/componentes/Modal";
+import type { EstadoFormulario } from "../consultas/acciones";
 import { registrarMovimiento } from "../consultas/accionesInsumos";
+import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -18,13 +20,18 @@ export function ModalCargarInsumo({
   insumoId: number;
   insumoNombre: string;
 }) {
-  const [estado, accion, enviando] = useActionState(registrarMovimiento, INICIAL);
-
-  const [estadoPrevio, setEstadoPrevio] = useState(estado);
-  if (estado !== estadoPrevio) {
-    setEstadoPrevio(estado);
-    if (!estado.error) onCerrar();
-  }
+  // Se cierra al terminar la acción, no comparando estados durante el render: eso
+  // le cambia el estado al padre mientras React renderiza (error de React), y además
+  // la acción devuelve siempre el mismo objeto de éxito, así que la segunda carga
+  // nunca se vería como un cambio.
+  const [estado, accion, enviando] = useActionState(
+    async (previo: EstadoFormulario, datos: FormData) => {
+      const resultado = await registrarMovimiento(previo, datos);
+      if (!resultado.error) onCerrar();
+      return resultado;
+    },
+    INICIAL,
+  );
 
   return (
     <Modal abierto={abierto} onCerrar={onCerrar} titulo={`Cargar ${insumoNombre}`}>
@@ -49,6 +56,7 @@ export function ModalCargarInsumo({
           </span>
           <input
             type="number"
+            onFocus={seleccionarAlEnfocar}
             name="cantidad"
             step="0.1"
             required

@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import { Boton } from "@/componentes/Boton";
 import { Modal } from "@/componentes/Modal";
-import { registrarAjusteBalde } from "../consultas/acciones";
+import { registrarAjusteBalde, type EstadoFormulario } from "../consultas/acciones";
+import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -20,15 +21,16 @@ export function ModalReponerBalde({
   saborNombre: string;
   kgRestante: number;
 }) {
-  const [estado, accion, enviando] = useActionState(registrarAjusteBalde, INICIAL);
-
-  // Cierra solo al confirmar sin error, con el mismo patrón de "ajustar
-  // estado durante el render" que ya se usa en el ticket de Ventas.
-  const [estadoPrevio, setEstadoPrevio] = useState(estado);
-  if (estado !== estadoPrevio) {
-    setEstadoPrevio(estado);
-    if (!estado.error) onCerrar();
-  }
+  // Cierra solo al confirmar sin error, al terminar la acción y no durante el
+  // render (ver ModalCargarInsumo: ahí se explica por qué).
+  const [estado, accion, enviando] = useActionState(
+    async (previo: EstadoFormulario, datos: FormData) => {
+      const resultado = await registrarAjusteBalde(previo, datos);
+      if (!resultado.error) onCerrar();
+      return resultado;
+    },
+    INICIAL,
+  );
 
   return (
     <Modal abierto={abierto} onCerrar={onCerrar} titulo={`Reponer ${saborNombre}`}>
@@ -46,6 +48,7 @@ export function ModalReponerBalde({
             </span>
             <input
               type="number"
+              onFocus={seleccionarAlEnfocar}
               name="kg"
               step="0.1"
               required

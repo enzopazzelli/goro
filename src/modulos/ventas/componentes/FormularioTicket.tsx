@@ -3,10 +3,13 @@
 import { useActionState, useState } from "react";
 import type { Balde } from "@/lib/baldes";
 import type { Formato } from "@/lib/formatos";
+import type { Presentacion } from "@/lib/presentaciones";
 import type { Sabor } from "@/lib/sabores";
+import { totalDelCarrito } from "../ticket";
 import type { ItemEnCarrito, MedioPago } from "../tipos";
 import { registrarVenta } from "../consultas/acciones";
 import { CarritoTicket } from "./CarritoTicket";
+import { SelectorDeProductos } from "./SelectorDeProductos";
 import { SelectorFormatoYSabores } from "./SelectorFormatoYSabores";
 import { TicketConfirmado } from "./TicketConfirmado";
 
@@ -18,10 +21,12 @@ export function FormularioTicket({
   formatos,
   sabores,
   baldes,
+  presentaciones,
 }: {
   formatos: Formato[];
   sabores: Sabor[];
   baldes: Balde[];
+  presentaciones: Presentacion[];
 }) {
   const [carrito, setCarrito] = useState<ItemEnCarrito[]>([]);
   const [medioPago, setMedioPago] = useState<MedioPago>("efectivo");
@@ -36,7 +41,7 @@ export function FormularioTicket({
   if (estado !== estadoPrevio) {
     setEstadoPrevio(estado);
     if (!estado.error && carrito.length > 0) {
-      const total = carrito.reduce((suma, item) => suma + item.precio, 0);
+      const total = totalDelCarrito(carrito);
       setConfirmado({ items: carrito, medioPago, total });
       setCarrito([]);
     }
@@ -48,12 +53,20 @@ export function FormularioTicket({
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
-      <SelectorFormatoYSabores
-        formatos={formatos.filter((formato) => formato.activo)}
-        sabores={sabores}
-        baldes={baldes}
-        onAgregar={(item) => setCarrito((actuales) => [...actuales, item])}
-      />
+      <div className="flex flex-col gap-4">
+        <SelectorFormatoYSabores
+          formatos={formatos.filter((formato) => formato.activo)}
+          sabores={sabores}
+          baldes={baldes}
+          onAgregar={(item) => setCarrito((actuales) => [...actuales, item])}
+        />
+        <SelectorDeProductos
+          presentaciones={presentaciones.filter(
+            (presentacion) => presentacion.activo && presentacion.insumoActivo,
+          )}
+          onAgregar={(item) => setCarrito((actuales) => [...actuales, item])}
+        />
+      </div>
 
       {confirmado ? (
         <TicketConfirmado

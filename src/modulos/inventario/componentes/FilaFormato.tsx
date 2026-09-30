@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { Boton } from "@/componentes/Boton";
+import { CampoChico } from "@/componentes/CampoChico";
 import { Insignia } from "@/componentes/Insignia";
 import type { Formato } from "@/lib/formatos";
 import { editarFormato, eliminarFormato } from "../consultas/accionesFormatos";
@@ -16,8 +17,10 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
     return (
       <div className="flex flex-wrap items-center gap-2 rounded-(--r) border border-linea p-2 text-sm">
         <span className="font-semibold">{formato.nombre}</span>
-        <span className="text-texto-suave">{formato.gramos} g</span>
-        <span className="text-texto-suave">{formato.cantidadSabores} sabores</span>
+        <span className="text-texto-suave">
+          {formato.gramos} g · {formato.cantidadSabores} sabor
+          {formato.cantidadSabores > 1 ? "es" : ""}
+        </span>
         <span className="numero">${formato.precio}</span>
         {!formato.activo && <Insignia variante="neutra">Inactivo</Insignia>}
       </div>
@@ -26,57 +29,56 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
 
   return (
     <div className="flex flex-col gap-1.5 rounded-(--r) border border-linea p-2">
-      <form action={accionEditar} className="flex flex-wrap items-end gap-2">
+      <form action={accionEditar} className="flex flex-wrap items-end gap-x-6 gap-y-3">
         <input type="hidden" name="formatoId" value={formato.id} />
-        <input
-          type="text"
+        <CampoChico
+          etiqueta="Nombre"
           name="nombre"
           defaultValue={formato.nombre}
-          aria-label="Nombre"
           disabled={editando}
-          className="rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+          className="w-44"
         />
-        <input
+        <CampoChico
+          etiqueta="Gramos de helado"
           type="number"
           name="gramos"
           min="1"
           defaultValue={formato.gramos}
-          aria-label="Gramos"
           disabled={editando}
-          className="numero w-20 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+          className="numero w-28"
         />
-        <input
+        <CampoChico
+          etiqueta="Cantidad de sabores"
           type="number"
           name="cantidadSabores"
           min="1"
           defaultValue={formato.cantidadSabores}
-          aria-label="Cantidad de sabores"
           disabled={editando}
-          className="numero w-16 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+          className="numero w-28"
         />
-        <input
+        <CampoChico
+          etiqueta="Precio con helado"
           type="number"
           name="precio"
           min="0"
           defaultValue={formato.precio}
-          aria-label="Precio"
           disabled={editando}
-          className="numero w-24 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+          className="numero w-28"
         />
-        <label className="flex items-center gap-1 text-xs">
+        <label className="flex items-center gap-1 pb-1 text-xs">
           <input
             type="checkbox"
             name="activo"
             defaultChecked={formato.activo}
             disabled={editando}
           />
-          Activo
+          A la venta
         </label>
-        <button type="submit" disabled={editando} className="text-xs underline opacity-70">
+        <button type="submit" disabled={editando} className="pb-1 text-xs underline opacity-70">
           {editando ? "Guardando…" : "Guardar"}
         </button>
         {estadoEdicion.error && (
-          <span role="alert" className="text-xs text-alerta">
+          <span role="alert" className="pb-1 text-xs text-alerta">
             {estadoEdicion.error}
           </span>
         )}

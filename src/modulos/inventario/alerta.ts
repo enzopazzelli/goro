@@ -16,3 +16,14 @@ export function saborEnAlerta(
   const minimoEfectivo = sabor.stockMinimo ?? stockMinimoDefault;
   return baldeAbierto.kgRestante <= minimoEfectivo;
 }
+
+export type EstadoInsumo = "negativo" | "bajo" | "ok";
+
+/**
+ * Negativo no bloquea ninguna venta (decisión de negocio): solo avisa que el
+ * conteo dejó de cerrar y hay que recontar.
+ */
+export function estadoDeInsumo(cantidad: number, minimo: number): EstadoInsumo {
+  if (cantidad < 0) return "negativo";
+  return cantidad <= minimo ? "bajo" : "ok";
+}

@@ -3,7 +3,7 @@ import { ETIQUETA_MEDIO_PAGO, type MedioPago } from "../tipos";
 
 export type ItemParaDetalle = {
   key: string | number;
-  formatoNombre: string;
+  nombre: string;
   precio: number;
   sabores: ReactNode;
 };
@@ -26,7 +26,7 @@ export function DetalleTicket({
             className="flex flex-col gap-1 border-b border-dashed border-linea pb-2 last:border-0 last:pb-0"
           >
             <div className="flex justify-between gap-2">
-              <span className="font-semibold">{item.formatoNombre}</span>
+              <span className="font-semibold">{item.nombre}</span>
               <span className="numero">${item.precio}</span>
             </div>
             <div className="flex flex-wrap gap-2 text-xs text-texto-suave">{item.sabores}</div>

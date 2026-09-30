@@ -2,6 +2,7 @@
 
 import { useAccionConReset } from "@/lib/useAccionConReset";
 import { registrarMovimiento } from "../consultas/accionesInsumos";
+import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -22,6 +23,7 @@ export function FormularioMovimiento({ insumoId }: { insumoId: number }) {
       </select>
       <input
         type="number"
+        onFocus={seleccionarAlEnfocar}
         name="cantidad"
         step="0.1"
         required
