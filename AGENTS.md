@@ -14,8 +14,19 @@ Sistema de gestión para una heladería artesanal de **un solo local**.
 El plan está en `ROADMAP.md`; el mockup de venta, en `index.html` (HTML plano,
 no es código del sistema y no se toca con estas reglas).
 
-Antes de escribir una función nueva, repasar `../lecciones-ciro-polirrubro.md`.
-Los seis hallazgos de ahí son un checklist previo, no una auditoría posterior.
+Antes de escribir una función nueva, repasar `../_metodo/reglas.md` §1. Las ocho
+reglas de ahí son un checklist previo, no una auditoría posterior: cada una tiene
+al lado el error real del que salió.
+
+## Antes y después de cada sesión
+
+**Al empezar:** leer las últimas entradas de `BITACORA.md`. Enzo alterna entre
+el IDE y la consola, así que la sesión anterior puede no estar en este historial
+de chat.
+
+**Al cerrar la jornada con avance real:** agregar la entrada del día arriba de
+todo en `BITACORA.md`, con el formato que está ahí. Una entrada por sesión, no
+una por commit.
 
 ## Idioma
 
