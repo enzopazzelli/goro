@@ -11,6 +11,7 @@ type FilaInsumo = {
   minimo: string;
   costo: number;
   activo: boolean;
+  es_componente: boolean;
 };
 
 function mapearInsumo(fila: FilaInsumo): Insumo {
@@ -23,6 +24,7 @@ function mapearInsumo(fila: FilaInsumo): Insumo {
     minimo: Number(fila.minimo),
     costo: fila.costo,
     activo: fila.activo,
+    esComponente: fila.es_componente,
   };
 }
 
@@ -30,7 +32,7 @@ export async function listarInsumos(): Promise<Insumo[]> {
   const supabase = await clienteServidor();
   const { data } = await supabase
     .from("insumos")
-    .select("id, nombre, codigo, unidad, cantidad, minimo, costo, activo")
+    .select("id, nombre, codigo, unidad, cantidad, minimo, costo, activo, es_componente")
     .order("nombre");
 
   return ((data as FilaInsumo[] | null) ?? []).map(mapearInsumo);

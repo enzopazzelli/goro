@@ -100,6 +100,30 @@ describe("RLS: inventario", () => {
     expect(data!.costo).toBe(100);
   });
 
+  it("un colaborador no puede marcar un insumo como componente de un formato", async () => {
+    await colaborador.cliente.from("insumos").update({ es_componente: true }).eq("id", insumoId);
+    const { data } = await servicio
+      .from("insumos")
+      .select("es_componente")
+      .eq("id", insumoId)
+      .single();
+    expect(data!.es_componente).toBe(false);
+  });
+
+  it("el dueño sí puede marcar un insumo como componente de un formato", async () => {
+    const { error } = await duenio.cliente
+      .from("insumos")
+      .update({ es_componente: true })
+      .eq("id", insumoId);
+    expect(error).toBeNull();
+    const { data } = await servicio
+      .from("insumos")
+      .select("es_componente")
+      .eq("id", insumoId)
+      .single();
+    expect(data!.es_componente).toBe(true);
+  });
+
   it("un colaborador no puede insertar directo en movimientos_insumo", async () => {
     const { error } = await colaborador.cliente
       .from("movimientos_insumo")

@@ -35,8 +35,9 @@ select pg_temp.codigo_articulo(1), pg_temp.codigo_articulo(12), pg_temp.codigo_a
 
 -- Insumos: cinco conos y los productos de reventa. El código se genera solo
 -- para los que faltan, así volver a correr esto no gasta números de la secuencia.
-insert into public.insumos (nombre, codigo, unidad, minimo, costo)
-select v.nombre, pg_temp.codigo_articulo(public.siguiente_numero_insumo()), 'u', 0, 0
+insert into public.insumos (nombre, codigo, unidad, minimo, costo, es_componente)
+select v.nombre, pg_temp.codigo_articulo(public.siguiente_numero_insumo()), 'u', 0, 0,
+  v.nombre in ('Cono simple', 'Cono doble', 'Canasta', 'Cono dulce', 'Cono cucuruchón dulce')
 from (values
   ('Cono simple'),
   ('Cono doble'),
@@ -51,6 +52,9 @@ from (values
   ('Vasito 100 g')
 ) as v(nombre)
 where not exists (select 1 from public.insumos i where i.nombre = v.nombre);
+
+-- (Los cinco conos son los únicos componentes de un formato; el resto se revende. Requiere
+-- la migración 20260929150000_insumo_es_componente.sql.)
 
 -- Presentaciones: x1 y x12 de cada uno, inactivas y a $0 hasta que Goro ponga precio.
 insert into public.presentaciones_insumo (insumo_id, nombre, unidades)

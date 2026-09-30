@@ -1,8 +1,10 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
+import { insumosParaConsumo } from "../consumo";
 import type { ConsumoDeFormato, Insumo } from "../tipos";
-import { agregarConsumo, quitarConsumo } from "../consultas/accionesFormatos";
+import { quitarConsumo } from "../consultas/accionesFormatos";
+import { FormularioAgregarConsumo } from "./FormularioAgregarConsumo";
 
 const INICIAL = { error: null };
 
@@ -17,10 +19,26 @@ export function ConsumoFormato({
   insumos: Insumo[];
   esDuenio: boolean;
 }) {
-  const [estadoAgregar, accionAgregar, agregando] = useActionState(agregarConsumo, INICIAL);
   const [estadoQuitar, accionQuitar, quitando] = useActionState(quitarConsumo, INICIAL);
-  // Solo insumos que se cuentan por unidad: un formato consume "1 cono", no "0,3 kg".
-  const elegibles = insumos.filter((insumo) => insumo.activo && insumo.unidad === "u");
+  const [abierto, setAbierto] = useState(false);
+  const elegibles = insumosParaConsumo(insumos);
+
+  // La mayoría de los formatos (un pote) no consume nada: no se les muestra la
+  // fila hasta que el dueño la pide, salvo que ya tengan algo configurado.
+  if (consumos.length === 0 && !abierto) {
+    if (!esDuenio) return null;
+    return (
+      <div className="pl-2 text-xs">
+        <button
+          type="button"
+          onClick={() => setAbierto(true)}
+          className="text-texto-suave underline"
+        >
+          Configurar consumo
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-wrap items-center gap-2 pl-2 text-xs">
@@ -50,39 +68,22 @@ export function ConsumoFormato({
         ),
       )}
 
-      {esDuenio && (
-        <form action={accionAgregar} className="flex items-center gap-1">
-          <input type="hidden" name="formatoId" value={formatoId} />
-          <select
-            name="insumoId"
-            aria-label="Insumo que consume"
-            disabled={agregando}
-            className="rounded-(--r) border border-linea bg-superficie px-2 py-1"
-          >
-            {elegibles.map((insumo) => (
-              <option key={insumo.id} value={insumo.id}>
-                {insumo.nombre}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            name="cantidad"
-            min="1"
-            defaultValue={1}
-            aria-label="Cantidad"
-            disabled={agregando}
-            className="numero w-14 rounded-(--r) border border-linea bg-superficie px-2 py-1"
-          />
-          <button type="submit" disabled={agregando} className="underline opacity-70">
-            Agregar
-          </button>
-        </form>
+      {esDuenio && elegibles.length === 0 && (
+        <span className="text-texto-suave">
+          Ningún insumo está marcado como componente (se marca al editarlo en Stock).
+        </span>
       )}
-
-      {(estadoAgregar.error || estadoQuitar.error) && (
+      {esDuenio && elegibles.length > 0 && (
+        <FormularioAgregarConsumo formatoId={formatoId} elegibles={elegibles} />
+      )}
+      {esDuenio && consumos.length === 0 && (
+        <button type="button" onClick={() => setAbierto(false)} className="underline opacity-70">
+          Cerrar
+        </button>
+      )}
+      {estadoQuitar.error && (
         <span role="alert" className="text-alerta">
-          {estadoAgregar.error ?? estadoQuitar.error}
+          {estadoQuitar.error}
         </span>
       )}
     </div>

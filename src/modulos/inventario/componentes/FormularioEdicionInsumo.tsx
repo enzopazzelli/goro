@@ -50,6 +50,15 @@ export function FormularioEdicionInsumo({ insumo }: { insumo: Insumo }) {
           disabled={editando}
           className="numero w-24 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
         />
+        <label className="flex items-center gap-1 text-xs">
+          <input
+            type="checkbox"
+            name="esComponente"
+            defaultChecked={insumo.esComponente}
+            disabled={editando}
+          />
+          Se usa dentro de un formato
+        </label>
         <button type="submit" disabled={editando} className="text-xs underline opacity-70">
           {editando ? "Guardando…" : "Guardar"}
         </button>

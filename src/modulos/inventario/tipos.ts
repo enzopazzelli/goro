@@ -12,6 +12,8 @@ export type Insumo = {
   minimo: number;
   costo: number;
   activo: boolean;
+  /** Se consume dentro de un formato (un cono), a diferencia de lo que solo se revende. */
+  esComponente: boolean;
 };
 
 export type TipoMovimientoInsumo = "entrada" | "ajuste";
