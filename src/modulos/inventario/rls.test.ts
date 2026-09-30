@@ -1,3 +1,6 @@
+// @vitest-environment node
+// Sin jsdom: ahí los clientes de Supabase comparten localStorage y el cliente de servicio
+// termina actuando con la sesión de un usuario de prueba, sujeto a RLS.
 import { createClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -16,7 +19,7 @@ const claveServicio = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const servicio = createClient(url, claveServicio);
 
 async function crearUsuarioDePrueba(rol: "duenio" | "colaborador") {
-  const usuario = `test-${rol}-${Date.now()}`;
+  const usuario = `t-${rol}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
   const email = `${usuario}@heladeria.local`;
   const password = "prueba-123456";
 
@@ -105,7 +108,7 @@ describe("RLS: inventario", () => {
   });
 
   it("no se puede insertar un insumo con cantidad distinta de cero", async () => {
-    const { error } = await servicio.from("insumos").insert({
+    const { error } = await duenio.cliente.from("insumos").insert({
       nombre: `Insumo con stock trucho ${Date.now()}`,
       codigo: `GA${String(Date.now()).slice(-7)}`,
       unidad: "u",
@@ -270,9 +273,10 @@ describe("RLS: inventario", () => {
   });
 
   it("sin sesión no se puede leer formatos", async () => {
-    const { data, error } = await anonimo.from("formatos").select("id");
-    expect(data).toEqual([]);
-    expect(error).toBeNull();
+    const { data } = await anonimo.from("formatos").select("id");
+    // Sin privilegios sobre la tabla, PostgREST responde con error; con RLS a
+    // secas, con lista vacía. Las dos cosas significan "no se ve nada".
+    expect(data ?? []).toEqual([]);
   });
 
   it("un colaborador no puede cambiar el estado de un sabor", async () => {

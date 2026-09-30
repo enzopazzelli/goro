@@ -1,3 +1,6 @@
+// @vitest-environment node
+// Sin jsdom: ahí los clientes de Supabase comparten localStorage y el cliente de servicio
+// termina actuando con la sesión de un usuario de prueba, sujeto a RLS.
 import { createClient } from "@supabase/supabase-js";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -14,7 +17,7 @@ const claveServicio = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 const servicio = createClient(url, claveServicio);
 
 async function crearUsuarioDePrueba(rol: "duenio" | "colaborador") {
-  const usuario = `test-${rol}-${Date.now()}`;
+  const usuario = `t-${rol}-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
   const email = `${usuario}@heladeria.local`;
   const password = "prueba-123456";
 
@@ -83,6 +86,9 @@ describe("RLS: ventas", () => {
   });
 
   afterAll(async () => {
+    // La anulación deja un movimiento sin venta_item_id que el test no borra
+    // solo, y sin sacarlo la foreign key impide borrar el balde y el usuario.
+    await servicio.from("movimientos_balde").delete().eq("balde_id", baldeId);
     await servicio.from("baldes").delete().eq("id", baldeId);
     await servicio.from("formatos").delete().eq("id", formatoId);
     await servicio.from("sabores").delete().eq("id", saborId);
@@ -90,9 +96,10 @@ describe("RLS: ventas", () => {
   });
 
   it("sin sesión no se puede leer ventas", async () => {
-    const { data, error } = await anonimo.from("ventas").select("id");
-    expect(data).toEqual([]);
-    expect(error).toBeNull();
+    const { data } = await anonimo.from("ventas").select("id");
+    // Sin privilegios sobre la tabla, PostgREST responde con error; con RLS a
+    // secas, con lista vacía. Las dos cosas significan "no se ve nada".
+    expect(data ?? []).toEqual([]);
   });
 
   it("un colaborador no puede insertar directo en ventas", async () => {
