@@ -24,7 +24,7 @@ export function FormularioEdicionInsumo({
 
   return (
     <div className="flex flex-col gap-2">
-      <form action={accionEditar} className="flex flex-wrap items-end gap-2">
+      <form action={accionEditar} className="flex flex-wrap items-end gap-x-6 gap-y-3">
         <input type="hidden" name="insumoId" value={insumo.id} />
         <CampoChico
           etiqueta="Nombre"

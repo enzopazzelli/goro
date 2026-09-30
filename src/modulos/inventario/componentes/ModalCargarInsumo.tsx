@@ -5,6 +5,7 @@ import { Boton } from "@/componentes/Boton";
 import { Modal } from "@/componentes/Modal";
 import type { EstadoFormulario } from "../consultas/acciones";
 import { registrarMovimiento } from "../consultas/accionesInsumos";
+import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -55,6 +56,7 @@ export function ModalCargarInsumo({
           </span>
           <input
             type="number"
+            onFocus={seleccionarAlEnfocar}
             name="cantidad"
             step="0.1"
             required

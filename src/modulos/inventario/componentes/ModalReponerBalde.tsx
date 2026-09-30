@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { Boton } from "@/componentes/Boton";
 import { Modal } from "@/componentes/Modal";
 import { registrarAjusteBalde, type EstadoFormulario } from "../consultas/acciones";
+import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -47,6 +48,7 @@ export function ModalReponerBalde({
             </span>
             <input
               type="number"
+              onFocus={seleccionarAlEnfocar}
               name="kg"
               step="0.1"
               required

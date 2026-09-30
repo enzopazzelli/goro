@@ -125,3 +125,33 @@ export async function crearEnvase(
   revalidatePath("/inventario");
   return SIN_ERROR;
 }
+
+/**
+ * Solo se puede borrar una presentación que nunca se vendió: si ya tiene ventas,
+ * la foreign key de venta_items la protege sola, y el camino es retirarla
+ * sacándole el tilde "A la venta".
+ */
+export async function eliminarPresentacion(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const presentacionId = Number(datos.get("presentacionId"));
+  if (!Number.isInteger(presentacionId) || presentacionId <= 0) {
+    return { error: "Presentación inválida." };
+  }
+
+  const supabase = await clienteServidor();
+  const { error } = await supabase.from("presentaciones_insumo").delete().eq("id", presentacionId);
+
+  if (error) {
+    if (error.code === "23503") {
+      return {
+        error: 'Ya se vendió, no se puede borrar. Sacale el tilde "A la venta" para retirarla.',
+      };
+    }
+    return { error: "No se pudo borrar la presentación." };
+  }
+
+  revalidatePath("/inventario");
+  return SIN_ERROR;
+}

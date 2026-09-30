@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { registrarAjusteBalde } from "../consultas/acciones";
+import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -13,6 +14,7 @@ export function BotonAjustarBalde({ baldeId }: { baldeId: number }) {
       <input type="hidden" name="baldeId" value={baldeId} />
       <input
         type="number"
+        onFocus={seleccionarAlEnfocar}
         name="kg"
         step="0.01"
         aria-label="Ajuste en kg (positivo o negativo)"

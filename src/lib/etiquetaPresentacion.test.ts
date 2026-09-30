@@ -10,6 +10,15 @@ describe("etiquetaPresentacion", () => {
     expect(etiquetaPresentacion("Unidad", 1)).toBe("Unidad ×1");
   });
 
+  it("no repite la cantidad cuando el nombre ya la dice: Decena x10, no 'Decena x10 ×10'", () => {
+    expect(etiquetaPresentacion("Decena x10", 10)).toBe("Decena x10");
+    expect(etiquetaPresentacion("Caja ×24", 24)).toBe("Caja ×24");
+  });
+
+  it("si el nombre dice otra cantidad que la real, muestra la real para no engañar", () => {
+    expect(etiquetaPresentacion("Caja x24", 12)).toBe("Caja x24 ×12");
+  });
+
   it("ignora los espacios de sobra en el nombre", () => {
     expect(etiquetaPresentacion("  Caja  ", 24)).toBe("Caja ×24");
   });

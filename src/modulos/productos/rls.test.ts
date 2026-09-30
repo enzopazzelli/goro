@@ -147,12 +147,30 @@ describe("RLS: presentaciones de insumo", () => {
     expect(error?.code).toBe("23514");
   });
 
-  it("ni el dueño puede borrar una presentación: se desactiva", async () => {
+  it("un colaborador no puede borrar una presentación", async () => {
+    await colaborador.cliente.from("presentaciones_insumo").delete().eq("id", presentacionId);
+    const { data } = await servicio
+      .from("presentaciones_insumo")
+      .select("id")
+      .eq("id", presentacionId);
+    expect(data).toHaveLength(1);
+  });
+
+  it("el dueño puede borrar una presentación que nunca se vendió", async () => {
+    const { data: creada } = await servicio
+      .from("presentaciones_insumo")
+      .insert({ insumo_id: insumoId, nombre: "Para borrar", unidades: 99 })
+      .select("id")
+      .single();
+
     const { error } = await duenio.cliente
       .from("presentaciones_insumo")
       .delete()
-      .eq("id", presentacionId);
-    expect(error).not.toBeNull();
+      .eq("id", creada!.id);
+    expect(error).toBeNull();
+
+    const { data } = await servicio.from("presentaciones_insumo").select("id").eq("id", creada!.id);
+    expect(data).toEqual([]);
   });
 });
 

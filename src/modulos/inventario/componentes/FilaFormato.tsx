@@ -29,7 +29,7 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
 
   return (
     <div className="flex flex-col gap-1.5 rounded-(--r) border border-linea p-2">
-      <form action={accionEditar} className="flex flex-wrap items-end gap-2">
+      <form action={accionEditar} className="flex flex-wrap items-end gap-x-6 gap-y-3">
         <input type="hidden" name="formatoId" value={formato.id} />
         <CampoChico
           etiqueta="Nombre"

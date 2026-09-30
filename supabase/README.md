@@ -20,11 +20,12 @@ acá abajo cuál fue la última aplicada.
 | `20260930120000_inventario.sql`         | Config del comercio, sabores, insumos (insumo / producto / envase), baldes y ledger |
 | `20260930130000_productos.sql`          | Presentaciones (×1, ×12) y las funciones que crean productos y envases             |
 | `20260930140000_ventas.sql`             | Ventas, cobro de formatos y productos, anulación y ajustes de balde                |
+| `20260930150000_borrar_presentaciones.sql` | El dueño puede borrar una presentación que nunca se vendió                       |
 
-Van **en ese orden** (cada una usa lo de la anterior). Después de las cinco, correr
+Van **en ese orden** (cada una usa lo de la anterior). Después de todas, correr
 `carga_productos_goro.sql` (no es una migración: es la carga inicial de las listas de Goro; se puede repetir sin duplicar).
 
-Estas cinco **reemplazan** al historial anterior de trece archivos: se reescribieron por módulo con
+Las primeras cinco **reemplazan** al historial anterior de trece archivos: se reescribieron por módulo con
 todos los arreglos ya integrados. Es una excepción a la regla de no editar migraciones aplicadas, y se
 hizo porque el sistema todavía no tenía datos reales. De acá en adelante vuelve a valer: una migración
 aplicada no se toca, se agrega otra.

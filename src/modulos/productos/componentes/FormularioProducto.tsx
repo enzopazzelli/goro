@@ -12,7 +12,7 @@ export function FormularioProducto() {
 
   return (
     <form ref={formRef} action={accion} className="flex flex-col gap-2">
-      <div className="flex flex-wrap items-end gap-2">
+      <div className="flex flex-wrap items-end gap-x-6 gap-y-3">
         <Campo
           id="nombre-producto"
           name="nombre"

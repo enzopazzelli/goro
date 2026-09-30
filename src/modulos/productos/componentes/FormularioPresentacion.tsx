@@ -11,7 +11,7 @@ export function FormularioPresentacion({ insumoId }: { insumoId: number }) {
   const { estado, accion, enviando, formRef } = useAccionConReset(crearPresentacion, INICIAL);
 
   return (
-    <form ref={formRef} action={accion} className="flex flex-wrap items-end gap-2">
+    <form ref={formRef} action={accion} className="flex flex-wrap items-end gap-x-6 gap-y-3">
       <input type="hidden" name="insumoId" value={insumoId} />
       <Campo
         id={`nombre-presentacion-${insumoId}`}

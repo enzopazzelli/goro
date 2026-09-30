@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { editarStockMinimo } from "../consultas/accionesSabores";
+import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -19,6 +20,7 @@ export function FormularioMinimo({
       <input type="hidden" name="saborId" value={saborId} />
       <input
         type="number"
+        onFocus={seleccionarAlEnfocar}
         name="stockMinimo"
         step="0.1"
         min="0"
