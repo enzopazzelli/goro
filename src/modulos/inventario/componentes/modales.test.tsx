@@ -1,15 +1,14 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useState, type ReactNode } from "react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } from "vitest";
 import { ModalCargarInsumo } from "./ModalCargarInsumo";
 import { ModalReponerBalde } from "./ModalReponerBalde";
 
 // Las acciones reales devuelven SIEMPRE el mismo objeto de éxito: el modal tiene que
 // cerrarse igual en la segunda carga, aunque el estado que devuelve no cambie.
-const { EXITO, registrarMovimiento, registrarAjusteBalde } = vi.hoisted(() => {
+const { registrarMovimiento, registrarAjusteBalde } = vi.hoisted(() => {
   const EXITO = { error: null };
   return {
-    EXITO,
     registrarMovimiento: vi.fn(async () => EXITO),
     registrarAjusteBalde: vi.fn(async () => EXITO),
   };
@@ -52,7 +51,7 @@ const modales: [string, (props: { abierto: boolean; onCerrar: () => void }) => R
 ];
 
 describe.each(modales)("%s", (_nombre, modal) => {
-  let errores: ReturnType<typeof vi.spyOn>;
+  let errores: MockInstance<typeof console.error>;
 
   beforeEach(() => {
     errores = vi.spyOn(console, "error").mockImplementation(() => {});
