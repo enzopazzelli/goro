@@ -22,6 +22,14 @@ acá abajo cuál fue la última aplicada.
 | `20260921150000_color_sabor.sql`| ✅       |
 | `20260921160000_borrar_sabores_insumos.sql`| ✅       |
 | `20260921170000_borrar_baldes.sql`| ✅       |
+| `20260929100000_presentaciones_insumo.sql` | ✅       |
+| `20260929110000_formato_insumos.sql` | ✅       |
+| `20260929120000_tipos_movimiento_venta.sql` | ✅       |
+| `20260929130000_venta_de_productos.sql` | ✅       |
+| `20260929140000_cerrar_funciones_de_movimiento.sql` | ✅       |
+| `20260929150000_insumo_es_componente.sql` | ✅       |
+
+**Aparte:** `carga_productos_goro.sql` no es una migración: es la carga inicial de las listas de Goro (conos, productos de reventa y formatos con cono), se corre una vez a mano y se puede repetir sin duplicar.
 
 ## Después de la primera migración: hacerte dueño
 
