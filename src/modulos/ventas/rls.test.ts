@@ -88,6 +88,7 @@ describe("RLS: ventas", () => {
   afterAll(async () => {
     // La anulación deja un movimiento sin venta_item_id que el test no borra
     // solo, y sin sacarlo la foreign key impide borrar el balde y el usuario.
+    await limpiarVentasDe("formato_id", [formatoId]);
     await servicio.from("movimientos_balde").delete().eq("balde_id", baldeId);
     await servicio.from("baldes").delete().eq("id", baldeId);
     await servicio.from("formatos").delete().eq("id", formatoId);
@@ -198,6 +199,18 @@ async function limpiarVenta(ventaId: number) {
   await servicio.from("ventas").delete().eq("id", ventaId);
 }
 
+/**
+ * Un test que falla a mitad de camino no llega a su propio limpiarVenta y deja
+ * una venta que impide borrar el formato (y el balde, y el usuario). El afterAll
+ * barre todas las ventas que tocaron estos formatos o presentaciones.
+ */
+async function limpiarVentasDe(columna: "formato_id" | "presentacion_id", ids: number[]) {
+  const { data } = await servicio.from("venta_items").select("venta_id").in(columna, ids);
+  for (const venta of new Set((data ?? []).map((item) => item.venta_id))) {
+    await limpiarVenta(venta);
+  }
+}
+
 describe("Ventas: productos por unidad y conos", () => {
   let colaborador: Awaited<ReturnType<typeof crearUsuarioDePrueba>>;
   let saborId: number;
@@ -284,6 +297,8 @@ describe("Ventas: productos por unidad y conos", () => {
   });
 
   afterAll(async () => {
+    await limpiarVentasDe("presentacion_id", [docenaId]);
+    await limpiarVentasDe("formato_id", [formatoId]);
     await servicio.from("movimientos_insumo").delete().in("insumo_id", [conoId, bombonId]);
     await servicio.from("movimientos_balde").delete().eq("balde_id", baldeId);
     await servicio.from("presentaciones_insumo").delete().eq("insumo_id", bombonId);
