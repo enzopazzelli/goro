@@ -1,5 +1,6 @@
 import { Tarjeta } from "@/componentes/Tarjeta";
 import type { Sabor } from "@/lib/sabores";
+import { FormularioProducto } from "@/modulos/productos/componentes/FormularioProducto";
 import { FormularioBalde } from "./FormularioBalde";
 import { FormularioFormato } from "./FormularioFormato";
 import { FormularioInsumo } from "./FormularioInsumo";
@@ -28,6 +29,12 @@ export function SeccionCargarInventario({
         <Tarjeta compacta>
           <h2 className="font-display text-base font-semibold">Insumo nuevo</h2>
           <FormularioInsumo />
+        </Tarjeta>
+      )}
+      {esDuenio && (
+        <Tarjeta compacta>
+          <h2 className="font-display text-base font-semibold">Producto nuevo</h2>
+          <FormularioProducto />
         </Tarjeta>
       )}
       {esDuenio && (

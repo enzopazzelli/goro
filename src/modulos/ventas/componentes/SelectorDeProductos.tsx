@@ -1,5 +1,6 @@
 "use client";
 
+import { etiquetaPresentacion } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
 import type { ItemEnCarrito } from "../tipos";
 
@@ -24,7 +25,7 @@ export function SelectorDeProductos({
               onAgregar({
                 tipo: "producto",
                 presentacionId: presentacion.id,
-                nombre: `${presentacion.insumoNombre} · ${presentacion.nombre}`,
+                nombre: `${presentacion.insumoNombre} · ${etiquetaPresentacion(presentacion.nombre, presentacion.unidades)}`,
                 precio: presentacion.precio,
                 saboresNombres: [],
               })
@@ -32,7 +33,9 @@ export function SelectorDeProductos({
             className="flex flex-col items-center gap-1 rounded-(--radius-arco) border border-linea bg-superficie p-3 text-center transition hover:bg-superficie-honda"
           >
             <span className="font-display font-semibold">{presentacion.insumoNombre}</span>
-            <span className="font-mono text-xs opacity-70">{presentacion.nombre}</span>
+            <span className="font-mono text-xs opacity-70">
+              {etiquetaPresentacion(presentacion.nombre, presentacion.unidades)}
+            </span>
             <span className="numero">${presentacion.precio}</span>
           </button>
         ))}

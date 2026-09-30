@@ -1,37 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Insignia } from "@/componentes/Insignia";
-import type { Presentacion } from "@/lib/presentaciones";
-import { PresentacionesInsumo } from "@/modulos/presentaciones/componentes/PresentacionesInsumo";
-import { estadoDeInsumo, type EstadoInsumo } from "../alerta";
 import type { Insumo } from "../tipos";
 import { FormularioEdicionInsumo } from "./FormularioEdicionInsumo";
+import { InsigniaStock } from "./InsigniaStock";
 import { ModalCargarInsumo } from "./ModalCargarInsumo";
 
 const ETIQUETA_UNIDAD: Record<string, string> = { u: "u", kg: "kg" };
 
-const INSIGNIA_INSUMO: Record<
-  EstadoInsumo,
-  { variante: "alerta" | "advertencia" | "ok"; texto: string }
-> = {
-  negativo: { variante: "alerta", texto: "Negativo: recontar" },
-  bajo: { variante: "advertencia", texto: "Reponer" },
-  ok: { variante: "ok", texto: "Ok" },
-};
-
-export function FilaInsumoExpandible({
-  insumo,
-  presentaciones,
-  esDuenio,
-}: {
-  insumo: Insumo;
-  presentaciones: Presentacion[];
-  esDuenio: boolean;
-}) {
+export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esDuenio: boolean }) {
   const [expandida, setExpandida] = useState(false);
   const [modalAbierto, setModalAbierto] = useState(false);
-  const insignia = INSIGNIA_INSUMO[estadoDeInsumo(insumo.cantidad, insumo.minimo)];
 
   return (
     <>
@@ -42,7 +21,7 @@ export function FilaInsumoExpandible({
           {insumo.cantidad} {ETIQUETA_UNIDAD[insumo.unidad]}
         </td>
         <td className="px-2 py-[var(--fila-y)]">
-          <Insignia variante={insignia.variante}>{insignia.texto}</Insignia>
+          <InsigniaStock cantidad={insumo.cantidad} minimo={insumo.minimo} />
         </td>
         <td className="px-2 py-[var(--fila-y)]">
           <button
@@ -70,10 +49,7 @@ export function FilaInsumoExpandible({
       {expandida && esDuenio && (
         <tr className="border-b border-linea bg-superficie-honda last:border-0">
           <td colSpan={6} className="p-2">
-            <div className="flex flex-col gap-3">
-              <FormularioEdicionInsumo insumo={insumo} />
-              <PresentacionesInsumo insumoId={insumo.id} presentaciones={presentaciones} />
-            </div>
+            <FormularioEdicionInsumo insumo={insumo} />
           </td>
         </tr>
       )}

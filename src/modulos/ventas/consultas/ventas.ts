@@ -12,7 +12,11 @@ type FilaItem = {
   id: number;
   precio: number;
   formatos: { nombre: string } | null;
-  presentaciones_insumo: { nombre: string; insumos: { nombre: string } | null } | null;
+  presentaciones_insumo: {
+    nombre: string;
+    unidades: number;
+    insumos: { nombre: string } | null;
+  } | null;
   movimientos_balde: FilaMovimiento[];
 };
 
@@ -73,7 +77,7 @@ export async function listarVentasRecientes(): Promise<VentaReciente[]> {
        venta_items (
          id, precio,
          formatos ( nombre ),
-         presentaciones_insumo ( nombre, insumos ( nombre ) ),
+         presentaciones_insumo ( nombre, unidades, insumos ( nombre ) ),
          movimientos_balde ( kg, baldes ( sabores ( id, nombre ) ) )
        )`,
     )

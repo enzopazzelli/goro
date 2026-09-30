@@ -245,20 +245,6 @@ describe("Ventas: productos por unidad y conos", () => {
       .single();
     baldeId = balde!.id;
 
-    const { data: cono } = await servicio
-      .from("insumos")
-      .insert({
-        nombre: `Cono ${Date.now()}`,
-        codigo: codigoDePrueba(),
-        unidad: "u",
-        cantidad: 5,
-        minimo: 0,
-        costo: 0,
-      })
-      .select("id")
-      .single();
-    conoId = cono!.id;
-
     const { data: bombon } = await servicio
       .from("insumos")
       .insert({
@@ -291,9 +277,23 @@ describe("Ventas: productos por unidad y conos", () => {
       .select("id")
       .single();
     formatoId = formato!.id;
-    await servicio
-      .from("formato_insumos")
-      .insert({ formato_id: formatoId, insumo_id: conoId, cantidad: 1 });
+
+    // El envase del formato (su cono): stock propio que baja 1 por cada venta.
+    const { data: cono } = await servicio
+      .from("insumos")
+      .insert({
+        nombre: `Cono ${Date.now()}`,
+        codigo: codigoDePrueba(),
+        unidad: "u",
+        tipo: "envase",
+        formato_id: formatoId,
+        cantidad: 5,
+        minimo: 0,
+        costo: 0,
+      })
+      .select("id")
+      .single();
+    conoId = cono!.id;
   });
 
   afterAll(async () => {
@@ -302,8 +302,8 @@ describe("Ventas: productos por unidad y conos", () => {
     await servicio.from("movimientos_insumo").delete().in("insumo_id", [conoId, bombonId]);
     await servicio.from("movimientos_balde").delete().eq("balde_id", baldeId);
     await servicio.from("presentaciones_insumo").delete().eq("insumo_id", bombonId);
-    await servicio.from("formatos").delete().eq("id", formatoId);
     await servicio.from("insumos").delete().in("id", [conoId, bombonId]);
+    await servicio.from("formatos").delete().eq("id", formatoId);
     await servicio.from("baldes").delete().eq("id", baldeId);
     await servicio.from("sabores").delete().eq("id", saborId);
     await servicio.auth.admin.deleteUser(colaborador.id);

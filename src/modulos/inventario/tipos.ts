@@ -2,6 +2,7 @@ import type { Balde } from "@/lib/baldes";
 import type { Sabor } from "@/lib/sabores";
 
 export type UnidadInsumo = "u" | "kg";
+export type TipoInsumo = "insumo" | "producto" | "envase";
 
 export type Insumo = {
   id: number;
@@ -12,8 +13,10 @@ export type Insumo = {
   minimo: number;
   costo: number;
   activo: boolean;
-  /** Se consume dentro de un formato (un cono), a diferencia de lo que solo se revende. */
-  esComponente: boolean;
+  /** insumo = se consume; producto = se vende por unidad; envase = el stock propio de un formato. */
+  tipo: TipoInsumo;
+  /** Solo para los envases: el formato al que pertenecen. */
+  formatoId: number | null;
 };
 
 export type TipoMovimientoInsumo = "entrada" | "ajuste";
@@ -26,12 +29,4 @@ export type FilaSaborVista = {
   pct: number;
   insignia: InsigniaSabor;
   baldeAbiertoId: number | null;
-};
-
-/** Cuánto de un insumo se lleva un formato al venderse con helado (ej. Cucurucho doble → Cono doble × 1). */
-export type ConsumoDeFormato = {
-  formatoId: number;
-  insumoId: number;
-  insumoNombre: string;
-  cantidad: number;
 };

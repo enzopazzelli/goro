@@ -12,15 +12,18 @@ describe("nombreDeItem", () => {
     expect(
       nombreDeItem({
         formatos: null,
-        presentaciones_insumo: { nombre: "Docena", insumos: { nombre: "Bombón" } },
+        presentaciones_insumo: { nombre: "Docena", unidades: 12, insumos: { nombre: "Bombón" } },
       }),
-    ).toBe("Bombón · Docena");
+    ).toBe("Bombón · Docena ×12");
   });
 
   it("no explota si falta el insumo o no hay nada", () => {
     expect(
-      nombreDeItem({ formatos: null, presentaciones_insumo: { nombre: "Docena", insumos: null } }),
-    ).toBe("Docena");
+      nombreDeItem({
+        formatos: null,
+        presentaciones_insumo: { nombre: "Docena", unidades: 12, insumos: null },
+      }),
+    ).toBe("Docena ×12");
     expect(nombreDeItem({ formatos: null, presentaciones_insumo: null })).toBe("");
   });
 });

@@ -5,11 +5,19 @@ import { Boton } from "@/componentes/Boton";
 import { Insignia } from "@/componentes/Insignia";
 import { Pildora } from "@/componentes/Pildora";
 import type { Presentacion } from "@/lib/presentaciones";
+import { estadoDeInsumo } from "../alerta";
 import type { FilaSaborVista, Insumo } from "../tipos";
 import { TablaInsumos } from "./TablaInsumos";
+import { TablaProductos } from "./TablaProductos";
 import { TablaSabores } from "./TablaSabores";
 
-type Pestana = "sabores" | "insumos";
+type Pestana = "sabores" | "insumos" | "productos";
+
+const ETIQUETA_BUSQUEDA: Record<Pestana, string> = {
+  sabores: "Buscar sabor",
+  insumos: "Buscar insumo",
+  productos: "Buscar producto",
+};
 
 export function PanelStock({
   filasSabores,
@@ -31,13 +39,18 @@ export function PanelStock({
     setBusqueda("");
   }
 
+  // Los envases no aparecen acá: cuelgan de su formato y se manejan desde él.
   const q = busqueda.toLowerCase();
-  const filasFiltradas = filasSabores.filter((fila) => fila.sabor.nombre.toLowerCase().includes(q));
-  const insumosFiltrados = insumos.filter((insumo) => insumo.nombre.toLowerCase().includes(q));
+  const coincide = (nombre: string) => nombre.toLowerCase().includes(q);
+  const soloInsumos = insumos.filter((insumo) => insumo.tipo === "insumo");
+  const soloProductos = insumos.filter((insumo) => insumo.tipo === "producto");
+  const filasFiltradas = filasSabores.filter((fila) => coincide(fila.sabor.nombre));
+  const deLaPestana = pestana === "productos" ? soloProductos : soloInsumos;
   const bajos =
     pestana === "sabores"
       ? filasSabores.filter((fila) => fila.insignia.variante !== "ok").length
-      : insumos.filter((insumo) => insumo.cantidad <= insumo.minimo).length;
+      : deLaPestana.filter((insumo) => estadoDeInsumo(insumo.cantidad, insumo.minimo) !== "ok")
+          .length;
 
   return (
     <div
@@ -52,13 +65,16 @@ export function PanelStock({
           <Pildora activa={pestana === "insumos"} onClick={() => cambiarPestana("insumos")}>
             Insumos
           </Pildora>
+          <Pildora activa={pestana === "productos"} onClick={() => cambiarPestana("productos")}>
+            Productos
+          </Pildora>
         </div>
         <input
           type="search"
           value={busqueda}
           onChange={(evento) => setBusqueda(evento.target.value)}
           placeholder="Buscar…"
-          aria-label={pestana === "sabores" ? "Buscar sabor" : "Buscar insumo"}
+          aria-label={ETIQUETA_BUSQUEDA[pestana]}
           className="min-w-40 flex-1 rounded-full border border-linea bg-superficie px-3 py-1.5 text-sm"
         />
         <Insignia variante={bajos > 0 ? "advertencia" : "ok"}>
@@ -75,11 +91,13 @@ export function PanelStock({
         </Boton>
       </div>
 
-      {pestana === "sabores" ? (
-        <TablaSabores filas={filasFiltradas} esDuenio={esDuenio} />
-      ) : (
-        <TablaInsumos
-          insumos={insumosFiltrados}
+      {pestana === "sabores" && <TablaSabores filas={filasFiltradas} esDuenio={esDuenio} />}
+      {pestana === "insumos" && (
+        <TablaInsumos insumos={soloInsumos.filter((i) => coincide(i.nombre))} esDuenio={esDuenio} />
+      )}
+      {pestana === "productos" && (
+        <TablaProductos
+          productos={soloProductos.filter((i) => coincide(i.nombre))}
           presentaciones={presentaciones}
           esDuenio={esDuenio}
         />

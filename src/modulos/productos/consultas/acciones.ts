@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { clienteServidor } from "@/lib/supabase/servidor";
-import { validarPresentacion, type DatosPresentacion } from "../validacion";
+import { validarPresentacion, validarProducto, type DatosPresentacion } from "../validacion";
 
 export type EstadoFormulario = { error: string | null };
 
@@ -66,6 +66,61 @@ export async function editarPresentacion(
     .eq("id", presentacionId);
 
   if (error) return { error: mensajeDeError(error.code, "No se pudo guardar la presentación.") };
+
+  revalidatePath("/inventario");
+  return SIN_ERROR;
+}
+
+/**
+ * La función de base crea el insumo, su código y sus dos presentaciones (Unidad
+ * ×1 y Docena ×12, inactivas) y el stock inicial en UNA transacción; acá solo
+ * se valida y se traducen los errores.
+ */
+export async function crearProducto(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const cantidadCruda = String(datos.get("cantidadInicial") ?? "").trim();
+  const producto = {
+    nombre: String(datos.get("nombre") ?? "").trim(),
+    costo: Number(datos.get("costo")),
+    cantidadInicial: cantidadCruda === "" ? 0 : Number(cantidadCruda),
+  };
+
+  const errorValidacion = validarProducto(producto);
+  if (errorValidacion) return { error: errorValidacion };
+
+  const supabase = await clienteServidor();
+  const { error } = await supabase.rpc("crear_producto", {
+    p_nombre: producto.nombre,
+    p_costo: producto.costo,
+    p_cantidad_inicial: producto.cantidadInicial,
+  });
+
+  if (error) {
+    if (error.code === "23505") return { error: `Ya existe algo llamado "${producto.nombre}".` };
+    return { error: "No se pudo crear el producto." };
+  }
+
+  revalidatePath("/inventario");
+  return SIN_ERROR;
+}
+
+/** El envase propio de un formato (su cono, canasta o vasito): stock y precio "sin helado". */
+export async function crearEnvase(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const formatoId = Number(datos.get("formatoId"));
+  if (!Number.isInteger(formatoId) || formatoId <= 0) return { error: "Formato inválido." };
+
+  const supabase = await clienteServidor();
+  const { error } = await supabase.rpc("crear_envase_de_formato", { p_formato_id: formatoId });
+
+  if (error) {
+    if (error.code === "23505") return { error: "Ese formato ya tiene envase." };
+    return { error: "No se pudo crear el envase." };
+  }
 
   revalidatePath("/inventario");
   return SIN_ERROR;

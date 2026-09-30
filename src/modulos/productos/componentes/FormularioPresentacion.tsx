@@ -16,13 +16,14 @@ export function FormularioPresentacion({ insumoId }: { insumoId: number }) {
       <Campo
         id={`nombre-presentacion-${insumoId}`}
         name="nombre"
-        etiqueta="Presentación"
+        etiqueta="Otra presentación"
+        placeholder="Caja"
         required
       />
       <Campo
         id={`unidades-presentacion-${insumoId}`}
         name="unidades"
-        etiqueta="Unidades"
+        etiqueta="Unidades (×)"
         type="number"
         min="1"
         required
@@ -30,7 +31,7 @@ export function FormularioPresentacion({ insumoId }: { insumoId: number }) {
       <Campo
         id={`precio-presentacion-${insumoId}`}
         name="precio"
-        etiqueta="Precio"
+        etiqueta="Precio de venta"
         type="number"
         min="0"
       />

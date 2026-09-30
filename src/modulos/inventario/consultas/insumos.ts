@@ -1,6 +1,6 @@
 import "server-only";
 import { clienteServidor } from "@/lib/supabase/servidor";
-import type { Insumo, UnidadInsumo } from "../tipos";
+import type { Insumo, TipoInsumo, UnidadInsumo } from "../tipos";
 
 type FilaInsumo = {
   id: number;
@@ -11,7 +11,8 @@ type FilaInsumo = {
   minimo: string;
   costo: number;
   activo: boolean;
-  es_componente: boolean;
+  tipo: TipoInsumo;
+  formato_id: number | null;
 };
 
 function mapearInsumo(fila: FilaInsumo): Insumo {
@@ -24,7 +25,8 @@ function mapearInsumo(fila: FilaInsumo): Insumo {
     minimo: Number(fila.minimo),
     costo: fila.costo,
     activo: fila.activo,
-    esComponente: fila.es_componente,
+    tipo: fila.tipo,
+    formatoId: fila.formato_id,
   };
 }
 
@@ -32,7 +34,7 @@ export async function listarInsumos(): Promise<Insumo[]> {
   const supabase = await clienteServidor();
   const { data } = await supabase
     .from("insumos")
-    .select("id, nombre, codigo, unidad, cantidad, minimo, costo, activo, es_componente")
+    .select("id, nombre, codigo, unidad, cantidad, minimo, costo, activo, tipo, formato_id")
     .order("nombre");
 
   return ((data as FilaInsumo[] | null) ?? []).map(mapearInsumo);

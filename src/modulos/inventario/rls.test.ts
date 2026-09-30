@@ -100,28 +100,12 @@ describe("RLS: inventario", () => {
     expect(data!.costo).toBe(100);
   });
 
-  it("un colaborador no puede marcar un insumo como componente de un formato", async () => {
-    await colaborador.cliente.from("insumos").update({ es_componente: true }).eq("id", insumoId);
-    const { data } = await servicio
-      .from("insumos")
-      .select("es_componente")
-      .eq("id", insumoId)
-      .single();
-    expect(data!.es_componente).toBe(false);
-  });
-
-  it("el dueño sí puede marcar un insumo como componente de un formato", async () => {
-    const { error } = await duenio.cliente
-      .from("insumos")
-      .update({ es_componente: true })
-      .eq("id", insumoId);
-    expect(error).toBeNull();
-    const { data } = await servicio
-      .from("insumos")
-      .select("es_componente")
-      .eq("id", insumoId)
-      .single();
-    expect(data!.es_componente).toBe(true);
+  it("el tipo de un insumo no se edita: ni un colaborador ni el dueño", async () => {
+    for (const cliente of [colaborador.cliente, duenio.cliente]) {
+      await cliente.from("insumos").update({ tipo: "producto" }).eq("id", insumoId);
+    }
+    const { data } = await servicio.from("insumos").select("tipo").eq("id", insumoId).single();
+    expect(data!.tipo).toBe("insumo");
   });
 
   it("un colaborador no puede insertar directo en movimientos_insumo", async () => {

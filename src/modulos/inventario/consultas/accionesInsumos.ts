@@ -103,7 +103,6 @@ export async function editarInsumo(
   const unidad = String(datos.get("unidad") ?? "");
   const minimo = Number(datos.get("minimo"));
   const costo = Number(datos.get("costo"));
-  const esComponente = datos.get("esComponente") === "on";
 
   if (!Number.isInteger(insumoId) || insumoId <= 0) return { error: "Insumo inválido." };
   const errorValidacion = validarDatosInsumo(nombre, unidad, minimo, costo);
@@ -112,7 +111,7 @@ export async function editarInsumo(
   const supabase = await clienteServidor();
   const { error } = await supabase
     .from("insumos")
-    .update({ nombre, unidad, minimo, costo, es_componente: esComponente })
+    .update({ nombre, unidad, minimo, costo })
     .eq("id", insumoId);
 
   if (error) return { error: "No se pudo guardar el insumo." };

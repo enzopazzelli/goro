@@ -13,23 +13,42 @@ acá abajo cuál fue la última aplicada.
 
 **Con el CLI (cuando haya Docker).** `npx supabase db push`.
 
-| Migración                      | Aplicada |
-| ------------------------------ | -------- |
-| `20260912120000_nucleo.sql`    | ✅       |
-| `20260919130000_inventario.sql`| ✅       |
-| `20260921090000_catalogo.sql`  | ✅       |
-| `20260921120000_ventas.sql`    | ✅       |
-| `20260921150000_color_sabor.sql`| ✅       |
-| `20260921160000_borrar_sabores_insumos.sql`| ✅       |
-| `20260921170000_borrar_baldes.sql`| ✅       |
-| `20260929100000_presentaciones_insumo.sql` | ✅       |
-| `20260929110000_formato_insumos.sql` | ✅       |
-| `20260929120000_tipos_movimiento_venta.sql` | ✅       |
-| `20260929130000_venta_de_productos.sql` | ✅       |
-| `20260929140000_cerrar_funciones_de_movimiento.sql` | ✅       |
-| `20260929150000_insumo_es_componente.sql` | ✅       |
+| Migración (una por módulo)              | Qué crea                                                                           |
+| --------------------------------------- | ---------------------------------------------------------------------------------- |
+| `20260930100000_nucleo.sql`             | Perfiles, roles, `auth_rol()` / `es_duenio()` y el alta automática del perfil       |
+| `20260930110000_catalogo.sql`           | Formatos y sus precios                                                             |
+| `20260930120000_inventario.sql`         | Config del comercio, sabores, insumos (insumo / producto / envase), baldes y ledger |
+| `20260930130000_productos.sql`          | Presentaciones (×1, ×12) y las funciones que crean productos y envases             |
+| `20260930140000_ventas.sql`             | Ventas, cobro de formatos y productos, anulación y ajustes de balde                |
 
-**Aparte:** `carga_productos_goro.sql` no es una migración: es la carga inicial de las listas de Goro (conos, productos de reventa y formatos con cono), se corre una vez a mano y se puede repetir sin duplicar.
+Van **en ese orden** (cada una usa lo de la anterior). Después de las cinco, correr
+`carga_productos_goro.sql` (no es una migración: es la carga inicial de las listas de Goro; se puede repetir sin duplicar).
+
+Estas cinco **reemplazan** al historial anterior de trece archivos: se reescribieron por módulo con
+todos los arreglos ya integrados. Es una excepción a la regla de no editar migraciones aplicadas, y se
+hizo porque el sistema todavía no tenía datos reales. De acá en adelante vuelve a valer: una migración
+aplicada no se toca, se agrega otra.
+
+## Reiniciar la base (una sola vez, para pasar al esquema renovado)
+
+**Borra todo lo de `public`, datos incluidos.** Los usuarios de Authentication no se tocan.
+
+1. En el SQL Editor, hoja nueva: pegar `supabase/reiniciar_base.sql` y ejecutar.
+2. Una hoja nueva **por cada migración**, en el orden de la tabla de arriba: pegar y ejecutar. Cada una
+   tiene que terminar en `Success. No rows returned`.
+3. **Recuperar los perfiles.** El paso 1 borró la tabla `perfiles`, así que los usuarios que ya existían
+   en Authentication quedaron sin perfil y no pueden entrar. Hoja nueva:
+
+   ```sql
+   insert into public.perfiles (id, usuario, nombre)
+   select id, split_part(email, '@', 1), initcap(split_part(email, '@', 1)) from auth.users;
+
+   update public.perfiles set rol = 'duenio', nombre = 'Goro' where usuario = 'goro';
+   ```
+
+4. Pegar y ejecutar `supabase/carga_productos_goro.sql`. Tiene que mostrar 12 filas: 6 productos y 6 envases,
+   con 2 presentaciones cada uno.
+5. Entrar al sistema con el usuario de siempre y probar.
 
 ## Después de la primera migración: hacerte dueño
 

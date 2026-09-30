@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
+import { CampoChico } from "@/componentes/CampoChico";
+import { etiquetaPresentacion } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
 import { editarPresentacion } from "../consultas/acciones";
 
@@ -12,33 +14,35 @@ export function FilaPresentacion({ presentacion }: { presentacion: Presentacion 
   return (
     <form action={accion} className="flex flex-wrap items-end gap-2">
       <input type="hidden" name="presentacionId" value={presentacion.id} />
-      <input
-        type="text"
+      <span className="w-28 pb-1 text-sm font-semibold">
+        {etiquetaPresentacion(presentacion.nombre, presentacion.unidades)}
+      </span>
+      <CampoChico
+        etiqueta="Nombre"
         name="nombre"
         defaultValue={presentacion.nombre}
-        aria-label="Nombre de la presentación"
         disabled={guardando}
-        className="w-28 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+        className="w-28"
       />
-      <input
+      <CampoChico
+        etiqueta="Unidades (×)"
         type="number"
         name="unidades"
         min="1"
         defaultValue={presentacion.unidades}
-        aria-label="Unidades que descuenta"
         disabled={guardando}
-        className="numero w-16 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+        className="numero w-20"
       />
-      <input
+      <CampoChico
+        etiqueta="Precio de venta"
         type="number"
         name="precio"
         min="0"
         defaultValue={presentacion.precio}
-        aria-label="Precio"
         disabled={guardando}
-        className="numero w-24 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+        className="numero w-28"
       />
-      <label className="flex items-center gap-1 text-xs">
+      <label className="flex items-center gap-1 pb-1 text-xs">
         <input
           type="checkbox"
           name="activo"
@@ -47,11 +51,11 @@ export function FilaPresentacion({ presentacion }: { presentacion: Presentacion 
         />
         A la venta
       </label>
-      <button type="submit" disabled={guardando} className="text-xs underline opacity-70">
+      <button type="submit" disabled={guardando} className="pb-1 text-xs underline opacity-70">
         {guardando ? "Guardando…" : "Guardar"}
       </button>
       {estado.error && (
-        <span role="alert" className="text-xs text-alerta">
+        <span role="alert" className="pb-1 text-xs text-alerta">
           {estado.error}
         </span>
       )}
