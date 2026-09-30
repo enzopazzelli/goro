@@ -2,48 +2,24 @@
 -- Carga inicial de las dos listas que mandó Goro (2026-09-29).
 -- NO es una migración versionada: es un script aparte que se corre una vez a
 -- mano, como seed_ejemplo.sql. Se puede volver a correr sin duplicar nada.
+-- Requiere las cinco migraciones aplicadas.
 --
 -- Todo entra INACTIVO y SIN PRECIO: Goro completa los precios después desde
--- Inventario. Los mínimos y costos quedan en 0 por el mismo motivo.
+-- Inventario. Los costos quedan en 0 por el mismo motivo.
 --
--- Supuestos para confirmar con Goro (se corrigen desde Stock, sin código):
---  * hay cinco conos distintos: simple, doble, canasta, dulce y cucuruchón;
---  * el vasito simple (1 bocha) no consume ningún cono.
--- Bocha = 65 g: los dobles pesan 130 g y llevan 2 sabores.
+-- Supuestos para confirmar con Goro (se corrigen desde Inventario, sin código):
+--  * los seis formatos de la lista 2 llevan envase propio (cono, canasta o
+--    vasito) que se vende suelto "sin helado": Goro pidió ese precio para los
+--    seis;
+--  * bocha = 65 g: los dobles pesan 130 g y llevan 2 sabores.
 -- ============================================================================
 
--- Mismo cálculo que digitoVerificador() en src/lib/codigos/codigo.ts: tipo A
--- pesa 1, y las posiciones pares (contando el tipo como la 0) pesan 3.
-create function pg_temp.codigo_articulo(p_numero integer)
-returns text
-language plpgsql
-as $$
-declare
-  v_secuencia text := lpad(p_numero::text, 6, '0');
-  v_suma integer := 3;  -- el tipo (peso 1) en posición 0, que pesa 3
-  i integer;
-begin
-  for i in 1..6 loop
-    v_suma := v_suma + substr(v_secuencia, i, 1)::integer * case when i % 2 = 1 then 1 else 3 end;
-  end loop;
-  return 'GA' || v_secuencia || ((10 - v_suma % 10) % 10)::text;
-end;
-$$;
-
--- Comprobación: tiene que dar GA0000014, GA0000120, GA0003459.
-select pg_temp.codigo_articulo(1), pg_temp.codigo_articulo(12), pg_temp.codigo_articulo(345);
-
--- Insumos: cinco conos y los productos de reventa. El código se genera solo
--- para los que faltan, así volver a correr esto no gasta números de la secuencia.
-insert into public.insumos (nombre, codigo, unidad, minimo, costo, es_componente)
-select v.nombre, pg_temp.codigo_articulo(public.siguiente_numero_insumo()), 'u', 0, 0,
-  v.nombre in ('Cono simple', 'Cono doble', 'Canasta', 'Cono dulce', 'Cono cucuruchón dulce')
+-- Productos de freezer (lista 1). crear_articulo les pone su código y sus dos
+-- presentaciones (Unidad ×1 y Docena ×12), inactivas y a $0. Solo se llama
+-- para los que faltan, así volver a correr esto no gasta números de la
+-- secuencia de códigos.
+select public.crear_articulo(v.nombre, 'producto', 0)
 from (values
-  ('Cono simple'),
-  ('Cono doble'),
-  ('Canasta'),
-  ('Cono dulce'),
-  ('Cono cucuruchón dulce'),
   ('Bombón'),
   ('Palito'),
   ('Sándwich'),
@@ -53,51 +29,30 @@ from (values
 ) as v(nombre)
 where not exists (select 1 from public.insumos i where i.nombre = v.nombre);
 
--- (Los cinco conos son los únicos componentes de un formato; el resto se revende. Requiere
--- la migración 20260929150000_insumo_es_componente.sql.)
-
--- Presentaciones: x1 y x12 de cada uno, inactivas y a $0 hasta que Goro ponga precio.
-insert into public.presentaciones_insumo (insumo_id, nombre, unidades)
-select i.id, p.nombre, p.unidades
-from public.insumos i
-cross join (values ('Unidad', 1), ('Docena', 12)) as p(nombre, unidades)
-where i.nombre in (
-  'Cono simple', 'Cono doble', 'Canasta', 'Cono dulce', 'Cono cucuruchón dulce',
-  'Bombón', 'Palito', 'Sándwich', 'Cono bañado', 'Cremita', 'Vasito 100 g'
-)
-on conflict (insumo_id, unidades) do nothing;
-
 -- Formatos de la lista 2. Inactivos y a $0.
 insert into public.formatos (nombre, gramos, cantidad_sabores, precio, activo) values
-  ('Cucurucho simple',   65,  1, 0, false),
-  ('Cucurucho doble',    130, 2, 0, false),
-  ('Canasta doble',      130, 2, 0, false),
-  ('Cucurucho dulce',    130, 2, 0, false),
-  ('Vasito simple',      65,  1, 0, false),
-  ('Cucuruchón dulce',   130, 2, 0, false)
+  ('Cucurucho simple',  65,  1, 0, false),
+  ('Cucurucho doble',   130, 2, 0, false),
+  ('Canasta doble',     130, 2, 0, false),
+  ('Cucurucho dulce',   130, 2, 0, false),
+  ('Vasito simple',     65,  1, 0, false),
+  ('Cucuruchón dulce',  130, 2, 0, false)
 on conflict (nombre) do nothing;
 
--- Qué cono se lleva cada formato. El vasito simple no consume nada.
-insert into public.formato_insumos (formato_id, insumo_id, cantidad)
-select f.id, i.id, 1
-from (values
-  ('Cucurucho simple', 'Cono simple'),
-  ('Cucurucho doble',  'Cono doble'),
-  ('Canasta doble',    'Canasta'),
-  ('Cucurucho dulce',  'Cono dulce'),
-  ('Cucuruchón dulce', 'Cono cucuruchón dulce')
-) as c(formato, insumo)
-join public.formatos f on f.nombre = c.formato
-join public.insumos i on i.nombre = c.insumo
-on conflict (formato_id, insumo_id) do nothing;
+-- El envase de cada uno: "Cucurucho doble (sin helado)", con su stock propio y
+-- sus presentaciones. Al vender el formato con helado se descuenta 1 envase.
+select public.crear_articulo(f.nombre || ' (sin helado)', 'envase', 0, f.id)
+from public.formatos f
+where f.nombre in (
+  'Cucurucho simple', 'Cucurucho doble', 'Canasta doble',
+  'Cucurucho dulce', 'Vasito simple', 'Cucuruchón dulce'
+)
+and not exists (select 1 from public.insumos i where i.formato_id = f.id);
 
--- Para mirar el resultado: 11 insumos nuevos, 22 presentaciones, 6 formatos, 5 consumos.
-select i.codigo, i.nombre, count(p.id) as presentaciones
+-- Para mirar el resultado: 6 productos, 6 envases (con 2 presentaciones cada uno).
+select i.codigo, i.nombre, i.tipo, count(p.id) as presentaciones
 from public.insumos i
 left join public.presentaciones_insumo p on p.insumo_id = i.id
-where i.nombre in (
-  'Cono simple', 'Cono doble', 'Canasta', 'Cono dulce', 'Cono cucuruchón dulce',
-  'Bombón', 'Palito', 'Sándwich', 'Cono bañado', 'Cremita', 'Vasito 100 g'
-)
-group by i.codigo, i.nombre
+where i.tipo in ('producto', 'envase')
+group by i.codigo, i.nombre, i.tipo
 order by i.codigo;

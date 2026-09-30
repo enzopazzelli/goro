@@ -1,10 +1,11 @@
 -- ============================================================================
--- Ventas: cobrar formatos a dedo, sin escaneo (recorte de Fase 4).
+-- Ventas: cobrar formatos (con sabores) y productos (por unidad o docena), y
+-- anularlos devolviendo todo lo descontado.
 -- ============================================================================
 -- Mismo criterio que las migraciones anteriores: RLS activa desde la
--- creación, grant explícito a authenticated, revoke de anon. Las tres
--- tablas nuevas quedan de solo lectura para authenticated — la única
--- puerta de escritura son las funciones de abajo.
+-- creación, grant explícito a authenticated, revoke de anon. Las tablas de
+-- acá quedan de solo lectura para authenticated: la única puerta de escritura
+-- son las funciones de abajo.
 -- ============================================================================
 
 create type public.medio_pago as enum ('efectivo', 'tarjeta', 'transferencia');
@@ -30,12 +31,17 @@ create policy "ventas: cualquier sesion activa lee"
   on public.ventas for select to authenticated
   using (public.auth_rol() is not null);
 
+-- Cada línea es un formato (con sus sabores) o una presentación de producto,
+-- nunca las dos: el check lo exige en la base. El precio se congela acá, así
+-- que cambiar la lista de precios no toca ninguna venta vieja.
 create table public.venta_items (
-  id          integer generated always as identity primary key,
-  venta_id    integer not null references public.ventas (id),
-  formato_id  integer not null references public.formatos (id),
-  precio      integer not null,
-  constraint precio_no_negativo check (precio >= 0)
+  id               integer generated always as identity primary key,
+  venta_id         integer not null references public.ventas (id),
+  formato_id       integer references public.formatos (id),
+  presentacion_id  integer references public.presentaciones_insumo (id),
+  precio           integer not null,
+  constraint precio_no_negativo check (precio >= 0),
+  constraint item_es_formato_o_presentacion check ((formato_id is null) <> (presentacion_id is null))
 );
 
 alter table public.venta_items enable row level security;
@@ -45,6 +51,14 @@ revoke all on public.venta_items from anon;
 create policy "venta_items: cualquier sesion activa lee"
   on public.venta_items for select to authenticated
   using (public.auth_rol() is not null);
+
+-- El ledger de insumos ya existe (Inventario); acá se le liga lo que lo causó,
+-- y anular_venta busca por esa columna.
+alter table public.movimientos_insumo
+  add constraint movimientos_insumo_venta_item_fkey
+  foreign key (venta_item_id) references public.venta_items (id);
+
+create index movimientos_insumo_venta_item_idx on public.movimientos_insumo (venta_item_id);
 
 -- Ledger de baldes: mismo criterio que movimientos_insumo, nunca se pisa
 -- kg_restante con un número absoluto. `venta_item_id` es nulo para los
@@ -72,10 +86,10 @@ create policy "movimientos_balde: cualquier sesion activa lee"
   using (public.auth_rol() is not null);
 
 -- ----------------------------------------------------------------------------
--- La única función que escribe de verdad. Sin `grant execute` a
--- `authenticated`: solo la llaman las cuatro funciones de abajo, desde
--- adentro. Esto es lo que impide que alguien dispare un movimiento 'venta'
--- sin pasar por registrar_venta, o un 'anulacion' sin pasar por anular_venta.
+-- La única función que escribe movimientos de balde. Cerrada a todos los
+-- roles: solo la llaman las funciones de abajo, desde adentro. Esto es lo que
+-- impide que alguien dispare un movimiento 'venta' sin pasar por
+-- registrar_venta, o un 'anulacion' sin pasar por anular_venta.
 -- ----------------------------------------------------------------------------
 create function public.aplicar_movimiento_balde(
   p_balde_id integer,
@@ -96,10 +110,123 @@ begin
 end;
 $$;
 
+revoke execute on function public.aplicar_movimiento_balde(integer, public.tipo_movimiento_balde, numeric, integer)
+  from public, anon, authenticated;
+
 -- ----------------------------------------------------------------------------
--- Arma el ticket completo: uno o más items, cada uno con su formato y los
--- sabores elegidos (hasta el cupo del formato, nunca repetidos). Precio y
--- gramos se leen del servidor, nunca del cliente.
+-- Un item de tipo formato: el helado de los baldes abiertos (uno por sabor
+-- elegido) y, si el formato tiene envase propio, una unidad de ese envase.
+-- Devuelve el precio cobrado. Precio y gramos se leen del servidor, nunca del
+-- cliente. No se mira si el envase está activo ni si alcanza el stock: no se
+-- frena una venta por un conteo.
+-- ----------------------------------------------------------------------------
+create function public.cobrar_item_formato(p_venta_id integer, p_item jsonb)
+returns integer
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_formato public.formatos%rowtype;
+  v_sabor_nombre text;
+  v_sabor_ids integer[];
+  v_cantidad_sabores integer;
+  v_kg numeric;
+  v_sabor_id integer;
+  v_balde_id integer;
+  v_envase_id integer;
+  v_item_id integer;
+begin
+  select * into v_formato from public.formatos
+    where id = (p_item->>'formato_id')::integer and activo
+    for update;
+  if not found then
+    raise exception 'Formato inválido o inactivo.';
+  end if;
+
+  select array_agg(distinct value::integer) into v_sabor_ids
+    from jsonb_array_elements_text(p_item->'sabor_ids');
+  v_cantidad_sabores := coalesce(array_length(v_sabor_ids, 1), 0);
+
+  if v_cantidad_sabores < 1 or v_cantidad_sabores > v_formato.cantidad_sabores then
+    raise exception 'Elegí entre 1 y % sabores para %.', v_formato.cantidad_sabores, v_formato.nombre;
+  end if;
+
+  insert into public.venta_items (venta_id, formato_id, precio)
+  values (p_venta_id, v_formato.id, v_formato.precio)
+  returning id into v_item_id;
+
+  v_kg := (v_formato.gramos::numeric / v_cantidad_sabores) / 1000.0;
+
+  foreach v_sabor_id in array v_sabor_ids
+  loop
+    select nombre into v_sabor_nombre from public.sabores where id = v_sabor_id and activo;
+    if not found then
+      raise exception 'Sabor inválido o inactivo.';
+    end if;
+
+    select id into v_balde_id from public.baldes
+      where sabor_id = v_sabor_id and estado = 'abierto';
+    if v_balde_id is null then
+      raise exception 'No hay un balde abierto de %.', v_sabor_nombre
+        using detail = v_sabor_id::text, hint = 'sin_balde_abierto';
+    end if;
+
+    perform public.aplicar_movimiento_balde(v_balde_id, 'venta', -v_kg, v_item_id);
+  end loop;
+
+  select id into v_envase_id from public.insumos where formato_id = v_formato.id;
+  if v_envase_id is not null then
+    perform public.aplicar_movimiento_insumo(v_envase_id, 'venta', -1, v_item_id);
+  end if;
+
+  return v_formato.precio;
+end;
+$$;
+
+revoke execute on function public.cobrar_item_formato(integer, jsonb)
+  from public, anon, authenticated;
+
+-- Un item de tipo producto: una presentación (unidad, docena) de un insumo.
+create function public.cobrar_item_presentacion(p_venta_id integer, p_item jsonb)
+returns integer
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_presentacion public.presentaciones_insumo%rowtype;
+  v_item_id integer;
+begin
+  select * into v_presentacion from public.presentaciones_insumo
+    where id = (p_item->>'presentacion_id')::integer and activo
+    for update;
+  if not found then
+    raise exception 'Producto inválido o inactivo.';
+  end if;
+
+  perform 1 from public.insumos where id = v_presentacion.insumo_id and activo;
+  if not found then
+    raise exception 'Producto inválido o inactivo.';
+  end if;
+
+  insert into public.venta_items (venta_id, presentacion_id, precio)
+  values (p_venta_id, v_presentacion.id, v_presentacion.precio)
+  returning id into v_item_id;
+
+  perform public.aplicar_movimiento_insumo(v_presentacion.insumo_id, 'venta', -v_presentacion.unidades, v_item_id);
+
+  return v_presentacion.precio;
+end;
+$$;
+
+revoke execute on function public.cobrar_item_presentacion(integer, jsonb)
+  from public, anon, authenticated;
+
+-- ----------------------------------------------------------------------------
+-- Arma el ticket completo: uno o más items, cada uno un formato (con sus
+-- sabores) o un producto. Todo en UNA transacción: si cualquier item falla,
+-- no queda ninguna venta.
 -- ----------------------------------------------------------------------------
 create function public.registrar_venta(
   p_items jsonb,
@@ -114,14 +241,8 @@ declare
   v_venta_id integer;
   v_total integer := 0;
   v_item jsonb;
-  v_formato public.formatos%rowtype;
-  v_sabor_nombre text;
-  v_sabor_ids integer[];
-  v_cantidad_sabores integer;
-  v_kg numeric;
-  v_sabor_id integer;
-  v_balde_id integer;
-  v_item_id integer;
+  v_es_formato boolean;
+  v_es_producto boolean;
 begin
   if not coalesce(public.auth_rol() is not null, false) then
     raise exception 'Sin sesión activa';
@@ -137,44 +258,18 @@ begin
 
   for v_item in select * from jsonb_array_elements(p_items)
   loop
-    select * into v_formato from public.formatos
-      where id = (v_item->>'formato_id')::integer and activo
-      for update;
-    if not found then
-      raise exception 'Formato inválido o inactivo.';
+    v_es_formato := v_item->>'formato_id' is not null;
+    v_es_producto := v_item->>'presentacion_id' is not null;
+
+    if v_es_formato = v_es_producto then
+      raise exception 'Cada item tiene que ser un formato o un producto.';
     end if;
 
-    select array_agg(distinct value::integer) into v_sabor_ids
-      from jsonb_array_elements_text(v_item->'sabor_ids');
-    v_cantidad_sabores := coalesce(array_length(v_sabor_ids, 1), 0);
-
-    if v_cantidad_sabores < 1 or v_cantidad_sabores > v_formato.cantidad_sabores then
-      raise exception 'Elegí entre 1 y % sabores para %.', v_formato.cantidad_sabores, v_formato.nombre;
+    if v_es_producto then
+      v_total := v_total + public.cobrar_item_presentacion(v_venta_id, v_item);
+    else
+      v_total := v_total + public.cobrar_item_formato(v_venta_id, v_item);
     end if;
-
-    insert into public.venta_items (venta_id, formato_id, precio)
-    values (v_venta_id, v_formato.id, v_formato.precio)
-    returning id into v_item_id;
-
-    v_total := v_total + v_formato.precio;
-    v_kg := (v_formato.gramos::numeric / v_cantidad_sabores) / 1000.0;
-
-    foreach v_sabor_id in array v_sabor_ids
-    loop
-      select nombre into v_sabor_nombre from public.sabores where id = v_sabor_id and activo;
-      if not found then
-        raise exception 'Sabor inválido o inactivo.';
-      end if;
-
-      select id into v_balde_id from public.baldes
-        where sabor_id = v_sabor_id and estado = 'abierto';
-      if v_balde_id is null then
-        raise exception 'No hay un balde abierto de %.', v_sabor_nombre
-          using detail = v_sabor_id::text, hint = 'sin_balde_abierto';
-      end if;
-
-      perform public.aplicar_movimiento_balde(v_balde_id, 'venta', -v_kg, v_item_id);
-    end loop;
   end loop;
 
   update public.ventas set total = v_total where id = v_venta_id;
@@ -183,12 +278,14 @@ begin
 end;
 $$;
 
-grant execute on function public.registrar_venta to authenticated;
+revoke execute on function public.registrar_venta(jsonb, public.medio_pago) from public, anon;
+grant execute on function public.registrar_venta(jsonb, public.medio_pago) to authenticated;
 
 -- ----------------------------------------------------------------------------
--- Anula una venta cobrada: agrupa los movimientos por balde y revierte el
--- neto de cada uno (una corrección de sabor previa puede haber dejado más
--- de una fila por balde).
+-- Anula una venta cobrada: agrupa los movimientos por balde y por insumo y
+-- revierte el neto de cada uno (una corrección de sabor previa puede haber
+-- dejado más de una fila por balde). El `for update` sobre la venta hace que
+-- una segunda anulación simultánea vea 'anulada' y falle sin devolver nada.
 -- ----------------------------------------------------------------------------
 create function public.anular_venta(p_venta_id integer)
 returns void
@@ -223,19 +320,32 @@ begin
     perform public.aplicar_movimiento_balde(v_movimiento.balde_id, 'anulacion', -v_movimiento.kg_neto, null);
   end loop;
 
+  for v_movimiento in
+    select mi.insumo_id, sum(mi.cantidad) as cantidad_neta
+    from public.movimientos_insumo mi
+    join public.venta_items vi on vi.id = mi.venta_item_id
+    where vi.venta_id = p_venta_id
+    group by mi.insumo_id
+    having sum(mi.cantidad) <> 0
+  loop
+    perform public.aplicar_movimiento_insumo(v_movimiento.insumo_id, 'anulacion', -v_movimiento.cantidad_neta, null);
+  end loop;
+
   update public.ventas
     set estado = 'anulada', anulado_por = auth.uid(), anulado_en = now()
     where id = p_venta_id;
 end;
 $$;
 
-grant execute on function public.anular_venta to authenticated;
+revoke execute on function public.anular_venta(integer) from public, anon;
+grant execute on function public.anular_venta(integer) to authenticated;
 
 -- ----------------------------------------------------------------------------
 -- El cliente pidió frutilla y chocolate, cambió chocolate por vainilla
 -- antes de irse. Busca el balde EXACTO que se debitó para ese item y ese
 -- sabor viejo (no "el balde abierto" en genérico, puede haber cambiado), le
--- devuelve el kg neto, y se lo saca al balde abierto del sabor nuevo.
+-- devuelve el kg neto, y se lo saca al balde abierto del sabor nuevo. Solo
+-- corrige helado: un item de producto no tiene sabores.
 -- ----------------------------------------------------------------------------
 create function public.corregir_sabor_venta_item(
   p_venta_item_id integer,
@@ -288,7 +398,8 @@ begin
 end;
 $$;
 
-grant execute on function public.corregir_sabor_venta_item to authenticated;
+revoke execute on function public.corregir_sabor_venta_item(integer, integer, integer) from public, anon;
+grant execute on function public.corregir_sabor_venta_item(integer, integer, integer) to authenticated;
 
 -- ----------------------------------------------------------------------------
 -- Corrección de fin de día: la estimación de registrar_venta puede no
@@ -316,4 +427,5 @@ begin
 end;
 $$;
 
-grant execute on function public.registrar_ajuste_balde to authenticated;
+revoke execute on function public.registrar_ajuste_balde(integer, numeric) from public, anon;
+grant execute on function public.registrar_ajuste_balde(integer, numeric) to authenticated;

@@ -6,11 +6,10 @@
 --
 -- A diferencia de `sabores`/`insumos`, acá SÍ se otorga `delete`: un formato
 -- creado por error tiene que poder desaparecer. No hace falta proteger el
--- borrado de un formato con ventas encima "a mano" — el día que Fase 4
--- agregue `formato_id integer not null references public.formatos (id)` en
--- la línea de venta, esa foreign key (sin `on delete cascade`) va a
--- rechazar sola cualquier intento de borrar un formato ya usado. `activo`
--- pasa a ser el único camino para retirarlo recién en ese momento.
+-- borrado de un formato usado "a mano": las foreign keys (sin `on delete
+-- cascade`) lo rechazan solas, tanto la de `venta_items.formato_id` (ya se
+-- vendió) como la de `insumos.formato_id` (tiene un envase con stock propio).
+-- En esos casos `activo` es el único camino para retirarlo.
 -- ============================================================================
 create table public.formatos (
   id                integer generated always as identity primary key,
