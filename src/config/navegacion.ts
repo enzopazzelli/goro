@@ -18,6 +18,7 @@ const SOLO_DUENIO = ["duenio"] as const;
 export const MODULOS: readonly Modulo[] = [
   { href: "/inicio", etiqueta: "Inicio", icono: "🍦", roles: TODOS },
   { href: "/ventas", etiqueta: "Ventas", icono: "🛒", roles: TODOS },
+  { href: "/caja", etiqueta: "Caja", icono: "💵", roles: TODOS },
   { href: "/inventario", etiqueta: "Inventario", icono: "📦", roles: TODOS },
   { href: "/codigos", etiqueta: "Códigos", icono: "🏷️", roles: TODOS },
   { href: "/usuarios", etiqueta: "Usuarios", icono: "👥", roles: SOLO_DUENIO },

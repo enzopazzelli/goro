@@ -26,6 +26,12 @@ export const NOMBRE_COMERCIO = "Goro";
 export const DOMINIO_INTERNO = "heladeria.local";
 
 /**
+ * Las horas se muestran en la del local, no en la del servidor: en el hosting
+ * el servidor corre en UTC, y un turno abierto a las 14:30 diría 17:30.
+ */
+export const ZONA_HORARIA = "America/Argentina/Buenos_Aires";
+
+/**
  * Color de la barra del navegador en el celular.
  *
  * Es el único color literal fuera de `tema.css`, y no por descuido: va en una

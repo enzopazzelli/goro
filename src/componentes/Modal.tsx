@@ -7,11 +7,17 @@ export function Modal({
   abierto,
   onCerrar,
   titulo,
+  cerrarConClicAfuera = true,
   children,
 }: {
   abierto: boolean;
   onCerrar: () => void;
   titulo: string;
+  /**
+   * En falso para formularios que cuesta rehacer: en marlyn un clic afuera por
+   * error borraba un cierre de caja a medio cargar. Se cierra con Escape.
+   */
+  cerrarConClicAfuera?: boolean;
   children: ReactNode;
 }) {
   const cajaRef = useRef<HTMLDivElement>(null);
@@ -33,7 +39,7 @@ export function Modal({
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-marco/55 p-4"
       onClick={(evento) => {
-        if (evento.target === evento.currentTarget) onCerrar();
+        if (cerrarConClicAfuera && evento.target === evento.currentTarget) onCerrar();
       }}
     >
       <div

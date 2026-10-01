@@ -6,8 +6,9 @@ import { NOMBRE_COMERCIO } from "@/config/comercio";
 import { modulosDe } from "@/config/navegacion";
 import { salir } from "@/modulos/auth/consultas/acciones";
 import { ETIQUETA_ROL, type Perfil } from "@/modulos/auth/tipos";
+import { InsigniaCaja } from "./InsigniaCaja";
 
-export function BarraLateral({ perfil }: { perfil: Perfil }) {
+export function BarraLateral({ perfil, cajaAbierta }: { perfil: Perfil; cajaAbierta: boolean }) {
   const ruta = usePathname();
 
   return (
@@ -18,6 +19,8 @@ export function BarraLateral({ perfil }: { perfil: Perfil }) {
           Heladería artesanal
         </div>
       </div>
+
+      <InsigniaCaja abierta={cajaAbierta} />
 
       <nav className="flex flex-1 flex-wrap gap-1 md:flex-col" aria-label="Módulos">
         {modulosDe(perfil.rol).map((modulo) => {
