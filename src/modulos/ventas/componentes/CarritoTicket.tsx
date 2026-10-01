@@ -5,8 +5,9 @@ import { Boton } from "@/componentes/Boton";
 import { BotonAbrirCaja } from "@/componentes/ModalAbrirCaja";
 import type { Sabor } from "@/lib/sabores";
 import type { EstadoTicket } from "../consultas/acciones";
-import { totalDelCarrito } from "../ticket";
+import { totalDelCarrito, type Cobrado } from "../ticket";
 import type { ItemEnCarrito, MedioPago } from "../tipos";
+import { AvisoCobrado } from "./AvisoCobrado";
 import { BotonAbrirBaldeFaltante } from "./BotonAbrirBaldeFaltante";
 import { LineasDeCarrito } from "./LineasDeCarrito";
 
@@ -20,6 +21,7 @@ export function CarritoTicket({
   estado,
   enviando,
   cajaAbierta,
+  cobrado,
 }: {
   carrito: ItemEnCarrito[];
   sabores: Sabor[];
@@ -30,6 +32,8 @@ export function CarritoTicket({
   estado: EstadoTicket;
   enviando: boolean;
   cajaAbierta: boolean;
+  /** La venta que se acaba de cobrar; se va al agregar el primer ítem de la siguiente. */
+  cobrado: Cobrado | null;
 }) {
   const total = totalDelCarrito(carrito);
   // El error de "caja cerrada" queda en el estado hasta el próximo cobro; si
@@ -43,6 +47,8 @@ export function CarritoTicket({
         titulo={`${carrito.length} ítem${carrito.length === 1 ? "" : "s"}`}
       />
       <div className="flex flex-col gap-3 rounded-b-(--r-grande) border border-t-0 border-linea bg-superficie p-4 shadow-(--shadow-tarjeta)">
+        <AvisoCobrado cobrado={cobrado} />
+
         {carrito.length === 0 ? (
           <p className="text-sm text-texto-suave">
             Elegí un formato (y sus sabores) o un producto.

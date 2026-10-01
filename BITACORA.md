@@ -76,7 +76,12 @@ dejó de ser una lista de solo lectura.
   antes, pero borrar usuarios desde la pantalla lo dejó a la mano. Ahora el proxy
   solo redirige navegaciones (`lib/destinoProxy.ts`, con sus tests); las acciones
   pasan y verifican la sesión ellas mismas, como ya hacían.
-- 19 tests unitarios nuevos y `auth/rls.test.ts`. `npm run verificar` y
+- **En Ventas, el carrito vuelve vacío solo al cobrar.** Antes había que tocar
+  "Nueva venta" para salir del panel "¡Listo!"; ahora queda el carrito listo para
+  el próximo cliente con una línea "Cobrado: $X · Efectivo" que se va al agregar
+  el primer ítem. Se sacó `TicketConfirmado`. El carrito se vacía al terminar la
+  acción y ya no comparando estados durante el render.
+- 23 tests unitarios nuevos y `auth/rls.test.ts`. `npm run verificar` y
   `npm run build` pasan.
 
 ### Qué se decidió

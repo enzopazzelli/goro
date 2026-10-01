@@ -5,17 +5,14 @@ import type { Balde } from "@/lib/baldes";
 import type { Formato } from "@/lib/formatos";
 import type { Presentacion } from "@/lib/presentaciones";
 import type { Sabor } from "@/lib/sabores";
-import { totalDelCarrito } from "../ticket";
+import { cobradoDe, type Cobrado } from "../ticket";
 import type { ItemEnCarrito, MedioPago } from "../tipos";
-import { registrarVenta } from "../consultas/acciones";
+import { registrarVenta, type EstadoTicket } from "../consultas/acciones";
 import { CarritoTicket } from "./CarritoTicket";
 import { SelectorDeProductos } from "./SelectorDeProductos";
 import { SelectorFormatoYSabores } from "./SelectorFormatoYSabores";
-import { TicketConfirmado } from "./TicketConfirmado";
 
-const INICIAL = { error: null, faltaBalde: null };
-
-type Confirmado = { items: ItemEnCarrito[]; medioPago: MedioPago; total: number };
+const INICIAL: EstadoTicket = { error: null, faltaBalde: null };
 
 export function FormularioTicket({
   formatos,
@@ -32,21 +29,29 @@ export function FormularioTicket({
 }) {
   const [carrito, setCarrito] = useState<ItemEnCarrito[]>([]);
   const [medioPago, setMedioPago] = useState<MedioPago>("efectivo");
-  const [confirmado, setConfirmado] = useState<Confirmado | null>(null);
-  const [estado, accion, enviando] = useActionState(registrarVenta, INICIAL);
+  const [cobrado, setCobrado] = useState<Cobrado | null>(null);
 
-  // "Ajustar estado cuando cambia un valor" durante el render, no en un
-  // efecto (la guía de React lo pide así: llamar setState acá adentro es
-  // válido porque React vuelve a renderizar antes de pintar nada, y el
-  // segundo render ya no vuelve a entrar porque estadoPrevio quedó al día).
-  const [estadoPrevio, setEstadoPrevio] = useState(estado);
-  if (estado !== estadoPrevio) {
-    setEstadoPrevio(estado);
-    if (!estado.error && carrito.length > 0) {
-      const total = totalDelCarrito(carrito);
-      setConfirmado({ items: carrito, medioPago, total });
-      setCarrito([]);
-    }
+  // Al cobrar, el carrito queda vacío solo, listo para el próximo cliente: no
+  // hay un paso intermedio que cerrar a mano. Se vacía al TERMINAR la acción y
+  // no comparando estados durante el render: la acción devuelve siempre el
+  // mismo objeto de éxito, así que la segunda venta no se vería como un cambio
+  // (ver ModalCargarInsumo).
+  const [estado, accion, enviando] = useActionState(
+    async (previo: EstadoTicket, datos: FormData) => {
+      const resultado = await registrarVenta(previo, datos);
+      if (!resultado.error) {
+        setCobrado(cobradoDe(datos));
+        setCarrito([]);
+      }
+      return resultado;
+    },
+    INICIAL,
+  );
+
+  function agregar(item: ItemEnCarrito) {
+    // El aviso de la venta anterior ya cumplió: empezó la siguiente.
+    setCobrado(null);
+    setCarrito((actuales) => [...actuales, item]);
   }
 
   function quitar(indice: number) {
@@ -60,37 +65,28 @@ export function FormularioTicket({
           formatos={formatos.filter((formato) => formato.activo)}
           sabores={sabores}
           baldes={baldes}
-          onAgregar={(item) => setCarrito((actuales) => [...actuales, item])}
+          onAgregar={agregar}
         />
         <SelectorDeProductos
           presentaciones={presentaciones.filter(
             (presentacion) => presentacion.activo && presentacion.insumoActivo,
           )}
-          onAgregar={(item) => setCarrito((actuales) => [...actuales, item])}
+          onAgregar={agregar}
         />
       </div>
 
-      {confirmado ? (
-        <TicketConfirmado
-          items={confirmado.items}
-          sabores={sabores}
-          medioPago={confirmado.medioPago}
-          total={confirmado.total}
-          onNuevaVenta={() => setConfirmado(null)}
-        />
-      ) : (
-        <CarritoTicket
-          carrito={carrito}
-          sabores={sabores}
-          medioPago={medioPago}
-          onCambiarMedioPago={setMedioPago}
-          onQuitar={quitar}
-          accion={accion}
-          estado={estado}
-          enviando={enviando}
-          cajaAbierta={cajaAbierta}
-        />
-      )}
+      <CarritoTicket
+        carrito={carrito}
+        sabores={sabores}
+        medioPago={medioPago}
+        onCambiarMedioPago={setMedioPago}
+        onQuitar={quitar}
+        accion={accion}
+        estado={estado}
+        enviando={enviando}
+        cajaAbierta={cajaAbierta}
+        cobrado={cobrado}
+      />
     </div>
   );
 }
