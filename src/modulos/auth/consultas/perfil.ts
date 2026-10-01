@@ -9,8 +9,13 @@ import type { Perfil } from "../tipos";
  * rápido, pero la verdad se pregunta acá, contra la base, en cada request.
  */
 
-/** El perfil de quien pidió la página, o `null` si no hay sesión válida. */
-export async function perfilActual(): Promise<Perfil | null> {
+type Sesion = { tieneSesion: boolean; perfil: Perfil | null };
+
+/**
+ * "No tiene sesión" y "tiene sesión pero no perfil activo" son dos casos
+ * distintos, y `exigirPerfil` necesita distinguirlos (ver ahí por qué).
+ */
+async function leerSesion(): Promise<Sesion> {
   const supabase = await clienteServidor();
 
   // getUser() y no getSession(): getSession lee la cookie sin verificarla
@@ -18,7 +23,7 @@ export async function perfilActual(): Promise<Perfil | null> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) return null;
+  if (!user) return { tieneSesion: false, perfil: null };
 
   // RLS ya limita la fila a la propia; el filtro por id es para pedir una sola.
   const { data } = await supabase
@@ -28,14 +33,26 @@ export async function perfilActual(): Promise<Perfil | null> {
     .maybeSingle<Perfil>();
 
   // Un usuario desactivado tiene sesión válida pero no entra.
-  return data?.activo ? data : null;
+  return { tieneSesion: true, perfil: data?.activo ? data : null };
 }
 
-/** Igual que `perfilActual`, pero manda a la pantalla de ingreso si no hay. */
+/** El perfil de quien pidió la página, o `null` si no hay sesión válida. */
+export async function perfilActual(): Promise<Perfil | null> {
+  return (await leerSesion()).perfil;
+}
+
+/**
+ * Igual que `perfilActual`, pero saca de la pantalla a quien no tiene perfil.
+ *
+ * A quien tiene sesión pero ya no perfil activo (lo desactivaron o lo borraron
+ * con la sesión abierta) NO se lo manda a `/ingresar`: el proxy ve que tiene
+ * sesión y lo devuelve a `/inicio`, y queda en un bucle de redirecciones. Va a
+ * `/salir`, que le cierra la sesión primero.
+ */
 export async function exigirPerfil(): Promise<Perfil> {
-  const perfil = await perfilActual();
-  if (!perfil) redirect("/ingresar");
-  return perfil;
+  const { tieneSesion, perfil } = await leerSesion();
+  if (perfil) return perfil;
+  redirect(tieneSesion ? "/salir" : "/ingresar");
 }
 
 /** Para las pantallas que son solo del dueño. */
