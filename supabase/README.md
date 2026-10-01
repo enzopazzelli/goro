@@ -23,6 +23,8 @@ acá abajo cuál fue la última aplicada.
 | `20260930150000_borrar_presentaciones.sql` | El dueño puede borrar una presentación que nunca se vendió                       |
 | `20261001100000_caja.sql`               | Turnos de caja, libro de efectivo y arqueo ciego; reemplaza `registrar_venta` y `anular_venta` |
 
+| `20261001110000_usuarios.sql`           | Reglas de perfiles (siempre un dueño activo, nadie se degrada a sí mismo), renombre sincronizado y `perfil_tiene_historial` |
+
 **Caja cambia cómo se vende:** desde esa migración no se cobra sin una caja abierta. Hay que
 aplicarla **antes** de desplegar el código que la usa; al revés, Ventas muestra "La caja está
 cerrada" y no deja cobrar. Después de aplicarla, **ejecutar** las funciones reemplazadas (abrir la
@@ -79,8 +81,15 @@ update public.perfiles set rol = 'duenio', nombre = 'Goro'
 where usuario = 'goro';
 ```
 
-De ahí en más, los usuarios se dan de alta desde la pantalla de Usuarios
-(Fase 9; por ahora, repitiendo estos dos pasos).
+De ahí en más, los usuarios se crean, se editan y se borran desde la pantalla de
+Usuarios. Esa pantalla usa la API de administración de Auth, así que el servidor
+necesita `SUPABASE_SERVICE_ROLE_KEY`: en `.env.local` para desarrollar **y como
+variable de entorno en el hosting**. Sin ella, crear un usuario, renombrarlo,
+cambiarle la contraseña o borrarlo falla; el resto del sistema anda igual.
+
+Aplicar `20261001110000_usuarios.sql` **antes** de usar esa pantalla: sin el
+trigger, renombrar a alguien cambia con qué usuario entra pero no lo que muestra
+la lista, y borrar falla.
 
 ## Las cuatro reglas
 
