@@ -53,12 +53,21 @@ arqueos            SOLO el dueño lee
   diferencia generated (contado − esperado),
   fondo_que_queda check entre 0 y contado
 
-ventas.turno_id    fk; check (turno_id is not null) NOT VALID
+ventas.turno_id    fk, admite null
 ```
 
-El `not valid` exige turno a toda venta nueva sin romper las ventas de prueba
-anteriores a Caja. La "plata que faltó entre turnos" no se guarda: es la
-apertura del turno N contra el `fondo_que_queda` del arqueo N−1.
+`ventas.turno_id` admite null solo por las ventas de prueba anteriores a Caja.
+Toda venta nueva lo tiene porque `registrar_venta` es la única puerta a
+`ventas`. **Corregido al implementar:** el diseño decía `check (turno_id is not
+null) not valid`, pero Postgres vuelve a evaluar ese check en cada `update`, y
+anular una venta vieja fallaría.
+
+La "plata que faltó entre turnos" no se guarda: es la apertura del turno N
+contra el `fondo_que_queda` del arqueo N−1.
+
+**Nombres ("quién abrió", "quién cargó"):** solo en la vista del dueño. La RLS
+de `perfiles` deja al colaborador verse solo a sí mismo, y abrirla para esto
+quedó fuera de alcance.
 
 Las tres tablas son de solo lectura para `authenticated`: la única puerta de
 escritura son las funciones.

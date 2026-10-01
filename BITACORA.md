@@ -51,6 +51,95 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ---
 
+## 2026-10-01 — Caja: turnos, libro de efectivo y arqueo ciego
+
+### Qué se hizo
+
+La Fase 5 del roadmap, de punta a punta menos el último paso: **la migración
+está escrita y probada en local, pero todavía no se aplicó a Supabase.**
+
+- **Migración `20261001100000_caja.sql`:** `turnos_caja`, `movimientos_caja` (el
+  libro) y `arqueos`; `ventas.turno_id`; las funciones `abrir_caja`,
+  `registrar_movimiento_caja`, `anular_movimiento_caja` y `cerrar_caja`; y
+  `registrar_venta` / `anular_venta` reemplazadas para que escriban en la caja
+  dentro de su misma transacción.
+- **Pantalla `/caja`:** abrir, cargar ingreso / gasto / retiro, anular uno mal
+  cargado, cerrar. El dueño ve además el resumen del turno, las ventas por medio
+  de pago, y el historial de turnos con su arqueo (`/caja/turno/[id]` abre uno).
+- **Insignia "Caja abierta / cerrada"** en la barra lateral, en todas las pantallas.
+- **Ventas:** con la caja cerrada avisa arriba y no deja cobrar; si la caja se
+  cierra mientras se arma un ticket, ofrece abrirla sin perder el carrito.
+- **Tests:** 13 unitarios nuevos (resumen del turno, texto de la diferencia,
+  historial, formato de plata, horas en la zona del local) y `caja/rls.test.ts`.
+  Los tests de base de Ventas ahora abren una caja de prueba.
+- `npm run verificar` y `npm run build` pasan. La migración pasó 57 escenarios en
+  un Postgres local (PGlite) antes de escribir una línea de pantalla.
+
+### Qué se decidió
+
+- **Sin caja abierta no se cobra.** Cada venta pertenece a un turno.
+- **Arqueo ciego, y apertura también ciega.** El colaborador ve los movimientos
+  pero no totales, ni el esperado, ni la diferencia; al abrir tampoco se le
+  sugiere el fondo que dejó el cierre anterior, porque una sugerencia se confirma
+  sin contar. `arqueos` solo la lee el dueño (RLS).
+- **Libro de caja en vez de caja derivada:** cada peso es una fila y el esperado
+  es una suma sobre una sola tabla. La apertura también es un movimiento.
+- **El turno es del local, no de la persona.** Un solo cajón.
+- **Anular una venta en efectivo saca la plata del turno abierto ahora**, aunque
+  la venta sea de un turno anterior. Sin caja abierta no se anula; con tarjeta o
+  transferencia, sí.
+- **Los tres movimientos a mano (ingreso, gasto, retiro) los cargan los dos
+  roles:** si Goro se lleva plata con Ana logueada, Ana tiene que poder anotarlo.
+- **Se descartó `check (turno_id is not null) not valid`** sobre `ventas`, que
+  estaba en el diseño: Postgres lo reevalúa en cada `update` y anular una venta
+  vieja fallaba. La garantía es que `registrar_venta` es la única puerta.
+- **Por medio de pago:** en Caja, el dueño ve y filtra las ventas del turno por
+  efectivo / tarjeta / transferencia. Las consultas por rango de fechas van al
+  Historial (Fase 6), ya anotado en el roadmap; el modelo no cambia.
+- **Los modales de Caja no se cierran con clic afuera** (`Modal` tiene ahora
+  `cerrarConClicAfuera`). Los demás modales siguen como estaban.
+- **Las horas se muestran en la zona del local** (`ZONA_HORARIA` en
+  `config/comercio.ts`), no en la del servidor.
+- Los tests de base corren **de a un archivo** (`npm run test:rls`): "una sola
+  caja abierta" vale para toda la base. `caja/rls.test.ts` **se niega a correr si
+  encuentra una caja abierta.**
+
+### La pregunta de la regla 1.8: ¿hay algún punto débil?
+
+Sí, y conviene tenerlos a la vista:
+
+1. **Nada de esto corrió todavía contra Supabase.** PGlite prueba la lógica y los
+   permisos, pero no la concurrencia real (el `for share` / `for update` entre
+   una venta y un cierre) ni PostgREST. Eso lo prueba `caja/rls.test.ts`, que
+   recién puede correr con la migración aplicada.
+2. **El arqueo ciego se puede burlar sumando.** El colaborador lee las ventas y
+   los movimientos (por pantalla y por API) y puede calcular el esperado. El
+   sistema no se lo sirve; impedirlo exigiría esconderle sus propias ventas.
+3. **Cualquier sesión puede cerrar la caja y anular un movimiento ajeno.** Queda
+   quién y cuándo, pero no hay permiso que lo impida hasta la Fase 8.
+4. **Un arqueo mal tipeado no se corrige.** Si quien cierra escribe 4.200 en vez
+   de 42.000, queda una diferencia falsa para siempre, sin nota que la explique.
+5. **Nada obliga a cerrar la caja.** Un turno puede quedar abierto varios días;
+   solo se ve la fecha de apertura.
+6. **Staging dejó de ser deseable y pasó a ser condición.** Los tests de base
+   corren contra el mismo proyecto que va a usar Goro; los de Ventas escribirían
+   ventas de prueba en su turno real.
+7. **Las ventas de prueba anteriores a Caja no tienen turno.** Anular una en
+   efectivo resta del turno abierto plata que nunca entró a ningún turno.
+
+### Qué queda pendiente
+
+- **Aplicar `20261001100000_caja.sql`** en el SQL Editor, **antes** de desplegar
+  este código. Después: abrir la caja, cobrar en efectivo y con tarjeta, cargar
+  un gasto, anular, cerrar, y correr `npm run test:rls` con la caja cerrada.
+- Probar la pantalla a mano con los dos roles (no se pudo sin la migración).
+- Lo que ya venía: precios y envases que completa Goro, la venta mezclada a
+  mano, baldes de 10 L y 5 L, los menores (formato a $0, mensaje al borrar un
+  insumo), staging y la guía para Goro.
+- La pantalla de Inicio sigue diciendo "Todavía no hay módulos".
+
+---
+
 ## 2026-09-29 — Productos, envases y migraciones renovadas
 
 ### Qué se hizo
