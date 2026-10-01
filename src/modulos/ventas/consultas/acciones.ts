@@ -3,18 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { clienteServidor } from "@/lib/supabase/servidor";
 import { itemsParaServidor } from "../ticket";
-import type { ItemDeTicket, MedioPago } from "../tipos";
+import type { Cobrado, ItemDeTicket, MedioPago } from "../tipos";
 
 export type EstadoTicket = {
   error: string | null;
   faltaBalde?: { saborId: number; saborNombre: string; baldeParaAbrir: number | null } | null;
   /** La caja se cerró mientras se armaba el ticket: la pantalla ofrece abrirla sin perder el carrito. */
   cajaCerrada?: boolean;
+  /** La venta que acaba de entrar, para el aviso de la pantalla. */
+  cobrado?: Cobrado | null;
 };
 
 export type EstadoFormulario = { error: string | null };
 
-const SIN_ERROR: EstadoTicket = { error: null };
 const SIN_ERROR_SIMPLE: EstadoFormulario = { error: null };
 
 const MEDIOS_VALIDOS: MedioPago[] = ["efectivo", "tarjeta", "transferencia"];
@@ -45,6 +46,26 @@ async function buscarBaldeParaAbrir(
   };
 }
 
+/**
+ * El total lo calcula `registrar_venta` del lado del servidor, así que el aviso
+ * de la pantalla lo lee de la venta registrada y no de lo que sumaba el
+ * carrito: si un precio cambió mientras se armaba el ticket, el que vale es
+ * este, que es el que también quedó en la caja.
+ *
+ * Si la lectura falla, el aviso sale igual sin monto. Lo que no puede pasar es
+ * que quien cobra no se entere de que la venta entró y la cobre de nuevo.
+ */
+async function leerCobrado(
+  supabase: Awaited<ReturnType<typeof clienteServidor>>,
+  ventaId: number,
+  medioPago: MedioPago,
+): Promise<Cobrado> {
+  const { data } = await supabase.from("ventas").select("total").eq("id", ventaId).maybeSingle();
+  const venta = data as { total: number } | null;
+
+  return { ventaId, total: venta ? Number(venta.total) : null, medioPago };
+}
+
 export async function registrarVenta(
   _previo: EstadoTicket,
   datos: FormData,
@@ -63,7 +84,7 @@ export async function registrarVenta(
   }
 
   const supabase = await clienteServidor();
-  const { error } = await supabase.rpc("registrar_venta", {
+  const { data: ventaId, error } = await supabase.rpc("registrar_venta", {
     p_items: itemsParaServidor(items),
     p_medio_pago: medioPago,
   });
@@ -78,7 +99,7 @@ export async function registrarVenta(
   }
 
   revalidatePath("/ventas");
-  return SIN_ERROR;
+  return { error: null, cobrado: await leerCobrado(supabase, Number(ventaId), medioPago) };
 }
 
 export async function anularVenta(

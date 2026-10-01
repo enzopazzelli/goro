@@ -1,12 +1,16 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import type { Presentacion } from "@/lib/presentaciones";
+import type { Cobrado } from "../tipos";
 import { FormularioTicket } from "./FormularioTicket";
 
-// La acción real devuelve SIEMPRE el mismo objeto de éxito: la segunda venta
-// tiene que vaciar el carrito igual, aunque el estado que devuelve no cambie.
+// Devuelve SIEMPRE el mismo objeto: es el caso que rompía cuando el carrito se
+// vaciaba comparando el estado anterior con el nuevo durante el render.
 const { registrarVenta } = vi.hoisted(() => {
-  const EXITO: { error: string | null } = { error: null };
+  const EXITO = {
+    error: null as string | null,
+    cobrado: { ventaId: 12, total: 10000, medioPago: "efectivo" } as Cobrado | null,
+  };
   return { registrarVenta: vi.fn(async () => EXITO) };
 });
 
@@ -47,7 +51,17 @@ async function cobrar() {
   });
 }
 
+const aviso = () => screen.getByRole("status").textContent;
+
 describe("FormularioTicket: después de cobrar", () => {
+  it("el lugar del aviso existe desde antes de cobrar", () => {
+    montar();
+
+    // La región viva tiene que estar en el DOM de entrada: un lector de
+    // pantalla no anuncia lo que aparece junto con su propio contenedor.
+    expect(aviso()).toBe("");
+  });
+
   it("el carrito queda vacío sin tocar nada, con un aviso de lo cobrado", async () => {
     montar();
     agregarBombon();
@@ -57,21 +71,47 @@ describe("FormularioTicket: después de cobrar", () => {
     await cobrar();
 
     await waitFor(() => expect(screen.getByText("0 ítems")).toBeTruthy());
-    expect(screen.getByRole("status").textContent).toBe("Cobrado: $10.000 · Efectivo");
+    expect(aviso()).toBe("Cobrado: $10.000 · Efectivo · #12");
     // Ya no hay un paso intermedio que cerrar a mano.
     expect(screen.queryByRole("button", { name: "Nueva venta" })).toBeNull();
     expect(screen.getByRole("button", { name: "Cobrar" })).toBeTruthy();
+  });
+
+  it("el aviso dice el total que registró el servidor, no el que suma el carrito", async () => {
+    registrarVenta.mockResolvedValueOnce({
+      error: null,
+      cobrado: { ventaId: 7, total: 4500, medioPago: "efectivo" },
+    });
+    montar();
+    agregarBombon(); // $5.000 en la pantalla
+
+    await cobrar();
+
+    await waitFor(() => expect(aviso()).toBe("Cobrado: $4.500 · Efectivo · #7"));
+  });
+
+  it("si la venta entró pero no se pudo leer el total, el aviso igual sale", async () => {
+    registrarVenta.mockResolvedValueOnce({
+      error: null,
+      cobrado: { ventaId: 9, total: null, medioPago: "efectivo" },
+    });
+    montar();
+    agregarBombon();
+
+    await cobrar();
+
+    await waitFor(() => expect(aviso()).toBe("Cobrado · Efectivo · #9"));
   });
 
   it("el aviso se va solo al agregar el primer ítem de la venta siguiente", async () => {
     montar();
     agregarBombon();
     await cobrar();
-    await waitFor(() => expect(screen.getByRole("status")).toBeTruthy());
+    await waitFor(() => expect(aviso()).not.toBe(""));
 
     agregarBombon();
 
-    expect(screen.queryByRole("status")).toBeNull();
+    expect(aviso()).toBe("");
     expect(screen.getByText("1 ítem")).toBeTruthy();
   });
 
@@ -87,11 +127,28 @@ describe("FormularioTicket: después de cobrar", () => {
     await cobrar();
 
     await waitFor(() => expect(screen.getByText("0 ítems")).toBeTruthy());
-    expect(screen.getByRole("status").textContent).toBe("Cobrado: $15.000 · Efectivo");
+    expect(aviso()).toBe("Cobrado: $10.000 · Efectivo · #12");
+  });
+
+  it("el aviso vuelve si se agrega un ítem y se lo quita", async () => {
+    montar();
+    agregarBombon();
+    await cobrar();
+    await waitFor(() => expect(aviso()).not.toBe(""));
+
+    agregarBombon();
+    fireEvent.click(screen.getByRole("button", { name: /^Quitar/ }));
+
+    // Un toque por error no borra la constancia de que la venta anterior entró.
+    expect(aviso()).toBe("Cobrado: $10.000 · Efectivo · #12");
   });
 
   it("si el cobro falla, el carrito no se toca", async () => {
-    registrarVenta.mockResolvedValueOnce({ error: "La caja está cerrada." });
+    // Sin `cajaCerrada`: con la caja abierta, ese error lo tapa el carrito.
+    registrarVenta.mockResolvedValueOnce({
+      error: "No hay un balde abierto de Frutilla.",
+      cobrado: null,
+    });
     montar();
     agregarBombon();
 
@@ -99,6 +156,6 @@ describe("FormularioTicket: después de cobrar", () => {
 
     await waitFor(() => expect(screen.getByRole("alert")).toBeTruthy());
     expect(screen.getByText("1 ítem")).toBeTruthy();
-    expect(screen.queryByRole("status")).toBeNull();
+    expect(aviso()).toBe("");
   });
 });

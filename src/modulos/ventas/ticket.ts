@@ -1,4 +1,4 @@
-import type { ItemDeTicket, MedioPago } from "./tipos";
+import type { ItemDeTicket } from "./tipos";
 
 /**
  * Lo que espera registrar_venta: cada item es un formato (con sus sabores) o
@@ -22,19 +22,4 @@ export function saborIdsDe(item: ItemDeTicket): number[] {
 
 export function totalDelCarrito(items: { precio: number }[]): number {
   return items.reduce((suma, item) => suma + item.precio, 0);
-}
-
-/** Lo que se muestra un instante después de cobrar, mientras se arma la venta siguiente. */
-export type Cobrado = { total: number; medioPago: MedioPago };
-
-/**
- * Se lee del MISMO formulario que se mandó a cobrar, no del estado de la
- * pantalla: así el aviso dice lo que se vendió aunque el carrito ya cambió.
- */
-export function cobradoDe(datos: FormData): Cobrado {
-  const vendidos = JSON.parse(String(datos.get("items") ?? "[]")) as { precio: number }[];
-  return {
-    total: totalDelCarrito(vendidos),
-    medioPago: String(datos.get("medioPago")) as MedioPago,
-  };
 }

@@ -39,3 +39,15 @@ export type VentaReciente = {
   creadoEn: string;
   items: ItemVentaReciente[];
 };
+
+/**
+ * El aviso que queda después de cobrar. El total es el que registró la base,
+ * no el que sumaba la pantalla, y el número es el de la venta en Últimas
+ * ventas: con eso se abre el ticket completo, se corrige un sabor o se anula.
+ */
+export type Cobrado = {
+  ventaId: number;
+  /** `null` si la venta entró pero no se pudo volver a leer su total. */
+  total: number | null;
+  medioPago: MedioPago;
+};

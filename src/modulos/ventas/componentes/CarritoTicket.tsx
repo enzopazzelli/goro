@@ -5,8 +5,8 @@ import { Boton } from "@/componentes/Boton";
 import { BotonAbrirCaja } from "@/componentes/ModalAbrirCaja";
 import type { Sabor } from "@/lib/sabores";
 import type { EstadoTicket } from "../consultas/acciones";
-import { totalDelCarrito, type Cobrado } from "../ticket";
-import type { ItemEnCarrito, MedioPago } from "../tipos";
+import { totalDelCarrito } from "../ticket";
+import type { Cobrado, ItemEnCarrito, MedioPago } from "../tipos";
 import { AvisoCobrado } from "./AvisoCobrado";
 import { BotonAbrirBaldeFaltante } from "./BotonAbrirBaldeFaltante";
 import { LineasDeCarrito } from "./LineasDeCarrito";
@@ -32,7 +32,7 @@ export function CarritoTicket({
   estado: EstadoTicket;
   enviando: boolean;
   cajaAbierta: boolean;
-  /** La venta que se acaba de cobrar; se va al agregar el primer ítem de la siguiente. */
+  /** El aviso de la venta anterior, ya decidido afuera: el carrito solo lo dibuja. */
   cobrado: Cobrado | null;
 }) {
   const total = totalDelCarrito(carrito);
