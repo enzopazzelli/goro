@@ -10,8 +10,9 @@
     "formato": "prettier --check .",
     "formato:arreglar": "prettier --write .",
     "typecheck": "next typegen && tsc --noEmit",
-    "test": "vitest run",
+    "test": "npm run test:unit && npm run test:rls",
     "test:unit": "vitest run --exclude \"**/rls.test.ts\"",
+    "test:rls": "vitest run --no-file-parallelism rls.test",
     "verificar": "npm run formato && npm run lint && npm run typecheck && npm run test:unit"
   },
   "dependencies": {

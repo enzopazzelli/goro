@@ -3,7 +3,16 @@
 // termina actuando con la sesión de un usuario de prueba, sujeto a RLS.
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { clavePublica, crearUsuarioDePrueba, limpiarVentasDe, servicio, url } from "./utilesRls";
+import {
+  abrirCajaDePrueba,
+  borrarTurnoDePrueba,
+  clavePublica,
+  crearUsuarioDePrueba,
+  limpiarVenta,
+  limpiarVentasDe,
+  servicio,
+  url,
+} from "./utilesRls";
 import { createClient } from "@supabase/supabase-js";
 
 describe("RLS: ventas", () => {
@@ -12,10 +21,12 @@ describe("RLS: ventas", () => {
   let saborId: number;
   let baldeId: number;
   let formatoId: number;
+  let turnoDePrueba: number | null;
 
   beforeAll(async () => {
     colaborador = await crearUsuarioDePrueba("colaborador");
     anonimo = createClient(url, clavePublica);
+    turnoDePrueba = await abrirCajaDePrueba(colaborador.cliente);
 
     const { data: sabor } = await servicio
       .from("sabores")
@@ -60,6 +71,7 @@ describe("RLS: ventas", () => {
     await servicio.from("baldes").delete().eq("id", baldeId);
     await servicio.from("formatos").delete().eq("id", formatoId);
     await servicio.from("sabores").delete().eq("id", saborId);
+    await borrarTurnoDePrueba(turnoDePrueba);
     await servicio.auth.admin.deleteUser(colaborador.id);
   });
 
@@ -115,11 +127,7 @@ describe("RLS: ventas", () => {
       .single();
     expect(Number(baldeTrasAnular!.kg_restante)).toBeCloseTo(10);
 
-    const { data: items } = await servicio.from("venta_items").select("id").eq("venta_id", ventaId);
-    const itemIds = (items ?? []).map((item) => item.id);
-    await servicio.from("movimientos_balde").delete().in("venta_item_id", itemIds);
-    await servicio.from("venta_items").delete().eq("venta_id", ventaId);
-    await servicio.from("ventas").delete().eq("id", ventaId);
+    await limpiarVenta(ventaId as number);
   });
 
   it("registrar_venta avisa con hint sin_balde_abierto si el sabor no tiene balde abierto", async () => {

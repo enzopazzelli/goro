@@ -2,6 +2,7 @@
 
 import { ArcoCab } from "@/componentes/ArcoCab";
 import { Boton } from "@/componentes/Boton";
+import { BotonAbrirCaja } from "@/componentes/ModalAbrirCaja";
 import type { Sabor } from "@/lib/sabores";
 import type { EstadoTicket } from "../consultas/acciones";
 import { totalDelCarrito } from "../ticket";
@@ -18,6 +19,7 @@ export function CarritoTicket({
   accion,
   estado,
   enviando,
+  cajaAbierta,
 }: {
   carrito: ItemEnCarrito[];
   sabores: Sabor[];
@@ -27,8 +29,12 @@ export function CarritoTicket({
   accion: (datos: FormData) => void;
   estado: EstadoTicket;
   enviando: boolean;
+  cajaAbierta: boolean;
 }) {
   const total = totalDelCarrito(carrito);
+  // El error de "caja cerrada" queda en el estado hasta el próximo cobro; si
+  // mientras tanto la abrieron, ya no tiene nada que decir.
+  const errorVigente = estado.error && !(estado.cajaCerrada && cajaAbierta);
 
   return (
     <div className="flex flex-col lg:sticky lg:top-4 lg:self-start">
@@ -68,14 +74,19 @@ export function CarritoTicket({
               <option value="tarjeta">Tarjeta</option>
               <option value="transferencia">Transferencia</option>
             </select>
-            <Boton type="submit" tamano="grande" disabled={enviando || carrito.length === 0}>
+            <Boton
+              type="submit"
+              tamano="grande"
+              disabled={enviando || carrito.length === 0 || !cajaAbierta}
+            >
               {enviando ? "Cobrando…" : "Cobrar"}
             </Boton>
           </form>
 
-          {estado.error && (
-            <div role="alert" className="mt-2 flex flex-col gap-2 text-sm text-alerta">
+          {errorVigente && (
+            <div role="alert" className="mt-2 flex flex-col items-start gap-2 text-sm text-alerta">
               <p>{estado.error}</p>
+              {estado.cajaCerrada && <BotonAbrirCaja variante="suave" />}
               {estado.faltaBalde?.baldeParaAbrir && (
                 <BotonAbrirBaldeFaltante
                   baldeId={estado.faltaBalde.baldeParaAbrir}

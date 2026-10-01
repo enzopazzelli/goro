@@ -22,11 +22,13 @@ export function FormularioTicket({
   sabores,
   baldes,
   presentaciones,
+  cajaAbierta,
 }: {
   formatos: Formato[];
   sabores: Sabor[];
   baldes: Balde[];
   presentaciones: Presentacion[];
+  cajaAbierta: boolean;
 }) {
   const [carrito, setCarrito] = useState<ItemEnCarrito[]>([]);
   const [medioPago, setMedioPago] = useState<MedioPago>("efectivo");
@@ -86,6 +88,7 @@ export function FormularioTicket({
           accion={accion}
           estado={estado}
           enviando={enviando}
+          cajaAbierta={cajaAbierta}
         />
       )}
     </div>

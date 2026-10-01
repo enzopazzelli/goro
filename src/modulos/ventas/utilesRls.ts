@@ -1,4 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * Lo que comparten los tests de base de Ventas. Corre contra un proyecto Supabase
@@ -53,8 +53,40 @@ export async function limpiarVenta(ventaId: number) {
   const ids = (items ?? []).map((item) => item.id);
   await servicio.from("movimientos_insumo").delete().in("venta_item_id", ids);
   await servicio.from("movimientos_balde").delete().in("venta_item_id", ids);
+  // El cobro y la devolución en efectivo quedan en el libro de caja, atados a la venta.
+  await servicio.from("movimientos_caja").delete().eq("venta_id", ventaId);
   await servicio.from("venta_items").delete().eq("venta_id", ventaId);
   await servicio.from("ventas").delete().eq("id", ventaId);
+}
+
+/**
+ * Desde Caja, vender exige un turno abierto. Devuelve el id SOLO si el turno lo
+ * abrió este test, para que lo borre al final; si ya había una caja abierta no
+ * es suya y devuelve null.
+ *
+ * "Una sola caja abierta" vale para toda la base, así que estos archivos no
+ * pueden correr en paralelo: van con `npm run test:rls`, de a uno.
+ */
+export async function abrirCajaDePrueba(cliente: SupabaseClient): Promise<number | null> {
+  const { data: abierto } = await servicio
+    .from("turnos_caja")
+    .select("id")
+    .is("cerrado_en", null)
+    .maybeSingle();
+  if (abierto) return null;
+
+  const { data, error } = await cliente.rpc("abrir_caja", { p_contado: 0 });
+  if (error) throw error;
+  return data as number;
+}
+
+/** Borra un turno de prueba con su libro y su arqueo. Sin esto no se puede borrar al usuario que lo abrió. */
+export async function borrarTurnoDePrueba(turnoId: number | null) {
+  if (!turnoId) return;
+  await servicio.from("arqueos").delete().eq("turno_id", turnoId);
+  await servicio.from("movimientos_caja").delete().eq("turno_id", turnoId);
+  await servicio.from("ventas").update({ turno_id: null }).eq("turno_id", turnoId);
+  await servicio.from("turnos_caja").delete().eq("id", turnoId);
 }
 
 /**

@@ -8,6 +8,8 @@ import type { ItemDeTicket, MedioPago } from "../tipos";
 export type EstadoTicket = {
   error: string | null;
   faltaBalde?: { saborId: number; saborNombre: string; baldeParaAbrir: number | null } | null;
+  /** La caja se cerró mientras se armaba el ticket: la pantalla ofrece abrirla sin perder el carrito. */
+  cajaCerrada?: boolean;
 };
 
 export type EstadoFormulario = { error: string | null };
@@ -71,6 +73,7 @@ export async function registrarVenta(
       const faltaBalde = await buscarBaldeParaAbrir(supabase, Number(error.details));
       return { error: error.message, faltaBalde };
     }
+    if (error.hint === "caja_cerrada") return { error: error.message, cajaCerrada: true };
     return { error: error.message };
   }
 

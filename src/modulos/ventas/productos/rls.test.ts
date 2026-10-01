@@ -4,6 +4,8 @@
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import {
+  abrirCajaDePrueba,
+  borrarTurnoDePrueba,
   codigoDePrueba,
   crearUsuarioDePrueba,
   kgDe,
@@ -21,9 +23,11 @@ describe("Ventas: productos por unidad y conos", () => {
   let conoId: number;
   let bombonId: number;
   let docenaId: number;
+  let turnoDePrueba: number | null;
 
   beforeAll(async () => {
     colaborador = await crearUsuarioDePrueba("colaborador");
+    turnoDePrueba = await abrirCajaDePrueba(colaborador.cliente);
 
     const { data: sabor } = await servicio
       .from("sabores")
@@ -108,6 +112,7 @@ describe("Ventas: productos por unidad y conos", () => {
     await servicio.from("formatos").delete().eq("id", formatoId);
     await servicio.from("baldes").delete().eq("id", baldeId);
     await servicio.from("sabores").delete().eq("id", saborId);
+    await borrarTurnoDePrueba(turnoDePrueba);
     await servicio.auth.admin.deleteUser(colaborador.id);
   });
 
