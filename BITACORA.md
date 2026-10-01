@@ -55,8 +55,8 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ### Qué se hizo
 
-La Fase 5 del roadmap, de punta a punta menos el último paso: **la migración
-está escrita y probada en local, pero todavía no se aplicó a Supabase.**
+La Fase 5 del roadmap, de punta a punta. La migración se escribió y se probó en
+local; Enzo la aplicó en Supabase y probó el circuito a mano el mismo día.
 
 - **Migración `20261001100000_caja.sql`:** `turnos_caja`, `movimientos_caja` (el
   libro) y `arqueos`; `ventas.turno_id`; las funciones `abrir_caja`,
@@ -74,6 +74,9 @@ está escrita y probada en local, pero todavía no se aplicó a Supabase.**
   Los tests de base de Ventas ahora abren una caja de prueba.
 - `npm run verificar` y `npm run build` pasan. La migración pasó 57 escenarios en
   un Postgres local (PGlite) antes de escribir una línea de pantalla.
+- **Con la migración ya aplicada, `npm run test:rls` pasa entero: 66 tests en 5
+  archivos**, contra Supabase. Incluye las dos aperturas simultáneas (gana una
+  sola) y que el esperado que congela la base es el mismo que calcula la pantalla.
 
 ### Qué se decidió
 
@@ -108,10 +111,10 @@ está escrita y probada en local, pero todavía no se aplicó a Supabase.**
 
 Sí, y conviene tenerlos a la vista:
 
-1. **Nada de esto corrió todavía contra Supabase.** PGlite prueba la lógica y los
-   permisos, pero no la concurrencia real (el `for share` / `for update` entre
-   una venta y un cierre) ni PostgREST. Eso lo prueba `caja/rls.test.ts`, que
-   recién puede correr con la migración aplicada.
+1. **Una venta que entra justo mientras se cierra la caja no tiene test.** El
+   candado está (`for share` en la venta, `for update` en el cierre) y la
+   apertura simultánea sí se probó contra Supabase, pero ese cruce puntual solo
+   está razonado, no ejercitado.
 2. **El arqueo ciego se puede burlar sumando.** El colaborador lee las ventas y
    los movimientos (por pantalla y por API) y puede calcular el esperado. El
    sistema no se lo sirve; impedirlo exigiría esconderle sus propias ventas.
@@ -129,10 +132,8 @@ Sí, y conviene tenerlos a la vista:
 
 ### Qué queda pendiente
 
-- **Aplicar `20261001100000_caja.sql`** en el SQL Editor, **antes** de desplegar
-  este código. Después: abrir la caja, cobrar en efectivo y con tarjeta, cargar
-  un gasto, anular, cerrar, y correr `npm run test:rls` con la caja cerrada.
-- Probar la pantalla a mano con los dos roles (no se pudo sin la migración).
+- Si la prueba a mano fue solo como dueño: entrar como colaborador y confirmar
+  que no ve totales, ni el esperado, ni la diferencia al cerrar.
 - Lo que ya venía: precios y envases que completa Goro, la venta mezclada a
   mano, baldes de 10 L y 5 L, los menores (formato a $0, mensaje al borrar un
   insumo), staging y la guía para Goro.
