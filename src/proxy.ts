@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { destinoDelProxy } from "@/lib/destinoProxy";
 import { clavePublica, urlSupabase } from "@/lib/supabase/entorno";
 
 /*
@@ -13,9 +14,10 @@ import { clavePublica, urlSupabase } from "@/lib/supabase/entorno";
  * El chequeo de acá es OPTIMISTA y corre en cada request, incluidas las
  * precargas. Quién puede ver qué se decide contra la base —en `consultas/` y,
  * sobre todo, en las políticas RLS de Postgres—, nunca solo acá.
+ *
+ * A dónde se redirige (y por qué una acción del servidor nunca se redirige)
+ * está en `lib/destinoProxy.ts`, que es puro y tiene sus tests.
  */
-
-const PUBLICAS = ["/ingresar"];
 
 export async function proxy(pedido: NextRequest) {
   let respuesta = NextResponse.next({ request: pedido });
@@ -37,22 +39,16 @@ export async function proxy(pedido: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const ruta = pedido.nextUrl.pathname;
-  const esPublica = PUBLICAS.some((p) => ruta === p || ruta.startsWith(`${p}/`));
+  const camino = destinoDelProxy({
+    metodo: pedido.method,
+    ruta: pedido.nextUrl.pathname,
+    tieneSesion: user !== null,
+  });
+  if (!camino) return respuesta;
 
-  if (!user && !esPublica) {
-    const destino = pedido.nextUrl.clone();
-    destino.pathname = "/ingresar";
-    return NextResponse.redirect(destino);
-  }
-
-  if (user && esPublica) {
-    const destino = pedido.nextUrl.clone();
-    destino.pathname = "/inicio";
-    return NextResponse.redirect(destino);
-  }
-
-  return respuesta;
+  const destino = pedido.nextUrl.clone();
+  destino.pathname = camino;
+  return NextResponse.redirect(destino);
 }
 
 export const config = {

@@ -69,7 +69,14 @@ dejó de ser una lista de solo lectura.
   al código del servidor, detrás de `server-only`.
 - **Se arregló un bucle de redirecciones** que ya existía: un usuario desactivado
   con sesión rebotaba para siempre entre `/ingresar` y `/inicio`.
-- 14 tests unitarios nuevos y `auth/rls.test.ts`. `npm run verificar` y
+- **Se arregló "Salir" desde una pestaña con la sesión muerta**, que Enzo encontró
+  probando: tiraba "An unexpected response was received from the server". El
+  proxy redirigía con un 307 el POST de la acción, el navegador repetía ese POST
+  contra `/ingresar`, y la respuesta no era la de una acción. También venía de
+  antes, pero borrar usuarios desde la pantalla lo dejó a la mano. Ahora el proxy
+  solo redirige navegaciones (`lib/destinoProxy.ts`, con sus tests); las acciones
+  pasan y verifican la sesión ellas mismas, como ya hacían.
+- 19 tests unitarios nuevos y `auth/rls.test.ts`. `npm run verificar` y
   `npm run build` pasan.
 
 ### Qué se decidió
