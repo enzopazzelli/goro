@@ -21,6 +21,12 @@ acá abajo cuál fue la última aplicada.
 | `20260930130000_productos.sql`          | Presentaciones (×1, ×12) y las funciones que crean productos y envases             |
 | `20260930140000_ventas.sql`             | Ventas, cobro de formatos y productos, anulación y ajustes de balde                |
 | `20260930150000_borrar_presentaciones.sql` | El dueño puede borrar una presentación que nunca se vendió                       |
+| `20261001100000_caja.sql`               | Turnos de caja, libro de efectivo y arqueo ciego; reemplaza `registrar_venta` y `anular_venta` |
+
+**Caja cambia cómo se vende:** desde esa migración no se cobra sin una caja abierta. Hay que
+aplicarla **antes** de desplegar el código que la usa; al revés, Ventas muestra "La caja está
+cerrada" y no deja cobrar. Después de aplicarla, **ejecutar** las funciones reemplazadas (abrir la
+caja, cobrar, anular, cerrar): que se creen sin error no prueba que anden.
 
 Van **en ese orden** (cada una usa lo de la anterior). Después de todas, correr
 `carga_productos_goro.sql` (no es una migración: es la carga inicial de las listas de Goro; se puede repetir sin duplicar).
