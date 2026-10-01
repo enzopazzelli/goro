@@ -51,6 +51,83 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ---
 
+## 2026-10-01 (segunda parte) — Usuarios: alta, edición y baja desde la pantalla
+
+### Qué se hizo
+
+Primero se cerró Caja: Enzo aplicó la migración y probó a mano, y los 66 tests de
+base pasaron contra Supabase. Después, a pedido de Enzo, la pantalla de Usuarios
+dejó de ser una lista de solo lectura.
+
+- **Migración `20261001110000_usuarios.sql`** (escrita y probada en local con 31
+  escenarios; **falta aplicarla**): un trigger que protege los perfiles, otro que
+  copia el usuario al perfil cuando se renombra la cuenta en Auth, y la función
+  `perfil_tiene_historial`. `perfiles.usuario` deja de ser editable directo.
+- **Pantalla `/usuarios`:** nuevo usuario, editar (nombre, usuario de ingreso,
+  rol), cambiar la contraseña, activar / desactivar y borrar.
+- **`src/lib/supabase/servicio.ts`:** por primera vez la clave de servicio entra
+  al código del servidor, detrás de `server-only`.
+- **Se arregló un bucle de redirecciones** que ya existía: un usuario desactivado
+  con sesión rebotaba para siempre entre `/ingresar` y `/inicio`.
+- 14 tests unitarios nuevos y `auth/rls.test.ts`. `npm run verificar` y
+  `npm run build` pasan.
+
+### Qué se decidió
+
+- **"Borrar" hace una de dos cosas y dice cuál:** sin historial se borra de
+  verdad; con ventas o movimientos, se desactiva. Se mantiene lo que ya decía la
+  migración del núcleo (lo que alguien vendió sigue a su nombre) y se le suma que
+  un usuario creado por error pueda desaparecer.
+- **La clave de servicio se usa solo para la cuenta de Auth.** Nombre, rol y
+  activo se editan con la sesión del dueño, así siguen pasando por la RLS y los
+  triggers. Se descartó hacer todo con la clave de servicio: dejaba la seguridad
+  entera en un `if`.
+- **Las reglas duras van en la base:** siempre queda un dueño activo, y nadie se
+  cambia el rol ni se desactiva a sí mismo. Valen también desde el panel de
+  Supabase.
+- **Renombrar es una sola escritura:** se cambia el correo de Auth y un trigger
+  copia el usuario al perfil. No hay dos lugares que puedan desfasarse.
+- **`perfil_tiene_historial` ensaya el borrado y lo deshace**, en vez de llevar
+  una lista de tablas que quedaría vieja con la primera tabla nueva.
+- **La contraseña la pone el dueño**, con un "Mostrar" para ver lo que tipea: se
+  la tiene que decir a otra persona. Mínimo 8 caracteres.
+- **Un desactivado que intenta entrar ve "usuario o contraseña incorrectos"**, el
+  mismo mensaje de siempre.
+- **Fuera de alcance:** los permisos por acción ("sacarle a Ana el permiso de
+  anular"). Siguen siendo la Fase 8.
+
+### La pregunta de la regla 1.8: ¿hay algún punto débil?
+
+1. **Las acciones que usan la clave de servicio no tienen test automático.** Toda
+   su seguridad es `duenioQuePide()`. Los tests de base cubren lo que hay debajo
+   (RLS y triggers), no la acción.
+2. **Cambiar la contraseña no cierra las sesiones ya abiertas** de ese usuario.
+   Para sacar a alguien del sistema hay que desactivarlo, no cambiarle la clave.
+3. **Desactivar no revoca el token de Auth.** Sigue vivo hasta que vence, pero sin
+   perfil activo la base no le devuelve nada y la app le cierra la sesión.
+4. **"Siempre queda un dueño" no se probó contra Supabase:** exigiría desactivar a
+   los dueños reales. Está probado en local.
+5. **`/salir` responde a un GET:** un enlace malicioso puede cerrarle la sesión a
+   alguien. Es una molestia, no una fuga.
+6. **Crear un dueño son dos pasos** (crear y promover). Si falla el segundo, queda
+   como colaborador y la pantalla lo avisa.
+7. **No queda registro de quién cambió a qué usuario.**
+8. **La clave de servicio ahora vive en el hosting.** Si se filtra, es acceso total
+   a la base.
+
+### Qué queda pendiente
+
+- **Aplicar `20261001110000_usuarios.sql`** antes de usar la pantalla, y cargar
+  `SUPABASE_SERVICE_ROLE_KEY` en el hosting.
+- Probar a mano como dueño: crear un colaborador, entrar con él, renombrarlo,
+  cambiarle la contraseña, desactivarlo (y ver que no entra), borrar uno sin
+  historial y "borrar" uno con ventas. Después, `npm run test:rls` con la caja
+  cerrada.
+- Lo que ya venía: la vista del colaborador en Caja, precios y envases que
+  completa Goro, baldes de 10 L y 5 L, los menores, staging y la guía para Goro.
+
+---
+
 ## 2026-10-01 — Caja: turnos, libro de efectivo y arqueo ciego
 
 ### Qué se hizo
