@@ -101,7 +101,7 @@ salieron tres arreglos; después, la Fase 6.
 - **Enzo aplicó la migración del Panel y los 80 tests de base pasaron** (7
   archivos), con los 4 del Panel corriendo por primera vez contra Supabase.
 - **Cuatro indicadores más, a pedido de Enzo** (`20261001130000_panel_indicadores.sql`,
-  **sin aplicar todavía**): la comparación con el período anterior pegada a cada
+  que aplicó el mismo día): la comparación con el período anterior pegada a cada
   número, lo que rinde cada día de la semana, el margen bruto y el ranking de
   artículos. Tres funciones nuevas (`ventas_por_dia`, `unidades_por_articulo`,
   `costo_de_lo_vendido`) y el índice que faltaba en
@@ -155,14 +155,15 @@ salieron tres arreglos; después, la Fase 6.
   proveedor, y recién cuesta un envase el día que se vende en vez de canjearse
   (Fase 9). El test le pone $90.000 al envase para que se note si entrara.
 
-**Aplicar `20261001130000_panel_indicadores.sql`** en el SQL Editor; hasta
-entonces los cuatro indicadores nuevos no tienen de dónde leer. Después,
-`npm run test:rls`: los siete casos de `panel/rls.test.ts` quedan escritos y los
-tres nuevos fallan con `PGRST202` —la función no existe—, que es lo único que
-tienen que estar esperando.
+Las dos migraciones del Panel están aplicadas y Enzo lo probó en pantalla: anda.
+**`npm run test:rls` pasa entero: 83 tests en 7 archivos** contra Supabase, con
+los siete casos del Panel corriendo contra la base de verdad.
 
-La migración anterior (`20261001120000_panel.sql`) ya está aplicada y sus tests
-pasan. El Panel tampoco se vio en pantalla con datos de verdad todavía.
+Del plan quedan la Fase 3 (etiquetas y códigos de barras, que es lo que Goro más
+quiere ver), el balde entero y el escaneo en Ventas, los permisos por acción, el
+ciclo del balde y el Excel. Y los dos pendientes chicos del TPV anotados en el
+roadmap: el total del carrito sin separador de miles y el doble cobro por doble
+clic.
 
 Quedaron anotados en el roadmap dos pendientes chicos del TPV: el total del
 carrito sin separador de miles y el doble cobro por doble clic (que se arregla
