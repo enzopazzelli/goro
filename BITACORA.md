@@ -102,12 +102,15 @@ salieron tres arreglos; después, la Fase 6.
   puede anular. Restringirlo hoy pedía una migración de RLS, y los permisos por
   acción ya son la Fase 8.
 
-### Qué queda pendiente
+Enzo revisó el Historial en pantalla y funciona. Aplicó también
+`20261001110000_usuarios.sql`, así que **`npm run test:rls` pasa entero: 76 tests
+en 6 archivos** contra Supabase, con los de Usuarios corriendo por primera vez
+contra la base de verdad.
 
-Que Enzo mire el Historial en pantalla. Sigue faltando aplicar
-`20261001110000_usuarios.sql` en Supabase, y quedaron anotados en el roadmap dos
-pendientes chicos del TPV: el total del carrito sin separador de miles y el doble
-cobro por doble clic.
+Quedaron anotados en el roadmap dos pendientes chicos del TPV: el total del
+carrito sin separador de miles y el doble cobro por doble clic (que se arregla
+con un índice único, no en la pantalla). Lo próximo del plan es la Fase 7, el
+Panel.
 
 ---
 
@@ -120,7 +123,7 @@ base pasaron contra Supabase. Después, a pedido de Enzo, la pantalla de Usuario
 dejó de ser una lista de solo lectura.
 
 - **Migración `20261001110000_usuarios.sql`** (escrita y probada en local con 31
-  escenarios; **falta aplicarla**): un trigger que protege los perfiles, otro que
+  escenarios; Enzo la aplicó en Supabase): un trigger que protege los perfiles, otro que
   copia el usuario al perfil cuando se renombra la cuenta en Auth, y la función
   `perfil_tiene_historial`. `perfiles.usuario` deja de ser editable directo.
 - **Pantalla `/usuarios`:** nuevo usuario, editar (nombre, usuario de ingreso,
@@ -189,12 +192,10 @@ dejó de ser una lista de solo lectura.
 
 ### Qué queda pendiente
 
-- **Aplicar `20261001110000_usuarios.sql`** antes de usar la pantalla, y cargar
-  `SUPABASE_SERVICE_ROLE_KEY` en el hosting.
+- Cargar `SUPABASE_SERVICE_ROLE_KEY` en el hosting (en local ya está).
 - Probar a mano como dueño: crear un colaborador, entrar con él, renombrarlo,
   cambiarle la contraseña, desactivarlo (y ver que no entra), borrar uno sin
-  historial y "borrar" uno con ventas. Después, `npm run test:rls` con la caja
-  cerrada.
+  historial y "borrar" uno con ventas.
 - Lo que ya venía: la vista del colaborador en Caja, precios y envases que
   completa Goro, baldes de 10 L y 5 L, los menores, staging y la guía para Goro.
 
