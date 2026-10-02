@@ -5,10 +5,8 @@ import { Insignia } from "@/componentes/Insignia";
 import { Pildora } from "@/componentes/Pildora";
 import { horaDe } from "@/lib/fechas";
 import { formatearPlata } from "@/lib/plata";
-import { ETIQUETA_MEDIO_PAGO, type MedioPago } from "@/modulos/ventas/tipos";
+import { ETIQUETA_MEDIO_PAGO, MEDIOS_DE_PAGO, type MedioPago } from "@/modulos/ventas/tipos";
 import type { VentaDelTurno } from "../tipos";
-
-const MEDIOS: MedioPago[] = ["efectivo", "tarjeta", "transferencia"];
 
 /**
  * Las ventas del turno por medio de pago. La transferencia y la tarjeta no
@@ -25,7 +23,7 @@ export function VentasDelTurno({
 }) {
   const [medio, setMedio] = useState<MedioPago | null>(null);
   const visibles = medio ? ventas.filter((venta) => venta.medioPago === medio) : ventas;
-  const totalTodos = MEDIOS.reduce((suma, cada) => suma + porMedio[cada], 0);
+  const totalTodos = MEDIOS_DE_PAGO.reduce((suma, cada) => suma + porMedio[cada], 0);
 
   return (
     <div className="flex flex-col gap-3">
@@ -33,7 +31,7 @@ export function VentasDelTurno({
         <Pildora activa={medio === null} onClick={() => setMedio(null)}>
           Todas · <span className="numero">{formatearPlata(totalTodos)}</span>
         </Pildora>
-        {MEDIOS.map((cada) => (
+        {MEDIOS_DE_PAGO.map((cada) => (
           <Pildora key={cada} activa={medio === cada} onClick={() => setMedio(cada)}>
             {ETIQUETA_MEDIO_PAGO[cada]} ·{" "}
             <span className="numero">{formatearPlata(porMedio[cada])}</span>

@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { clienteServidor } from "@/lib/supabase/servidor";
 import { itemsParaServidor } from "../ticket";
-import type { Cobrado, ItemDeTicket, MedioPago } from "../tipos";
+import { esMedioDePago, type Cobrado, type ItemDeTicket, type MedioPago } from "../tipos";
 
 export type EstadoTicket = {
   error: string | null;
@@ -17,8 +17,6 @@ export type EstadoTicket = {
 export type EstadoFormulario = { error: string | null };
 
 const SIN_ERROR_SIMPLE: EstadoFormulario = { error: null };
-
-const MEDIOS_VALIDOS: MedioPago[] = ["efectivo", "tarjeta", "transferencia"];
 
 /** Cuando `registrar_venta` avisa que falta un balde abierto, busca uno cerrado para ofrecer abrirlo. */
 async function buscarBaldeParaAbrir(
@@ -71,7 +69,7 @@ export async function registrarVenta(
   datos: FormData,
 ): Promise<EstadoTicket> {
   const medioPago = String(datos.get("medioPago") ?? "") as MedioPago;
-  if (!MEDIOS_VALIDOS.includes(medioPago)) return { error: "Elegí un medio de pago." };
+  if (!esMedioDePago(medioPago)) return { error: "Elegí un medio de pago." };
 
   let items: ItemDeTicket[];
   try {
@@ -99,6 +97,7 @@ export async function registrarVenta(
   }
 
   revalidatePath("/ventas");
+  revalidatePath("/historial");
   return { error: null, cobrado: await leerCobrado(supabase, Number(ventaId), medioPago) };
 }
 
@@ -115,6 +114,7 @@ export async function anularVenta(
   if (error) return { error: error.message };
 
   revalidatePath("/ventas");
+  revalidatePath("/historial");
   return SIN_ERROR_SIMPLE;
 }
 
@@ -139,5 +139,6 @@ export async function corregirSaborVentaItem(
   if (error) return { error: error.message };
 
   revalidatePath("/ventas");
+  revalidatePath("/historial");
   return SIN_ERROR_SIMPLE;
 }

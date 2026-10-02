@@ -1,18 +1,29 @@
-import { listarSabores } from "@/lib/sabores";
+import Link from "next/link";
 import { Tarjeta } from "@/componentes/Tarjeta";
-import { listarVentasRecientes } from "../consultas/ventas";
-import { FilaVentaReciente } from "./FilaVentaReciente";
+import { listarSabores } from "@/lib/sabores";
+import { listarVentas } from "../consultas/ventas";
+import { FilaVenta } from "./FilaVenta";
 
+/**
+ * Las últimas cinco y nada más: en el mostrador esto es el atajo para anular o
+ * corregir lo que recién se cobró. Buscar una venta de ayer es otra tarea, y
+ * tiene su pantalla.
+ */
 export async function SeccionUltimasVentas() {
-  const [ventas, sabores] = await Promise.all([listarVentasRecientes(), listarSabores()]);
+  const [{ ventas }, sabores] = await Promise.all([listarVentas({ limite: 5 }), listarSabores()]);
 
   return (
     <Tarjeta>
-      <header>
-        <h2 className="font-display text-lg font-semibold">Últimas ventas</h2>
-        <p className="text-sm text-texto-suave">
-          Anular, o corregir un sabor si el cliente cambió de idea.
-        </p>
+      <header className="flex flex-wrap items-baseline justify-between gap-2">
+        <div>
+          <h2 className="font-display text-lg font-semibold">Últimas ventas</h2>
+          <p className="text-sm text-texto-suave">
+            Anular, o corregir un sabor si el cliente cambió de idea.
+          </p>
+        </div>
+        <Link href="/historial" className="text-sm text-texto-suave underline">
+          Ver el historial →
+        </Link>
       </header>
 
       {ventas.length === 0 ? (
@@ -20,7 +31,7 @@ export async function SeccionUltimasVentas() {
       ) : (
         <div className="flex flex-col gap-2">
           {ventas.map((venta) => (
-            <FilaVentaReciente key={venta.id} venta={venta} sabores={sabores} />
+            <FilaVenta key={venta.id} venta={venta} sabores={sabores} />
           ))}
         </div>
       )}

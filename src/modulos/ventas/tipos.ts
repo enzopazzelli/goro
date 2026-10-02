@@ -1,6 +1,17 @@
 export type MedioPago = "efectivo" | "tarjeta" | "transferencia";
 export type EstadoVenta = "cobrada" | "anulada";
 
+/**
+ * El orden en que se ofrecen y se muestran. Es la misma lista que valida el
+ * servidor: un medio de pago nuevo se agrega acá y en el enum de Postgres.
+ */
+export const MEDIOS_DE_PAGO: readonly MedioPago[] = ["efectivo", "tarjeta", "transferencia"];
+
+/** Para lo que llega de afuera (la URL, un formulario): un cast no es un chequeo. */
+export function esMedioDePago(valor: string | undefined): valor is MedioPago {
+  return MEDIOS_DE_PAGO.includes(valor as MedioPago);
+}
+
 export const ETIQUETA_MEDIO_PAGO: Record<MedioPago, string> = {
   efectivo: "Efectivo",
   tarjeta: "Tarjeta",
@@ -24,20 +35,20 @@ export type SaborDeItem = {
   saborNombre: string;
 };
 
-export type ItemVentaReciente = {
+export type ItemDeVenta = {
   id: number;
   nombre: string;
   precio: number;
   sabores: SaborDeItem[];
 };
 
-export type VentaReciente = {
+export type VentaConTicket = {
   id: number;
   medioPago: MedioPago;
   total: number;
   estado: EstadoVenta;
   creadoEn: string;
-  items: ItemVentaReciente[];
+  items: ItemDeVenta[];
 };
 
 /**

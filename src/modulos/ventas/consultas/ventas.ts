@@ -1,7 +1,8 @@
 import "server-only";
+import { rangoUtc, type Periodo } from "@/lib/periodos";
 import { clienteServidor } from "@/lib/supabase/servidor";
 import { nombreDeItem } from "../nombreItem";
-import type { EstadoVenta, ItemVentaReciente, MedioPago, VentaReciente } from "../tipos";
+import type { EstadoVenta, ItemDeVenta, MedioPago, VentaConTicket } from "../tipos";
 
 type FilaMovimiento = {
   kg: number;
@@ -34,7 +35,7 @@ type FilaVenta = {
  * corrección de sabor deja una fila negativa y otra positiva) — se agrupa
  * por sabor y solo se muestran los que quedaron netamente cargados.
  */
-function mapearItem(fila: FilaItem): ItemVentaReciente {
+function mapearItem(fila: FilaItem): ItemDeVenta {
   const netoPorSabor = new Map<number, { nombre: string; kg: number }>();
 
   for (const movimiento of fila.movimientos_balde) {
@@ -56,7 +57,7 @@ function mapearItem(fila: FilaItem): ItemVentaReciente {
   };
 }
 
-function mapearVenta(fila: FilaVenta): VentaReciente {
+function mapearVenta(fila: FilaVenta): VentaConTicket {
   return {
     id: fila.id,
     medioPago: fila.medio_pago,
@@ -67,22 +68,47 @@ function mapearVenta(fila: FilaVenta): VentaReciente {
   };
 }
 
-/** Últimas 20 ventas, con sus items y los sabores netamente cargados a cada uno. */
-export async function listarVentasRecientes(): Promise<VentaReciente[]> {
-  const supabase = await clienteServidor();
-  const { data } = await supabase
-    .from("ventas")
-    .select(
-      `id, medio_pago, total, estado, creado_en,
-       venta_items (
-         id, precio,
-         formatos ( nombre ),
-         presentaciones_insumo ( nombre, unidades, insumos ( nombre ) ),
-         movimientos_balde ( kg, baldes ( sabores ( id, nombre ) ) )
-       )`,
-    )
-    .order("creado_en", { ascending: false })
-    .limit(20);
+const SELECCION = `id, medio_pago, total, estado, creado_en,
+   venta_items (
+     id, precio,
+     formatos ( nombre ),
+     presentaciones_insumo ( nombre, unidades, insumos ( nombre ) ),
+     movimientos_balde ( kg, baldes ( sabores ( id, nombre ) ) )
+   )`;
 
-  return ((data as unknown as FilaVenta[] | null) ?? []).map(mapearVenta);
+export type FiltroVentas = {
+  /** Sin período, las últimas sin importar la fecha (el atajo del mostrador). */
+  periodo?: Periodo;
+  medioPago?: MedioPago | null;
+  limite: number;
+};
+
+/** `hayMas` es para avisar que el tope dejó ventas afuera, no para paginar. */
+export type PaginaDeVentas = { ventas: VentaConTicket[]; hayMas: boolean };
+
+/**
+ * Las ventas con su ticket armado: los items, y de cada uno los sabores que
+ * quedaron netamente cargados.
+ *
+ * Se pide una fila más que el tope para saber si quedó algo afuera sin tener
+ * que contar el total por separado.
+ */
+export async function listarVentas({
+  periodo,
+  medioPago,
+  limite,
+}: FiltroVentas): Promise<PaginaDeVentas> {
+  const supabase = await clienteServidor();
+  let consulta = supabase.from("ventas").select(SELECCION);
+
+  if (periodo) {
+    const { desdeIso, hastaIso } = rangoUtc(periodo);
+    consulta = consulta.gte("creado_en", desdeIso).lt("creado_en", hastaIso);
+  }
+  if (medioPago) consulta = consulta.eq("medio_pago", medioPago);
+
+  const { data } = await consulta.order("creado_en", { ascending: false }).limit(limite + 1);
+  const filas = (data as unknown as FilaVenta[] | null) ?? [];
+
+  return { ventas: filas.slice(0, limite).map(mapearVenta), hayMas: filas.length > limite };
 }

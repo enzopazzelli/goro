@@ -51,6 +51,66 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ---
 
+## 2026-10-01 (tercera parte) — Historial de ventas, y el total del aviso leído de la base
+
+### Qué se hizo
+
+Primero se revisó el commit anterior (el carrito que vuelve vacío al cobrar) y
+salieron tres arreglos; después, la Fase 6.
+
+- **El aviso "Cobrado" dice lo que registró la base, no lo que sumaba el
+  carrito.** El precio lo recalcula `registrar_venta`, así que si cambiaba
+  mientras se armaba el ticket la pantalla mostraba un número distinto al que
+  quedó en la venta y en la caja. La acción ahora devuelve el total registrado y
+  el número de venta, que sirve para encontrar el ticket en Últimas ventas.
+- **Mientras la venta viaja no se puede agregar nada** (un `fieldset`
+  deshabilitado): al volver, el carrito se vacía, y lo que se hubiera agregado en
+  el medio se perdía sin que quien cobra supiera si entró o no. Y si se pierde la
+  respuesta, el carrito queda como está con un error que manda a mirar Últimas
+  ventas antes de cobrar de nuevo: cobrar dos veces es peor que revisar.
+- **Fase 6 — pantalla `/historial`:** rango de fechas y medio de pago, atajos
+  Hoy / Esta semana / Este mes, y el resumen del filtro ("12 ventas · $148.000
+  cobrado · 1 anulada"). Las filas son las mismas de Últimas ventas, así que se
+  abre el ticket, se corrige un sabor y se anula sin código nuevo. Tope de 100
+  filas, con el aviso de acotar el rango.
+- **`src/lib/periodos.ts`:** el período (día, semana, mes o rango libre) y su
+  traducción a los instantes que entiende la base. 21 tests.
+- **"Últimas ventas" quedó en 5 filas** más un link al Historial: en el mostrador
+  es el atajo para lo que recién se cobró, no un archivo.
+- Renombres y una deduplicación: `FilaVentaReciente` → `FilaVenta` y
+  `VentaReciente` → `VentaConTicket` (la misma fila ahora muestra una venta de
+  hace un mes), y una sola lista de medios de pago (`MEDIOS_DE_PAGO`), que estaba
+  repetida en tres lugares.
+- **Sin migración:** `ventas` ya tenía `creado_en`, `medio_pago` y `estado`. 151
+  tests unitarios; `npm run verificar` y `npm run build` pasan.
+
+### Qué se decidió
+
+- **El Historial no es el Panel.** Los reportes por día, semana y mes son la Fase
+  7: el Historial busca UNA venta y necesita filas con su ticket; el Panel mide
+  el conjunto y necesita sumas, que las va a hacer Postgres y no el navegador.
+  Por eso el período vive en `lib/periodos.ts` y no en el módulo de ventas: el
+  Panel y el Excel lo van a pedir igual.
+- **El filtro vive en la URL, no en estado.** Así "las transferencias de la
+  semana" es un link que Goro puede guardar, el botón Atrás funciona y la
+  pantalla se sigue armando en el servidor: un `<form method="get">` sin una
+  línea de JavaScript.
+- **El desfasaje horario se mide, no se escribe.** Un día del local arranca a las
+  03:00 UTC, pero `-03:00` no está hardcodeado: se calcula contra la zona. Si
+  Argentina vuelve a mover la hora, que no se entere por un cierre que no cuadra.
+- **Los permisos quedan como estaban:** cualquiera con sesión ve el historial y
+  puede anular. Restringirlo hoy pedía una migración de RLS, y los permisos por
+  acción ya son la Fase 8.
+
+### Qué queda pendiente
+
+Que Enzo mire el Historial en pantalla. Sigue faltando aplicar
+`20261001110000_usuarios.sql` en Supabase, y quedaron anotados en el roadmap dos
+pendientes chicos del TPV: el total del carrito sin separador de miles y el doble
+cobro por doble clic.
+
+---
+
 ## 2026-10-01 (segunda parte) — Usuarios: alta, edición y baja desde la pantalla
 
 ### Qué se hizo

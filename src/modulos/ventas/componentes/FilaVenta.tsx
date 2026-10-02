@@ -3,14 +3,14 @@
 import { useActionState, useState } from "react";
 import { Insignia } from "@/componentes/Insignia";
 import type { Sabor } from "@/lib/sabores";
-import { ETIQUETA_MEDIO_PAGO, type VentaReciente } from "../tipos";
+import { ETIQUETA_MEDIO_PAGO, type VentaConTicket } from "../tipos";
 import { anularVenta } from "../consultas/acciones";
 import { CorregirSaborItem } from "./CorregirSaborItem";
 import { DetalleTicket, type ItemParaDetalle } from "./DetalleTicket";
 
 const INICIAL = { error: null };
 
-export function FilaVentaReciente({ venta, sabores }: { venta: VentaReciente; sabores: Sabor[] }) {
+export function FilaVenta({ venta, sabores }: { venta: VentaConTicket; sabores: Sabor[] }) {
   const [estado, accion, enviando] = useActionState(anularVenta, INICIAL);
   const [expandida, setExpandida] = useState(false);
 
