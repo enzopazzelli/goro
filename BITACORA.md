@@ -192,7 +192,8 @@ dejó de ser una lista de solo lectura.
 
 ### Qué queda pendiente
 
-- Cargar `SUPABASE_SERVICE_ROLE_KEY` en el hosting (en local ya está).
+- Cargar `SUPABASE_SERVICE_ROLE_KEY` el día que haya hosting; todavía no se
+  desplegó nada, y en local ya está.
 - Probar a mano como dueño: crear un colaborador, entrar con él, renombrarlo,
   cambiarle la contraseña, desactivarlo (y ver que no entra), borrar uno sin
   historial y "borrar" uno con ventas.
