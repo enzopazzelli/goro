@@ -1,7 +1,7 @@
 import "server-only";
 import { rangoUtc, type Periodo } from "@/lib/periodos";
 import { clienteServidor } from "@/lib/supabase/servidor";
-import { nombreDeItem } from "../nombreItem";
+import { nombreDeItem } from "@/lib/nombreItem";
 import type { EstadoVenta, ItemDeVenta, MedioPago, VentaConTicket } from "../tipos";
 
 type FilaMovimiento = {

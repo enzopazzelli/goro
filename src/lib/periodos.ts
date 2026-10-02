@@ -91,15 +91,45 @@ export function rangoUtc(periodo: Periodo): { desdeIso: string; hastaIso: string
   };
 }
 
+/** 0 el domingo, 6 el sábado, como `getUTCDay`. Es una casilla del almanaque: no hay zona en juego. */
+export function diaDeSemanaDe(diaIso: string): number {
+  const [anio, mes, numero] = numerosDe(diaIso);
+  return new Date(Date.UTC(anio, mes - 1, numero)).getUTCDay();
+}
+
+/** Cuántos días abarca el período, contando los dos extremos. */
+function diasDe(periodo: Periodo): number {
+  const [anioDesde, mesDesde, numeroDesde] = numerosDe(periodo.desde);
+  const [anioHasta, mesHasta, numeroHasta] = numerosDe(periodo.hasta);
+  const desde = Date.UTC(anioDesde, mesDesde - 1, numeroDesde);
+  const hasta = Date.UTC(anioHasta, mesHasta - 1, numeroHasta);
+
+  return (hasta - desde) / 86_400_000 + 1;
+}
+
+/**
+ * Los mismos días, inmediatamente antes: con lo que se compara el período.
+ *
+ * Es la única regla que da lo mismo para un día, una semana o un rango libre
+ * — y como la pantalla muestra las fechas con las que compara, nadie tiene que
+ * adivinar qué está mirando.
+ */
+export function periodoAnterior(periodo: Periodo): Periodo {
+  const [anio, mes, numero] = numerosDe(periodo.desde);
+  const dias = diasDe(periodo);
+
+  return { desde: dia(anio, mes, numero - dias), hasta: dia(anio, mes, numero - 1) };
+}
+
 export function periodoDeAtajo(atajo: Atajo, ahora: Date = new Date()): Periodo {
   const hoy = diaLocal(ahora);
   if (atajo === "dia") return { desde: hoy, hasta: hoy };
   if (atajo === "mes") return { desde: `${hoy.slice(0, 7)}-01`, hasta: hoy };
 
-  // La semana arranca el lunes, como el almanaque de acá; `getUTCDay` cuenta
-  // desde el domingo.
+  // La semana arranca el lunes, como el almanaque de acá; `diaDeSemanaDe`
+  // cuenta desde el domingo.
   const [anio, mes, numero] = numerosDe(hoy);
-  const diaDeSemana = new Date(Date.UTC(anio, mes - 1, numero)).getUTCDay();
+  const diaDeSemana = diaDeSemanaDe(hoy);
   return { desde: dia(anio, mes, numero - (diaDeSemana === 0 ? 6 : diaDeSemana - 1)), hasta: hoy };
 }
 

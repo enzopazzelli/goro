@@ -51,7 +51,7 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ---
 
-## 2026-10-01 (tercera parte) — Historial de ventas y Panel del dueño
+## 2026-10-01 (tercera parte) — Historial de ventas y Panel del dueño, con sus indicadores
 
 ### Qué se hizo
 
@@ -98,7 +98,18 @@ salieron tres arreglos; después, la Fase 6.
 - **El filtro de período subió a `componentes/FiltroDePeriodo.tsx`**, que ahora
   comparten el Historial y el Panel. Cada pantalla le agrega sus campos como
   `children`, dentro del mismo form: el Historial, el medio de pago.
-- 167 tests unitarios; `npm run verificar` y `npm run build` pasan.
+- **Enzo aplicó la migración del Panel y los 80 tests de base pasaron** (7
+  archivos), con los 4 del Panel corriendo por primera vez contra Supabase.
+- **Cuatro indicadores más, a pedido de Enzo** (`20261001130000_panel_indicadores.sql`,
+  **sin aplicar todavía**): la comparación con el período anterior pegada a cada
+  número, lo que rinde cada día de la semana, el margen bruto y el ranking de
+  artículos. Tres funciones nuevas (`ventas_por_dia`, `unidades_por_articulo`,
+  `costo_de_lo_vendido`) y el índice que faltaba en
+  `movimientos_balde (venta_item_id)`, por donde joinean dos de ellas.
+- **`nombreItem.ts` se mudó a `lib/`**: el ranking de artículos necesita el mismo
+  nombre que ve el cajero en el carrito, y ahora lo usan dos módulos. La base
+  devuelve los pedazos del nombre justamente para no armarlo también en SQL.
+- 184 tests unitarios; `npm run verificar` y `npm run build` pasan.
 
 ### Qué se decidió
 
@@ -129,13 +140,29 @@ salieron tres arreglos; después, la Fase 6.
 - **La zona horaria entra por parámetro a `ventas_por_hora`.** Si estuviera
   escrita dentro del SQL habría dos lugares que la definen, y un gráfico corrido
   tres horas manda personal al turno equivocado.
+- **El período anterior son los mismos N días, inmediatamente antes**, y la
+  pantalla muestra con qué fechas compara. Es la única regla que da lo mismo para
+  un día, una semana o un rango libre. Se descartó "el mismo tramo de la semana
+  pasada": más fiel para la semana, pero indefinible para un rango cualquiera.
+- **El margen es bruto y lo dice.** Lo cobrado menos lo que costó lo que salió;
+  no descuenta sueldos, alquiler ni los gastos de caja, que viven en Caja.
+  Mezclarlos daría un número que no es ni una cosa ni la otra.
+- **El helado se valúa al costo del balde del que salió**, no a un promedio: dos
+  baldes del mismo sabor pueden haber costado distinto. Eso hace que una
+  corrección de sabor se recalcule sola, y su test lo fija con dos baldes de
+  $100 y $200 el kilo.
+- **El `costo_envase` del balde no entra en el margen:** el balde vuelve al
+  proveedor, y recién cuesta un envase el día que se vende en vez de canjearse
+  (Fase 9). El test le pone $90.000 al envase para que se note si entrara.
 
-**Aplicar `20261001120000_panel.sql`** en el SQL Editor; hasta entonces el Panel
-no tiene de dónde leer. Después, `npm run test:rls`: los cuatro casos de
-`panel/rls.test.ts` ya están escritos y hoy fallan con `PGRST202` —la función no
-existe—, que es lo único que tienen que estar esperando. El resto de los tests de
-base siguen pasando (76 en 6 archivos), igual que el Historial, que Enzo ya
-revisó en pantalla.
+**Aplicar `20261001130000_panel_indicadores.sql`** en el SQL Editor; hasta
+entonces los cuatro indicadores nuevos no tienen de dónde leer. Después,
+`npm run test:rls`: los siete casos de `panel/rls.test.ts` quedan escritos y los
+tres nuevos fallan con `PGRST202` —la función no existe—, que es lo único que
+tienen que estar esperando.
+
+La migración anterior (`20261001120000_panel.sql`) ya está aplicada y sus tests
+pasan. El Panel tampoco se vio en pantalla con datos de verdad todavía.
 
 Quedaron anotados en el roadmap dos pendientes chicos del TPV: el total del
 carrito sin separador de miles y el doble cobro por doble clic (que se arregla

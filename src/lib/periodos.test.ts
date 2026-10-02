@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { diaCorto, diaLocal, periodoDeAtajo, periodoPedido, rangoUtc } from "./periodos";
+import {
+  diaCorto,
+  diaDeSemanaDe,
+  diaLocal,
+  periodoAnterior,
+  periodoDeAtajo,
+  periodoPedido,
+  rangoUtc,
+} from "./periodos";
 
 // Jueves 1 de octubre de 2026, 14:30 en Buenos Aires.
 const JUEVES = new Date("2026-10-01T17:30:00Z");
@@ -108,5 +116,45 @@ describe("rangoUtc", () => {
 describe("diaCorto", () => {
   it("es el día y el mes, como se escribe acá", () => {
     expect(diaCorto("2026-09-28")).toBe("28/09");
+  });
+});
+
+describe("diaDeSemanaDe", () => {
+  it("el 1 de octubre de 2026 fue jueves", () => {
+    expect(diaDeSemanaDe("2026-10-01")).toBe(4);
+  });
+
+  it("el domingo es 0", () => {
+    expect(diaDeSemanaDe("2026-10-04")).toBe(0);
+  });
+});
+
+describe("periodoAnterior", () => {
+  it("de un día es el día anterior", () => {
+    expect(periodoAnterior({ desde: "2026-10-01", hasta: "2026-10-01" })).toEqual({
+      desde: "2026-09-30",
+      hasta: "2026-09-30",
+    });
+  });
+
+  it("de cuatro días son los cuatro de antes", () => {
+    expect(periodoAnterior({ desde: "2026-09-28", hasta: "2026-10-01" })).toEqual({
+      desde: "2026-09-24",
+      hasta: "2026-09-27",
+    });
+  });
+
+  it("de una semana entera es la semana entera anterior", () => {
+    expect(periodoAnterior({ desde: "2026-09-21", hasta: "2026-09-27" })).toEqual({
+      desde: "2026-09-14",
+      hasta: "2026-09-20",
+    });
+  });
+
+  it("cruza el fin de año sin inventar días", () => {
+    expect(periodoAnterior({ desde: "2027-01-01", hasta: "2027-01-01" })).toEqual({
+      desde: "2026-12-31",
+      hasta: "2026-12-31",
+    });
   });
 });
