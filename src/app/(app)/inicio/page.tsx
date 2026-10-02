@@ -1,10 +1,14 @@
+import { AtajosDeInicio } from "@/componentes/AtajosDeInicio";
+import { unParametro } from "@/lib/parametros";
+import { periodoPedido } from "@/lib/periodos";
 import { exigirPerfil } from "@/modulos/auth/consultas/perfil";
 import { ETIQUETA_ROL } from "@/modulos/auth/tipos";
+import { Panel } from "@/modulos/panel/componentes/Panel";
 
 export const metadata = { title: "Inicio" };
 
-export default async function Inicio() {
-  const perfil = await exigirPerfil();
+export default async function Inicio(props: PageProps<"/inicio">) {
+  const [perfil, parametros] = await Promise.all([exigirPerfil(), props.searchParams]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -16,13 +20,19 @@ export default async function Inicio() {
         </p>
       </header>
 
-      <section className="rounded-(--r-grande) border border-linea bg-superficie p-6">
-        <h2 className="font-display text-lg font-semibold">Todavía no hay módulos</h2>
-        <p className="mt-1 text-sm text-texto-suave">
-          Esto es el núcleo: entrar, saber quién sos y qué podés ver. Vender, Stock y Caja vienen en
-          las fases siguientes del roadmap.
-        </p>
-      </section>
+      {/* El panel es para el dueño: es el que decide con estos números. La
+          barrera de verdad no es este `if` — un colaborador ya ve cada venta en
+          el Historial —, es que el arqueo de caja sigue siendo solo del dueño. */}
+      {perfil.rol === "duenio" ? (
+        <Panel
+          periodo={periodoPedido({
+            desde: unParametro(parametros.desde),
+            hasta: unParametro(parametros.hasta),
+          })}
+        />
+      ) : (
+        <AtajosDeInicio />
+      )}
     </div>
   );
 }

@@ -1,17 +1,13 @@
+import { unParametro } from "@/lib/parametros";
 import { periodoPedido } from "@/lib/periodos";
 import { SeccionHistorial } from "@/modulos/ventas/componentes/SeccionHistorial";
 import { esMedioDePago } from "@/modulos/ventas/tipos";
 
 export const metadata = { title: "Historial" };
 
-/** Un parámetro repetido en la URL (`?medio=a&medio=b`) llega como lista: vale el primero. */
-function uno(valor: string | string[] | undefined): string | undefined {
-  return Array.isArray(valor) ? valor[0] : valor;
-}
-
 export default async function Historial(props: PageProps<"/historial">) {
   const parametros = await props.searchParams;
-  const medio = uno(parametros.medio);
+  const medio = unParametro(parametros.medio);
 
   return (
     <div className="flex flex-col gap-6">
@@ -21,7 +17,10 @@ export default async function Historial(props: PageProps<"/historial">) {
       </header>
 
       <SeccionHistorial
-        periodo={periodoPedido({ desde: uno(parametros.desde), hasta: uno(parametros.hasta) })}
+        periodo={periodoPedido({
+          desde: unParametro(parametros.desde),
+          hasta: unParametro(parametros.hasta),
+        })}
         medioPago={esMedioDePago(medio) ? medio : null}
       />
     </div>

@@ -51,7 +51,7 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ---
 
-## 2026-10-01 (tercera parte) — Historial de ventas, y el total del aviso leído de la base
+## 2026-10-01 (tercera parte) — Historial de ventas y Panel del dueño
 
 ### Qué se hizo
 
@@ -81,8 +81,24 @@ salieron tres arreglos; después, la Fase 6.
   `VentaReciente` → `VentaConTicket` (la misma fila ahora muestra una venta de
   hace un mes), y una sola lista de medios de pago (`MEDIOS_DE_PAGO`), que estaba
   repetida en tres lugares.
-- **Sin migración:** `ventas` ya tenía `creado_en`, `medio_pago` y `estado`. 151
-  tests unitarios; `npm run verificar` y `npm run build` pasan.
+- **El Historial no necesitó migración:** `ventas` ya tenía `creado_en`,
+  `medio_pago` y `estado`.
+- **Fase 7 — el Panel vive en Inicio.** Para el dueño, `/inicio` pasó a mostrar
+  lo vendido del período, las ventas por hora y los kilos por sabor; el
+  colaborador ve tres atajos. Antes esa pantalla decía "todavía no hay módulos",
+  que quedó viejo hace cinco fases.
+- **Migración `20261001120000_panel.sql`** (escrita, con sus tests; **falta
+  aplicarla**): un índice por `ventas (creado_en)` —que el Historial también
+  usa— y tres funciones de lectura, `ventas_del_periodo`, `ventas_por_hora` y
+  `kilos_por_sabor`.
+- **El gráfico por hora es un SVG propio**, sin librería: barras en un
+  `viewBox` con `preserveAspectRatio="none"` (son rectángulos, estirarlos no
+  molesta) y los rótulos de la hora en HTML, para que no se estiren con él. La
+  barra del pico va en `--destacado`.
+- **El filtro de período subió a `componentes/FiltroDePeriodo.tsx`**, que ahora
+  comparten el Historial y el Panel. Cada pantalla le agrega sus campos como
+  `children`, dentro del mismo form: el Historial, el medio de pago.
+- 167 tests unitarios; `npm run verificar` y `npm run build` pasan.
 
 ### Qué se decidió
 
@@ -101,16 +117,30 @@ salieron tres arreglos; después, la Fase 6.
 - **Los permisos quedan como estaban:** cualquiera con sesión ve el historial y
   puede anular. Restringirlo hoy pedía una migración de RLS, y los permisos por
   acción ya son la Fase 8.
+- **Las tres funciones del Panel son `stable` y `security invoker`, no
+  `definer`:** así cada una ve exactamente lo que la RLS le deja ver a quien
+  llama, sin un `if` de rol que haya que mantener en paralelo con las políticas.
+  Esconder el Panel del colaborador es comodidad, no una barrera: ya ve cada
+  venta en el Historial y podría sumar lo mismo contra la API. La única plata
+  que la base le oculta de verdad sigue siendo el arqueo.
+- **El ranking de sabores va en kilos, no en plata.** Es lo que sirve para
+  comprar. Repartir el precio del pote entre sus sabores daría un número
+  inventado: el precio no depende del sabor.
+- **La zona horaria entra por parámetro a `ventas_por_hora`.** Si estuviera
+  escrita dentro del SQL habría dos lugares que la definen, y un gráfico corrido
+  tres horas manda personal al turno equivocado.
 
-Enzo revisó el Historial en pantalla y funciona. Aplicó también
-`20261001110000_usuarios.sql`, así que **`npm run test:rls` pasa entero: 76 tests
-en 6 archivos** contra Supabase, con los de Usuarios corriendo por primera vez
-contra la base de verdad.
+**Aplicar `20261001120000_panel.sql`** en el SQL Editor; hasta entonces el Panel
+no tiene de dónde leer. Después, `npm run test:rls`: los cuatro casos de
+`panel/rls.test.ts` ya están escritos y hoy fallan con `PGRST202` —la función no
+existe—, que es lo único que tienen que estar esperando. El resto de los tests de
+base siguen pasando (76 en 6 archivos), igual que el Historial, que Enzo ya
+revisó en pantalla.
 
 Quedaron anotados en el roadmap dos pendientes chicos del TPV: el total del
 carrito sin separador de miles y el doble cobro por doble clic (que se arregla
-con un índice único, no en la pantalla). Lo próximo del plan es la Fase 7, el
-Panel.
+con un índice único, no en la pantalla). Del plan quedan la Fase 3 (etiquetas y
+códigos), el balde entero y el escaneo en Ventas, el ciclo del balde y el Excel.
 
 ---
 
