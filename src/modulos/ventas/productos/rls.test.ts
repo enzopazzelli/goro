@@ -194,7 +194,7 @@ describe("Ventas: productos por unidad y conos", () => {
     await limpiarVenta(ventaId as number);
   });
 
-  it("un item tiene que ser exactamente formato, producto o balde", async () => {
+  it("un item tiene que ser exactamente formato, producto, balde o pote", async () => {
     for (const item of [
       { formato_id: formatoId, sabor_ids: [saborId], presentacion_id: docenaId },
       {},
@@ -203,7 +203,7 @@ describe("Ventas: productos por unidad y conos", () => {
         p_items: [item],
         p_medio_pago: "efectivo",
       });
-      expect(error?.message).toMatch(/formato, un producto o un balde/);
+      expect(error?.message).toMatch(/formato, un producto, un balde o un pote/);
     }
   });
 

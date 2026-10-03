@@ -100,7 +100,7 @@ demás no depende de esto y sigue andando a mano.
 
 ### Qué queda pendiente
 
-1. **Aplicar `20261004100000_potes_y_codigos.sql` ANTES de desplegar el código**
+1. (Ya aplicada; los 120 tests de base pasan.) **Aplicar `20261004100000_potes_y_codigos.sql` ANTES de desplegar el código**
    (la pantalla de Potes y el historial de ventas la necesitan) y correr
    `npm run test:rls`: los tests nuevos están en `potes/rls.test.ts`. El SQL no se
    pudo ejecutar desde acá.
