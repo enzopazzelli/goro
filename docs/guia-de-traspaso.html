@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de traspaso y mantenimiento — Sistema Goro</title>
+<meta name="description" content="Cómo entregarle el sistema a Goro (GitHub, Supabase y Vercel) y cómo operarlo: backups, vaciar la base, recuperar accesos y solucionar problemas.">
+<!-- Generado a partir de guia-de-traspaso.md: si cambia el texto, se cambia ese archivo y se vuelve a generar. -->
+<style>
+  :root {
+    --marco: #2a1b12;
+    --marco-suave: #3b2a1e;
+    --fondo: #f7f1e4;
+    --superficie: #fffcf6;
+    --honda: #ede4d1;
+    --linea: #e2d7c0;
+    --texto: #2a1b12;
+    --suave: #6e5f4e;
+    --acento: #3f6b3a;
+    --acento-fondo: #e4eddc;
+    --acento-texto: #fffcf6;
+    --destacado: #c97b34;
+    --destacado-texto: #8a5620;
+    --destacado-fondo: #f8ecd9;
+    --alerta: #a83232;
+    --alerta-fondo: #f9e5e2;
+    --ok: #2c4c28;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 1rem; }
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font: 17px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* ---------- Estructura ---------- */
+  .portada {
+    background: var(--marco);
+    color: var(--fondo);
+    padding: 2.5rem 1.25rem 2rem;
+    text-align: center;
+  }
+  .portada .arco {
+    display: inline-block;
+    background: var(--acento);
+    color: var(--acento-texto);
+    border-radius: 999px 999px 10px 10px;
+    padding: 1rem 2rem .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .portada .arco b { display: block; font-size: 1.5rem; letter-spacing: .02em; }
+  .portada .arco span { font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; opacity: .85; }
+  .portada h1 { margin: 0 0 .4rem; font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.2; }
+  .portada p { margin: 0 auto; max-width: 40rem; opacity: .85; }
+
+  .pagina {
+    max-width: 74rem;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 4rem;
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  nav.indice {
+    position: sticky;
+    top: 1rem;
+    background: var(--superficie);
+    border: 1px solid var(--linea);
+    border-radius: 18px;
+    padding: 1rem;
+    font-size: .93rem;
+    max-height: calc(100vh - 2rem);
+    overflow: auto;
+  }
+  nav.indice h2 { margin: 0 0 .5rem; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--suave); }
+  nav.indice ol { list-style: none; margin: 0; padding: 0; }
+  nav.indice a {
+    display: block;
+    padding: .3rem .6rem;
+    border-radius: 8px;
+    color: var(--texto);
+    text-decoration: none;
+  }
+  nav.indice a:hover { background: var(--honda); }
+  nav.indice summary { cursor: pointer; font-weight: 700; }
+
+  @media (max-width: 62rem) {
+    .pagina { grid-template-columns: 1fr; gap: 1rem; }
+    nav.indice { position: static; max-height: none; }
+  }
+
+  main section {
+    background: var(--superficie);
+    border: 1px solid var(--linea);
+    border-radius: 18px;
+    padding: 1.5rem 1.5rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 40rem) { main section { padding: 1.1rem 1rem; } }
+
+  h2 { font-size: 1.55rem; line-height: 1.25; margin: 0 0 .25rem; }
+  h2 .n {
+    display: inline-grid; place-items: center;
+    width: 2rem; height: 2rem; margin-right: .5rem;
+    border-radius: 50%; background: var(--acento); color: var(--acento-texto);
+    font-size: 1rem; vertical-align: middle;
+  }
+  h3 { font-size: 1.15rem; margin: 1.6rem 0 .3rem; }
+  p { margin: .5rem 0; }
+  .bajada { color: var(--suave); margin-top: 0; }
+  ul, ol { padding-left: 1.3rem; }
+  li { margin: .25rem 0; }
+  a { color: var(--acento); }
+  code { background: var(--honda); padding: .08rem .35rem; border-radius: 6px; font-size: .92em; }
+
+  /* ---------- Piezas ---------- */
+  .btn {
+    display: inline-block;
+    background: var(--acento);
+    color: var(--acento-texto);
+    border-radius: 999px;
+    padding: .05rem .7rem;
+    font-size: .88em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .btn.suave { background: var(--superficie); color: var(--texto); border: 1px solid var(--linea); }
+  .btn.peligro { background: var(--alerta-fondo); color: var(--alerta); }
+  .campo {
+    display: inline-block;
+    border: 1px solid var(--linea);
+    background: var(--superficie);
+    border-radius: 8px;
+    padding: 0 .5rem;
+    font-size: .9em;
+    white-space: nowrap;
+  }
+  .pill {
+    display: inline-block; border-radius: 999px; padding: 0 .6rem;
+    font-size: .8em; font-weight: 700; white-space: nowrap;
+  }
+  .pill.ok { background: var(--acento-fondo); color: var(--ok); }
+  .pill.aviso { background: var(--destacado-fondo); color: var(--destacado-texto); }
+  .pill.alerta { background: var(--alerta-fondo); color: var(--alerta); }
+
+  .caja-aviso {
+    border-radius: 14px;
+    padding: .8rem 1rem;
+    margin: 1rem 0;
+    border: 1px solid transparent;
+  }
+  .caja-aviso > b:first-child { display: block; margin-bottom: .1rem; }
+  .ejemplo { background: var(--acento-fondo); border-color: #cfdcc4; }
+  .ojo { background: var(--destacado-fondo); border-color: #ecd5b0; }
+  .peligro-caja { background: var(--alerta-fondo); border-color: #ecc4be; }
+  .tip { background: var(--honda); border-color: var(--linea); }
+  .caja-aviso p:last-child, .caja-aviso ol:last-child, .caja-aviso ul:last-child { margin-bottom: 0; }
+
+  .pasos { counter-reset: paso; list-style: none; padding: 0; }
+  .pasos > li {
+    counter-increment: paso;
+    position: relative;
+    padding: .15rem 0 .15rem 2.6rem;
+    margin: .7rem 0;
+  }
+  .pasos > li::before {
+    content: counter(paso);
+    position: absolute; left: 0; top: .1rem;
+    width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--marco); color: var(--fondo); font-weight: 700; font-size: .9rem;
+  }
+
+  .tabla-scroll { overflow-x: auto; margin: .8rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+  th, td { text-align: left; padding: .5rem .65rem; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  tr.total td { border-top: 2px solid var(--marco); border-bottom: 0; font-weight: 700; }
+
+  .ticket {
+    background: #fff;
+    border: 1px dashed var(--suave);
+    border-radius: 10px;
+    padding: .8rem 1rem;
+    max-width: 24rem;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: .88rem;
+    margin: .8rem 0;
+  }
+  .ticket .f { display: flex; justify-content: space-between; gap: 1rem; }
+  .ticket .t { border-top: 2px solid var(--marco); margin-top: .4rem; padding-top: .4rem; font-weight: 700; }
+  .ticket small { color: var(--suave); }
+
+  .codigo {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 0;
+    background: #fff; border: 1px solid var(--linea); border-radius: 8px;
+    padding: .4rem .7rem; margin: .2rem .3rem .2rem 0;
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem;
+  }
+  .codigo i {
+    display: block; width: 7.5rem; height: 1.6rem;
+    background: repeating-linear-gradient(90deg, #000 0 2px, #fff 2px 4px, #000 4px 5px, #fff 5px 8px, #000 8px 11px, #fff 11px 12px);
+  }
+
+  .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: .8rem; margin: 1rem 0; }
+  .tarjetas > div { border: 1px solid var(--linea); border-radius: 14px; padding: .8rem 1rem; background: var(--fondo); }
+  .tarjetas b { display: block; }
+
+  details.faq { border-bottom: 1px solid var(--linea); padding: .2rem 0; }
+  details.faq summary { cursor: pointer; font-weight: 700; padding: .55rem 0; }
+  details.faq[open] summary { color: var(--acento); }
+  details.faq p, details.faq ul { margin-top: 0; }
+
+  .rol { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--destacado-texto); }
+
+  footer { text-align: center; color: var(--suave); font-size: .9rem; padding: 0 1rem 2rem; }
+
+  @media print {
+    nav.indice { display: none; }
+    .pagina { display: block; }
+    main section { break-inside: avoid-page; border: 0; padding: 0; }
+    details.faq:not([open]) > :not(summary) { display: block; }
+  }
+
+  pre { background: var(--marco); color: var(--fondo); border-radius: 12px; padding: .9rem 1rem; overflow-x: auto; font-size: .85rem; line-height: 1.5; margin: .8rem 0; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  ul.tareas { list-style: none; padding-left: .2rem; }
+  ul.tareas li { margin: .3rem 0; }
+  .peligro { background: var(--alerta-fondo); border-color: #ecc4be; }
+  .intro { background: var(--fondo); }
+  section h2 { scroll-margin-top: 1rem; }
+</style>
+</head>
+<body>
+
+<header class="portada">
+  <div class="arco"><b>Goro</b><span>Heladería artesanal</span></div>
+  <h1>Guía de traspaso y mantenimiento — Sistema Goro</h1>
+  <p>Para quien mantiene el sistema: cómo entregárselo a Goro y cómo operarlo, repararlo y vaciarlo cuando haga falta.</p>
+</header>
+
+<div class="pagina">
+
+<nav class="indice" aria-label="Índice de la guía">
+  <details open>
+    <summary>Índice</summary>
+    <ol>
+      <li><a href="#1-cómo-está-armado">1. Cómo está armado</a></li>
+      <li><a href="#2-las-tres-variables-de-entorno">2. Las tres variables de entorno</a></li>
+      <li><a href="#3-estrategia-de-traspaso-qué-conviene">3. Estrategia de traspaso: qué conviene</a></li>
+      <li><a href="#4-paso-a-paso-supabase">4. Paso a paso: Supabase</a></li>
+      <li><a href="#5-paso-a-paso-vercel">5. Paso a paso: Vercel</a></li>
+      <li><a href="#6-paso-a-paso-github">6. Paso a paso: GitHub</a></li>
+      <li><a href="#7-lista-de-verificación-del-traspaso">7. Lista de verificación del traspaso</a></li>
+      <li><a href="#8-qué-se-le-entrega-a-goro-y-qué-no">8. Qué se le entrega a Goro (y qué no)</a></li>
+      <li><a href="#9-trabajo-diario-actualizar-el-sistema">9. Trabajo diario: actualizar el sistema</a></li>
+      <li><a href="#10-backups-y-restauración">10. Backups y restauración</a></li>
+      <li><a href="#11-vaciar-y-reiniciar-la-base">11. Vaciar y reiniciar la base</a></li>
+      <li><a href="#12-usuarios-recuperar-el-acceso">12. Usuarios: recuperar el acceso</a></li>
+      <li><a href="#13-solución-de-problemas">13. Solución de problemas</a></li>
+      <li><a href="#14-consultas-sql-útiles">14. Consultas SQL útiles</a></li>
+      <li><a href="#15-ajustes-que-se-hacen-en-el-código">15. Ajustes que se hacen en el código</a></li>
+    </ol>
+  </details>
+</nav>
+
+<main>
+
+<section id="intro">
+  <p>Guía <strong>para quien mantiene el sistema</strong> (vos, Enzo), no para el usuario del mostrador (esa es <code>guia-de-uso.html</code>). Tiene dos partes: cómo <strong>entregarle el producto a Goro</strong> (GitHub, Supabase y Vercel) y cómo <strong>operarlo y repararlo</strong> después: vaciar la base, restaurar, destrabar usuarios, resolver los errores que ya conocemos.</p>
+  <div class="caja-aviso peligro"><p><strong>No pegues ninguna clave en este archivo ni en un chat.</strong> Las tres variables de entorno están descriptas en el capítulo 2; los valores reales viven en Vercel, en tu <code>.env.local</code> y en el gestor de contraseñas de Goro.</p></div>
+</section>
+
+<section id="1-cómo-está-armado">
+  <h2><span class="n">1</span>Cómo está armado</h2>
+  <p>Tres piezas, cada una con su dueño y su cuenta:</p>
+  <div class="tabla-scroll"><table><thead><tr><th>Pieza</th><th>Para qué sirve</th><th>Qué guarda</th></tr></thead><tbody><tr><td><strong>GitHub</strong></td><td>El código fuente.</td><td>Los archivos del proyecto, el historial de cambios y el CI. <strong>Nunca</strong> claves.</td></tr><tr><td><strong>Vercel</strong></td><td>Ejecuta el sistema en internet (la web que abre Goro).</td><td>El sitio publicado y las variables de entorno.</td></tr><tr><td><strong>Supabase</strong></td><td>La base de datos (Postgres), el ingreso de usuarios (Auth) y las reglas de seguridad (RLS).</td><td><strong>Todos los datos del negocio</strong>: ventas, caja, stock, usuarios.</td></tr></tbody></table></div>
+  <pre><code>Goro (navegador) ──► Vercel (Next.js) ──► Supabase (Postgres + Auth)
+                          ▲
+                   GitHub ┘  (cada push a la rama principal publica solo)</code></pre>
+  <p>Lo que hay que tener claro antes de empezar:</p>
+  <ul><li><strong>Los datos viven en Supabase, no en Vercel ni en GitHub.</strong> Si se pierde el proyecto de Supabase sin backup, se pierde el negocio. Por eso el capítulo 10 es obligatorio.</li><li><strong>El código y la base se actualizan por separado.</strong> Un cambio de código que usa una columna o función nueva necesita su migración aplicada <strong>antes</strong>. Si no, el sistema se rompe (el capítulo 9 lo explica con el caso real).</li><li><strong>Las claves nunca van en el repositorio.</strong> <code>.env.local</code> está en <code>.gitignore</code>; en el repo solo existe <code>.env.local.example</code>, sin valores.</li><li>Es <strong>un solo local</strong>, ni ahora ni previsto a futuro: no hay sucursales en el modelo de datos.</li></ul>
+</section>
+
+<section id="2-las-tres-variables-de-entorno">
+  <h2><span class="n">2</span>Las tres variables de entorno</h2>
+  <p>Son las únicas. Salen de Supabase → <em>Project Settings</em> → <em>API</em> (o <em>API Keys</em>, según la versión del panel).</p>
+  <div class="tabla-scroll"><table><thead><tr><th>Variable</th><th>Qué es</th><th>¿Es secreta?</th><th>Dónde va</th></tr></thead><tbody><tr><td><code>NEXT_PUBLIC_SUPABASE_URL</code></td><td>La dirección del proyecto (<code>https://xxxx.supabase.co</code>).</td><td>No</td><td>Vercel y <code>.env.local</code></td></tr><tr><td><code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code></td><td>La clave pública (<code>anon</code>, o <code>publishable</code> en el panel nuevo). El navegador la usa; la seguridad real la dan las reglas RLS.</td><td>No (se ve en el navegador)</td><td>Vercel y <code>.env.local</code></td></tr><tr><td><code>SUPABASE_SERVICE_ROLE_KEY</code></td><td>La clave de servicio (<code>service_role</code>, o <code>secret</code> en el panel nuevo). <strong>Se saltea toda la seguridad.</strong> Solo la usa el servidor, para crear, renombrar y borrar cuentas de usuario.</td><td><strong>Sí. Nunca en el navegador, nunca en el repo, nunca en un chat.</strong></td><td>Vercel y <code>.env.local</code></td></tr></tbody></table></div>
+  <div class="caja-aviso peligro"><p><strong>Importante:</strong> las variables que empiezan con <code>NEXT_PUBLIC_</code> se <strong>incrustan en el sitio al compilarlo</strong>. Si las cambiás en Vercel, hay que <strong>volver a desplegar</strong> (<em>Redeploy</em>) para que tomen efecto. La de servicio se lee en el servidor, pero conviene redesplegar igual.</p></div>
+  <p>Si falta alguna, el sistema compila igual y falla recién al hablar con la base, con un mensaje que dice cuál falta (<code>Falta NEXT_PUBLIC_SUPABASE_URL…</code>).</p>
+</section>
+
+<section id="3-estrategia-de-traspaso-qué-conviene">
+  <h2><span class="n">3</span>Estrategia de traspaso: qué conviene</h2>
+  <p>Hay dos formas de pasarle el sistema a Goro. Elegí una antes de tocar nada.</p>
+  <div class="tabla-scroll"><table><thead><tr><th></th><th><strong>A. Proyecto nuevo en la cuenta de Goro</strong> (recomendada)</th><th><strong>B. Transferir el proyecto actual</strong></th></tr></thead><tbody><tr><td>Qué es</td><td>Goro crea su cuenta de Supabase, y se arma un proyecto limpio: migraciones, catálogo, usuario dueño.</td><td>Se mueve el proyecto de Supabase que usás hoy a la organización de Goro.</td></tr><tr><td>Datos de prueba</td><td>No viajan. Arranca limpio.</td><td>Viajan (hay que correr el script de limpieza).</td></tr><tr><td>Claves</td><td><strong>Nuevas</strong> (las de tu proyecto de pruebas no quedan en manos de nadie más).</td><td>Las mismas (si las compartiste en algún lado, siguen vivas).</td></tr><tr><td>Trabajo</td><td>Aplicar 14 migraciones y cargar el catálogo.</td><td>Pocos pasos, pero hay que depurar.</td></tr><tr><td>Riesgo</td><td>Bajo.</td><td>Medio: arrastra historia de pruebas y claves viejas.</td></tr></tbody></table></div>
+  <p><strong>Recomendación: A.</strong> Tu proyecto actual pasa a ser tu <strong>proyecto de pruebas</strong> (donde corren <code>npm run test:rls</code> y donde probás cambios), y producción es un proyecto aparte, a nombre de Goro. Así los tests de base —que crean y borran usuarios y filas— <strong>nunca tocan los datos reales</strong>.</p>
+  <div class="caja-aviso ojo"><p><strong>Ojo:</strong> <code>npm run test:rls</code> está pensado para un proyecto de <strong>prueba</strong>. Crea usuarios y datos y abre y cierra la caja (el test de caja directamente <strong>se niega a correr si hay una caja abierta</strong>). Nunca lo apuntes a la base de producción.</p></div>
+  <p>Para el resto de la guía se asume la opción A. Si elegís B, los pasos de Supabase se reemplazan por <em>Project Settings → General → Transfer project</em> y después se corre <code>limpiar_datos_de_prueba.sql</code> (capítulo 11); el resto es igual.</p>
+  <h3 id="quién-paga-qué-hablarlo-con-goro-antes">Quién paga qué (hablarlo con Goro antes)</h3>
+  <p>Los planes y precios cambian: <strong>verificalos el día del traspaso</strong> en las páginas de precios de cada servicio.</p>
+  <ul><li><strong>Supabase.</strong> El plan gratuito <strong>pausa el proyecto tras un período de inactividad</strong> y <strong>no incluye backups descargables ni restauración a un punto en el tiempo</strong>. Para un negocio que vive de esta base, lo prudente es un plan de pago con backups diarios. Es la decisión de costo más importante de todas.</li><li><strong>Vercel.</strong> El plan gratuito (<em>Hobby</em>) está pensado para <strong>uso personal y no comercial</strong> según sus términos. Un negocio real debería usar el plan de equipo (<em>Pro</em>). Revisá sus términos vigentes.</li><li><strong>GitHub.</strong> Un repositorio privado es gratis en una cuenta personal u organización gratuita.</li><li><strong>Dominio propio</strong> (opcional): se compra aparte. Sin dominio, el sitio vive en <code>algo.vercel.app</code> y anda igual.</li></ul>
+  <p>Definí también <strong>quién es el titular de cada cuenta</strong> (debería ser Goro, con tu usuario invitado como colaborador) y <strong>cómo se cobra el mantenimiento</strong> de ahí en adelante.</p>
+</section>
+
+<section id="4-paso-a-paso-supabase">
+  <h2><span class="n">4</span>Paso a paso: Supabase</h2>
+  <h3 id="41-cuenta-y-proyecto">4.1 Cuenta y proyecto</h3>
+  <ol><li>Goro crea su cuenta en <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a> (con <strong>su</strong> correo) y activa la <strong>verificación en dos pasos</strong>.</li><li>Crea una <strong>organización</strong> (el nombre del comercio) y, si corresponde, elige el plan.</li><li>Lo invita a vos a la organización como <strong>Developer</strong> o <strong>Administrator</strong> (<em>Organization settings → Team</em>).</li><li>Se crea el proyecto:<ul><li><strong>Nombre:</strong> el del comercio.</li><li><strong>Región:</strong> la más cercana a Argentina (<em>South America — São Paulo</em>).</li><li><strong>Contraseña de la base:</strong> generala larga y guardala <strong>ya</strong> en el gestor de contraseñas; Supabase no la vuelve a mostrar.</li></ul></li><li>Cuando termine de crearse, en <em>Project Settings → API</em>, anotá la URL y las dos claves (capítulo 2).</li></ol>
+  <h3 id="42-cerrar-el-registro-público-no-te-lo-saltees">4.2 Cerrar el registro público (no te lo saltees)</h3>
+  <p>El ingreso usa la API pública de Auth. Con el registro abierto, <strong>cualquier persona que conozca la dirección del proyecto podría crearse una cuenta</strong>, y toda cuenta nueva nace como <em>colaborador</em> con los permisos por defecto.</p>
+  <ol><li><em>Authentication → Sign In / Providers</em> (en algunas versiones, <em>Providers → Email</em>).</li><li>Desactivá <strong>Allow new users to sign up</strong>.</li><li>Dejá <strong>Confirm email</strong> como esté: las cuentas se crean desde la pantalla <em>Usuarios</em> del sistema con la API de administración, que las confirma sola y <strong>sigue funcionando con el registro cerrado</strong>.</li></ol>
+  <div class="caja-aviso tip"><p><strong>Probalo:</strong> después de desactivarlo, entrá a la pantalla <em>Usuarios</em> del sistema y creá un usuario de prueba. Tiene que andar.</p></div>
+  <p>También, en <em>Authentication → URL Configuration</em>, poné como <em>Site URL</em> la dirección final del sistema (no se usan mails, pero evita avisos).</p>
+  <h3 id="43-seguridad-de-la-api-de-datos">4.3 Seguridad de la API de datos</h3>
+  <p>La base está diseñada con <strong>"Automatically expose new tables" apagado</strong>: una tabla nueva no es visible por la API hasta que la migración le da su <code>grant</code> explícito, y cada migración ya lo hace. Al crear el proyecto, <strong>dejá esa opción apagada</strong> (<em>Project Settings → Data API</em>, o en el asistente de creación). Es una red de seguridad: si alguien agrega una tabla y se olvida de la política, queda cerrada en vez de abierta.</p>
+  <h3 id="44-aplicar-las-migraciones">4.4 Aplicar las migraciones</h3>
+  <p>Las migraciones están en <code>supabase/migrations/</code> y <strong>se aplican en orden de nombre</strong>, una por hoja del SQL Editor (<em>SQL Editor → New query</em>, pegar el contenido, <em>Run</em>). <strong>Cada una tiene que terminar en <code>Success. No rows returned</code>.</strong></p>
+  <div class="tabla-scroll"><table><thead><tr><th>#</th><th>Archivo</th><th>Qué crea</th></tr></thead><tbody><tr><td>1</td><td><code>20260930100000_nucleo.sql</code></td><td>Perfiles, roles, <code>auth_rol()</code> / <code>es_duenio()</code>, alta automática del perfil</td></tr><tr><td>2</td><td><code>20260930110000_catalogo.sql</code></td><td>Formatos y precios</td></tr><tr><td>3</td><td><code>20260930120000_inventario.sql</code></td><td>Config del comercio, sabores, insumos, baldes, ledger</td></tr><tr><td>4</td><td><code>20260930130000_productos.sql</code></td><td>Presentaciones (Unidad, Docena) y funciones de productos</td></tr><tr><td>5</td><td><code>20260930140000_ventas.sql</code></td><td>Ventas, cobro, anulación, ajustes</td></tr><tr><td>6</td><td><code>20260930150000_borrar_presentaciones.sql</code></td><td>Borrar una presentación nunca vendida</td></tr><tr><td>7</td><td><code>20261001100000_caja.sql</code></td><td>Turnos, libro de efectivo, arqueo ciego</td></tr><tr><td>8</td><td><code>20261001110000_usuarios.sql</code></td><td>Reglas de perfiles y alta/baja de usuarios</td></tr><tr><td>9</td><td><code>20261001120000_panel.sql</code></td><td>Funciones de lectura del Panel</td></tr><tr><td>10</td><td><code>20261001130000_panel_indicadores.sql</code></td><td>Por día, por artículo, costo de lo vendido</td></tr><tr><td>11</td><td><code>20261003100000_ventas_robustas.sql</code></td><td>Clave de cobro (sin doble cobro) y costo congelado</td></tr><tr><td>12</td><td><code>20261003110000_permisos.sql</code></td><td>Permisos por acción</td></tr><tr><td>13</td><td><code>20261003120000_ciclo_balde.sql</code></td><td>Vaciar, canjear y vender balde entero</td></tr><tr><td>14</td><td><code>20261004100000_potes_y_codigos.sql</code></td><td>Potes armados y <code>resolver_codigo</code></td></tr></tbody></table></div>
+  <div class="caja-aviso ejemplo"><p><strong>Regla de oro:</strong> una migración ya aplicada <strong>no se edita</strong>. Si hay que cambiar algo, se agrega otra con fecha nueva.</p></div>
+  <p>Alternativa con el CLI (<code>npx supabase link</code> y <code>npx supabase db push</code>): sirve, pero la vía que está probada en este proyecto es la del SQL Editor.</p>
+  <p>Para confirmar que quedaron todas, corré las consultas del <a href="#14-consultas-sql-útiles">capítulo 14</a> ("¿Qué migraciones están aplicadas?").</p>
+  <h3 id="45-el-usuario-dueño">4.5 El usuario dueño</h3>
+  <p>El primer dueño se crea a mano, <strong>una sola vez</strong> (el sistema no le asigna ese rol a nadie solo, a propósito):</p>
+  <ol><li><em>Authentication → Users → Add user → Create new user</em>.<ul><li><strong>Email:</strong> <code>goro@heladeria.local</code> (el usuario con el que entra va a ser <code>goro</code>).</li><li><strong>Password:</strong> la que le vaya a dar.</li><li><strong>Auto Confirm User:</strong> <em>sí</em>. Sin eso queda esperando un mail de confirmación que nunca llega.</li></ul></li><li><em>SQL Editor</em>:</li></ol>
+  <pre><code>update public.perfiles set rol = 'duenio', nombre = 'Goro'
+where usuario = 'goro';</code></pre>
+  <p>Desde ahí, todos los usuarios se crean, editan y borran desde la pantalla <em>Usuarios</em> del sistema.</p>
+  <div class="caja-aviso ojo"><p><strong>Ojo:</strong> el dominio <code>@heladeria.local</code> es interno y no existe; nadie lo lee ni lo ve. <strong>No lo cambies después</strong>: queda grabado en el correo de cada cuenta y cambiarlo obliga a migrar todas.</p></div>
+  <h3 id="46-el-catálogo-inicial">4.6 El catálogo inicial</h3>
+  <p>Dos caminos:</p>
+  <ul><li><strong>Cargar las listas de Goro:</strong> correr <code>supabase/carga_productos_goro.sql</code>. Crea 6 productos y 6 envases (12 filas) y 6 formatos, todo <strong>inactivo y a $0</strong>; Goro les pone precio desde <em>Inventario</em>. Se puede repetir sin duplicar.</li><li><strong>Copiar el catálogo ya trabajado</strong> desde tu proyecto de pruebas: no hay una herramienta para eso. Lo más simple es cargarlo a mano desde la pantalla o con un <code>pg_dump</code> solo de esas tablas (<code>sabores</code>, <code>formatos</code>, <code>insumos</code>, <code>presentaciones_insumo</code>).</li></ul>
+  <h3 id="47-un-proyecto-de-pruebas-aparte">4.7 Un proyecto de pruebas aparte</h3>
+  <p>Si conservás tu proyecto actual como <strong>proyecto de pruebas</strong>, ahí corrés <code>npm run test:rls</code> (con su propio <code>.env.local</code>) y probás las migraciones antes de aplicarlas en producción. Es gratis y evita accidentes. Podés habilitar el job de seguridad del CI para que lo use (capítulo 6).</p>
+</section>
+
+<section id="5-paso-a-paso-vercel">
+  <h2><span class="n">5</span>Paso a paso: Vercel</h2>
+  <ol><li>Goro crea su cuenta en <a href="https://vercel.com" target="_blank" rel="noopener">vercel.com</a> con <strong>su</strong> correo, activa la verificación en dos pasos y elige el plan según el capítulo 3. Te invita al equipo.</li><li><strong>Conectar GitHub:</strong> <em>Add New → Project → Import Git Repository</em>. Si el repositorio ya está en la cuenta de Goro (capítulo 6), Vercel lo lista; si no, hay que instalar la app de Vercel en esa cuenta de GitHub.</li><li><strong>Configuración del proyecto:</strong><ul><li><em>Framework Preset:</em> <strong>Next.js</strong> (lo detecta solo).</li><li><em>Root Directory:</em> la raíz del repositorio.</li><li><em>Build Command / Output:</em> los de por defecto (<code>next build</code>).</li><li><em>Node.js Version</em> (<em>Settings → General</em>): <strong>22.x</strong>, la misma que usa el CI.</li><li><em>Production Branch</em> (<em>Settings → Git</em>): la rama principal del repositorio (hoy <code>master</code>).</li></ul></li><li><strong>Variables de entorno</strong> (<em>Settings → Environment Variables</em>): cargá las tres del capítulo 2 en <strong>Production</strong>.<ul><li><code>SUPABASE_SERVICE_ROLE_KEY</code> marcala como <strong>Sensitive</strong> si el panel lo permite.</li><li><strong>Preview:</strong> si dejás las variables también en <em>Preview</em>, cada rama de prueba hablará con la base <strong>de producción</strong>. Lo prudente es no cargarlas ahí, o cargar las de tu proyecto de pruebas.</li></ul></li><li><strong>Región de las funciones</strong> (<em>Settings → Functions</em>): elegí la más cercana a Supabase y a Argentina (São Paulo, <code>gru1</code>). Cada pantalla hace varias consultas a la base; que servidor y base estén cerca se nota.</li><li><em>Deploy</em>. Cuando termine, abrí la dirección, entrá como dueño y revisá la lista del capítulo 7.</li><li><strong>Dominio propio</strong> (opcional): <em>Settings → Domains</em>, y seguir las instrucciones de DNS. Después actualizá el <em>Site URL</em> de Supabase.</li></ol>
+  <h3 id="publicar-y-volver-atrás">Publicar y volver atrás</h3>
+  <ul><li>Cada <strong>push</strong> a la rama de producción publica solo.</li><li>Para <strong>volver atrás</strong>: <em>Deployments</em> → elegir el despliegue anterior que andaba → <em>Promote to Production</em> (o <em>Instant Rollback</em>). Esto revierte <strong>el código</strong>, <strong>no la base</strong>: si el despliegue nuevo traía una migración, la base queda como está. Por eso las migraciones se escriben para ser compatibles hacia atrás cuando se puede.</li><li><strong>Logs:</strong> <em>Deployments → (el despliegue) → Logs</em> y <em>Logs</em> del proyecto. Los errores de las acciones del servidor y de los Excel se registran ahí (<code>console.error</code>).</li></ul>
+</section>
+
+<section id="6-paso-a-paso-github">
+  <h2><span class="n">6</span>Paso a paso: GitHub</h2>
+  <p>El repositorio hoy está en <code>github.com/enzopazzelli/goro</code>.</p>
+  <ol><li>Goro crea su cuenta (o una organización con el nombre del comercio), con verificación en dos pasos.</li><li><strong>Transferir el repositorio:</strong> en el repo, <em>Settings → General → Danger Zone → Transfer ownership</em> → escribir el usuario u organización de destino. Lo acepta Goro. La transferencia <strong>conserva el historial, issues y la configuración</strong>.<ul><li>Alternativa: que <strong>Goro cree un repositorio privado vacío</strong> y vos empujes el código con <code>git remote set-url</code> y <code>git push</code>.</li></ul></li><li><strong>Mantené tu acceso:</strong> que Goro te agregue como <em>colaborador</em> (<em>Settings → Collaborators</em>), o creá un equipo.</li><li>En tu copia local: <code>git remote set-url origin https://github.com/&lt;nuevo-dueño&gt;/goro.git</code>.</li><li><strong>Revisá que no haya claves en el historial:</strong> <code>.env.local</code> nunca se versionó (está en <code>.gitignore</code>). Si en algún momento se subió una clave por error, <strong>rotala en Supabase</strong> (<em>Project Settings → API → regenerar</em>); borrar el archivo después no la saca del historial.</li><li>Repositorio <strong>privado</strong>.</li><li>Volvé a conectar Vercel con el repositorio si cambió de dueño (capítulo 5).</li></ol>
+  <h3 id="el-ci-githubworkflowsciyml">El CI (<code>.github/workflows/ci.yml</code>)</h3>
+  <p>En cada push y pull request corre: formato, lint, typecheck, tests unitarios y <code>npm run build</code>. Es lo mismo que <code>npm run verificar</code> más el build.</p>
+  <p>Hay un segundo job, <strong><code>seguridad</code></strong>, que corre los tests de base (RLS) y <strong>está apagado</strong>. Se enciende creando la variable de repositorio <code>SUPABASE_PRUEBAS=si</code> y tres secretos con las claves de <strong>tu proyecto de pruebas</strong> (jamás las de producción): <code>SUPABASE_URL_PRUEBAS</code>, <code>SUPABASE_ANON_KEY_PRUEBAS</code> y <code>SUPABASE_SERVICE_ROLE_KEY_PRUEBAS</code>. Ojo: ese job hoy solo corre el test de inventario, no toda la suite.</p>
+</section>
+
+<section id="7-lista-de-verificación-del-traspaso">
+  <h2><span class="n">7</span>Lista de verificación del traspaso</h2>
+  <p>Hacela completa, con Goro al lado, en la dirección <strong>de producción</strong>.</p>
+  <p><strong>Cuentas y seguridad</strong></p>
+  <ul class="tareas"><li><input type="checkbox" disabled> Goro es el titular de GitHub, Vercel y Supabase, todas con verificación en dos pasos.</li><li><input type="checkbox" disabled> Vos figurás como colaborador/miembro en las tres.</li><li><input type="checkbox" disabled> El registro público de Supabase está <strong>desactivado</strong> (4.2) y crear un usuario desde el sistema igual funciona.</li><li><input type="checkbox" disabled> <code>SUPABASE_SERVICE_ROLE_KEY</code> está <strong>solo</strong> en Vercel (y en tu <code>.env.local</code>); no está en el repositorio.</li><li><input type="checkbox" disabled> Las claves de producción <strong>no</strong> son las de tu proyecto de pruebas.</li><li><input type="checkbox" disabled> Las contraseñas están en un gestor de contraseñas, no en papeles ni mensajes.</li></ul>
+  <p><strong>Base de datos</strong></p>
+  <ul class="tareas"><li><input type="checkbox" disabled> Las 14 migraciones están aplicadas (consulta del capítulo 14).</li><li><input type="checkbox" disabled> Existe el usuario dueño y entra.</li><li><input type="checkbox" disabled> El catálogo está cargado y los precios puestos.</li><li><input type="checkbox" disabled> <strong>Backups:</strong> activos y <strong>una restauración probada</strong> en el proyecto de pruebas (capítulo 10).</li></ul>
+  <p><strong>Sistema</strong></p>
+  <ul class="tareas"><li><input type="checkbox" disabled> Se puede entrar con el dueño. Se crea un colaborador desde <em>Usuarios</em> y entra.</li><li><input type="checkbox" disabled> Se abre la caja, se cobra algo en efectivo, se anula, y se cierra la caja.</li><li><input type="checkbox" disabled> Se arma un pote, se imprime su etiqueta y se cobra tipeando el código.</li><li><input type="checkbox" disabled> Se baja un Excel de inventario, de ventas y de caja.</li><li><input type="checkbox" disabled> La impresión de etiquetas sale limpia (solo la hoja, sin menú).</li><li><input type="checkbox" disabled> La hora de las ventas es la de Argentina.</li><li><input type="checkbox" disabled> Se corrió <code>limpiar_datos_de_prueba.sql</code> <strong>después</strong> de las pruebas, y antes de la primera venta real (capítulo 11).</li><li><input type="checkbox" disabled> La caja quedó <strong>cerrada</strong> y la base <strong>en cero</strong>, lista para el primer turno de verdad.</li></ul>
+  <p><strong>Entrega</strong></p>
+  <ul class="tareas"><li><input type="checkbox" disabled> Goro tiene la <code>guia-de-uso.html</code> y sabe dónde está.</li><li><input type="checkbox" disabled> Acordaron soporte, quién paga cada servicio y cómo se piden los cambios.</li></ul>
+</section>
+
+<section id="8-qué-se-le-entrega-a-goro-y-qué-no">
+  <h2><span class="n">8</span>Qué se le entrega a Goro (y qué no)</h2>
+  <p><strong>Sí:</strong></p>
+  <ul><li>La dirección del sistema y <strong>su usuario</strong> de dueño (usuario y contraseña, cambiada en el primer ingreso).</li><li>La guía de uso (<code>guia-de-uso.html</code>).</li><li>Los accesos como <strong>titular</strong> de GitHub, Vercel y Supabase (credenciales y códigos de recuperación de la verificación en dos pasos).</li><li>Un cuaderno o archivo (en su gestor de contraseñas) con <strong>qué cuenta es de qué servicio</strong>.</li></ul>
+  <p><strong>No hace falta, y mejor no:</strong></p>
+  <ul><li>La <strong>contraseña de la base</strong> y la <strong>clave de servicio</strong> no tienen por qué estar en su celular ni en su correo. Quedan en el gestor de contraseñas y en Vercel. Si se las dan a cualquiera, esa persona se saltea toda la seguridad.</li><li>Que cada colaborador comparta usuario: cada persona tiene el suyo, para que la caja y las ventas queden a su nombre.</li></ul>
+</section>
+
+<section id="9-trabajo-diario-actualizar-el-sistema">
+  <h2><span class="n">9</span>Trabajo diario: actualizar el sistema</h2>
+  <h3 id="cambiar-código">Cambiar código</h3>
+  <ol><li>Trabajás en tu máquina con <code>npm run dev</code>.</li><li>Antes de subir: <strong><code>npm run verificar</code></strong> (formato, lint, typecheck y tests unitarios) y, si tocaste algo grande, <code>npm run build</code>.</li><li><code>git push</code> → corre el CI → Vercel publica solo.</li></ol>
+  <h3 id="cambiar-la-base-migraciones">Cambiar la base (migraciones)</h3>
+  <div class="caja-aviso tip"><p><strong>Orden: primero la migración, después el código.</strong></p></div>
+  <p>El caso real que lo enseñó: el código nuevo leía <code>perfiles.permisos</code> en cada pantalla. Desplegado <strong>antes</strong> de aplicar la migración, <strong>nadie podía entrar</strong>. Con el código viejo y la migración nueva, en cambio, todo seguía andando.</p>
+  <p>Entonces:</p>
+  <ol><li>Escribís la migración con fecha nueva en <code>supabase/migrations/</code>, con RLS, <code>grant</code> explícito y reglas de seguridad (están en <code>AGENTS.md</code>).</li><li>La aplicás <strong>primero en tu proyecto de pruebas</strong> y corrés <code>npm run test:rls</code>.</li><li>Si pasa, la aplicás en <strong>producción</strong> (SQL Editor).</li><li><strong>Recién entonces</strong> publicás el código que la usa.</li><li>Anotás la migración en <code>supabase/README.md</code> y en la bitácora.</li></ol>
+  <p>Cuando una migración cambia qué devuelve una función o agrega funciones y la API "no las ve", se refresca con:</p>
+  <pre><code>notify pgrst, 'reload schema';</code></pre>
+  <h3 id="pruebas">Pruebas</h3>
+  <div class="tabla-scroll"><table><thead><tr><th>Comando</th><th>Qué hace</th><th>Dónde</th></tr></thead><tbody><tr><td><code>npm run verificar</code></td><td>Formato + lint + typecheck + tests unitarios</td><td>Tu máquina y el CI</td></tr><tr><td><code>npm run test:unit</code></td><td>Solo los tests unitarios</td><td>Tu máquina</td></tr><tr><td><code>npm run test:rls</code></td><td>Tests de seguridad contra una base real</td><td><strong>Solo contra el proyecto de pruebas</strong></td></tr><tr><td><code>npm run build</code></td><td>Compila como en producción</td><td>Tu máquina y el CI</td></tr></tbody></table></div>
+</section>
+
+<section id="10-backups-y-restauración">
+  <h2><span class="n">10</span>Backups y restauración</h2>
+  <div class="caja-aviso tip"><p><strong>Un respaldo que nunca se restauró no es un respaldo.</strong> Hay que probarlo.</p></div>
+  <h3 id="qué-cubre-cada-cosa">Qué cubre cada cosa</h3>
+  <ul><li><strong>Los backups del plan de Supabase</strong> (si el plan los incluye): son la primera línea. Revisá en <em>Database → Backups</em> qué ofrece el plan elegido y cuántos días guarda.</li><li><strong>Un volcado manual</strong> (<code>pg_dump</code>): sirve como segunda copia, para tenerla fuera de Supabase y para llevar la base a otro proyecto.</li><li><strong>Los Excel NO son un backup:</strong> son reportes. No sirven para reconstruir el sistema.</li></ul>
+  <h3 id="hacer-un-volcado-manual">Hacer un volcado manual</h3>
+  <p>Necesitás las herramientas de PostgreSQL (<code>pg_dump</code>, <code>pg_restore</code>) instaladas, y la cadena de conexión (<em>Project Settings → Database → Connection string</em>). Si tu red no soporta IPv6, usá la cadena del <strong>Session pooler</strong>.</p>
+  <pre><code># Datos del negocio (esquema public) en formato comprimido
+pg_dump "postgresql://postgres:&lt;CONTRASEÑA&gt;@&lt;HOST&gt;:5432/postgres" \
+  --schema=public --no-owner --format=custom --file=goro-public-AAAA-MM-DD.dump
+
+# Las cuentas de usuario viven en el esquema auth (hace falta para restaurar a las mismas personas)
+pg_dump "postgresql://postgres:&lt;CONTRASEÑA&gt;@&lt;HOST&gt;:5432/postgres" \
+  --schema=auth --no-owner --format=custom --file=goro-auth-AAAA-MM-DD.dump</code></pre>
+  <p>Guardá los archivos <strong>fuera</strong> de tu computadora de trabajo (un disco externo o un almacenamiento en la nube de Goro). Un volcado contiene datos sensibles: tratalo como una clave.</p>
+  <h3 id="restaurar-siempre-primero-en-el-proyecto-de-pruebas">Restaurar (siempre primero en el proyecto de pruebas)</h3>
+  <ol><li>Creá un proyecto vacío (o vaciá el de pruebas con <code>reiniciar_base.sql</code>, capítulo 11).</li><li>Restaurá:</li></ol>
+  <pre><code>pg_restore --no-owner --clean --if-exists \
+  --dbname "postgresql://postgres:&lt;CONTRASEÑA&gt;@&lt;HOST&gt;:5432/postgres" \
+  goro-public-AAAA-MM-DD.dump</code></pre>
+  <ol><li>Verificá: entrá al sistema, mirá que estén las ventas, el stock y que los usuarios puedan ingresar.</li><li>Si restauraste en otro proyecto, <strong>actualizá las variables de entorno</strong> de Vercel con las claves de ese proyecto y redesplegá.</li></ol>
+  <div class="caja-aviso ojo"><p><strong>Ojo:</strong> si falló el restore de <code>auth</code>, las personas quedan sin cuenta y sin perfil. La salida está en el capítulo 12 (recrear perfiles y volver a crear el usuario dueño).</p></div>
+  <h3 id="frecuencia-sugerida">Frecuencia sugerida</h3>
+  <ul><li>Backups del plan: los diarios que ofrezca.</li><li>Un volcado manual <strong>antes de cada migración grande</strong> y <strong>una vez por semana</strong>, mientras no haya otro mecanismo.</li><li>Una <strong>prueba de restauración cada tanto</strong> (por ejemplo, una vez por trimestre).</li></ul>
+</section>
+
+<section id="11-vaciar-y-reiniciar-la-base">
+  <h2><span class="n">11</span>Vaciar y reiniciar la base</h2>
+  <p>Hay <strong>tres niveles</strong>, de menos a más destructivo. Elegí el mínimo que resuelva tu caso. Todos se corren pegando el contenido en el <strong>SQL Editor</strong> de Supabase.</p>
+  <div class="caja-aviso tip"><p><strong>Antes de cualquiera:</strong> si hay datos reales, hacé un volcado (capítulo 10). <strong>No hay deshacer.</strong></p></div>
+  <div class="tabla-scroll"><table><thead><tr><th>Nivel</th><th>Script</th><th>Qué borra</th><th>Qué conserva</th></tr></thead><tbody><tr><td>1. Limpiar datos de prueba</td><td><code>supabase/limpiar_datos_de_prueba.sql</code></td><td>Ventas, caja, baldes, potes, stock y su historial</td><td>Usuarios, sabores, formatos, insumos, productos, presentaciones, precios, configuración</td></tr><tr><td>2. Reiniciar la base</td><td><code>supabase/reiniciar_base.sql</code></td><td><strong>Todo</strong> lo de <code>public</code>: tablas, datos, funciones, políticas</td><td>Solo las cuentas de Auth (sin perfil)</td></tr><tr><td>3. Proyecto nuevo</td><td>(crear otro proyecto)</td><td>—</td><td>El proyecto viejo queda intacto</td></tr></tbody></table></div>
+  <h3 id="nivel-1--limpiar-los-datos-de-prueba">Nivel 1 — Limpiar los datos de prueba</h3>
+  <p>Es lo que se usa <strong>al terminar de probar, antes de la primera venta real</strong>. Se puede repetir.</p>
+  <ol><li>Verificá que no haya una caja abierta de verdad (si la hay, se pierde).</li><li>Pegá <code>supabase/limpiar_datos_de_prueba.sql</code> y ejecutalo.</li><li>Al final muestra un conteo: las filas de ventas, caja, baldes, potes y movimientos tienen que dar <strong>0</strong>, y lo que se conserva tiene que seguir ahí.</li></ol>
+  <p>Después:</p>
+  <ol><li>Abrir la caja (<em>Caja → Abrir caja</em>).</li><li>Cargar el stock real: baldes por <em>Balde nuevo</em>, mercadería por <em>Recibir mercadería</em> o <em>Cargar</em>.</li></ol>
+  <p>Efectos que conviene saber:</p>
+  <ul><li>Los números <strong>reinician</strong>: la primera venta vuelve a ser la #1; el primer balde y el primer pote, el 1 de su serie.</li><li>Los códigos de los <strong>insumos no se reinician</strong> (son los mismos artículos), así que las etiquetas de estante siguen valiendo.</li><li>Las etiquetas de <strong>baldes y potes</strong> impresas antes de limpiar <strong>dejan de servir</strong>: esos códigos se vuelven a generar.</li><li>Los estantes con códigos de baldes viejos van a decir "no está cargado": hay que reimprimirlos.</li></ul>
+  <h3 id="nivel-2--reiniciar-la-base-entera">Nivel 2 — Reiniciar la base entera</h3>
+  <p>Se usa si la estructura quedó inconsistente o para reconstruir un proyecto de pruebas desde cero. <strong>Borra también el catálogo.</strong></p>
+  <ol><li>Pegá y ejecutá <code>supabase/reiniciar_base.sql</code> (borra y recrea el esquema <code>public</code>).</li><li>Aplicá <strong>todas las migraciones, en orden</strong> (capítulo 4.4), una por hoja.</li><li><strong>Recuperá los perfiles.</strong> El paso 1 borró la tabla <code>perfiles</code>, así que las cuentas que ya existían en Authentication quedaron sin perfil y no pueden entrar:</li></ol>
+  <pre><code>insert into public.perfiles (id, usuario, nombre)
+select id, split_part(email, '@', 1), initcap(split_part(email, '@', 1)) from auth.users;
+
+update public.perfiles set rol = 'duenio', nombre = 'Goro' where usuario = 'goro';</code></pre>
+  <ol><li>Cargá el catálogo: <code>supabase/carga_productos_goro.sql</code> (tiene que mostrar 12 filas).</li><li>Entrá con el dueño y probá.</li></ol>
+  <div class="caja-aviso ojo"><p><strong>Ojo:</strong> los colaboradores recuperados quedan con el perfil por defecto (rol <em>colaborador</em>, todos los permisos). Revisalos desde <em>Usuarios</em>.</p></div>
+  <h3 id="nivel-3--proyecto-nuevo">Nivel 3 — Proyecto nuevo</h3>
+  <p>Si algo se rompió de forma que no vale la pena reparar, es más rápido crear un proyecto nuevo y repetir el capítulo 4. El viejo queda como evidencia.</p>
+  <h3 id="borrados-parciales-no-recomendados">Borrados parciales (no recomendados)</h3>
+  <p>No hay un botón para borrar "solo las ventas de hoy": las tablas se referencian entre sí (ventas, renglones, movimientos de caja, de stock, de baldes y de insumos, potes) y borrar una fila suelta deja el stock y la caja <strong>descuadrados</strong>. Los caminos correctos:</p>
+  <ul><li><strong>Una venta de prueba:</strong> anularla desde el sistema (<em>Historial → Anular</em>). Devuelve el stock y la caja y deja constancia.</li><li><strong>Un sabor, formato, insumo o balde cargado por error:</strong> desde <em>Inventario</em> (solo se puede borrar lo que nunca se usó).</li><li><strong>Todo lo de prueba junto:</strong> nivel 1.</li></ul>
+</section>
+
+<section id="12-usuarios-recuperar-el-acceso">
+  <h2><span class="n">12</span>Usuarios: recuperar el acceso</h2>
+  <h3 id="el-dueño-olvidó-su-contraseña">El dueño olvidó su contraseña</h3>
+  <p>Si hay <strong>otro dueño</strong> activo, entra y se la cambia en <em>Usuarios → Contraseña</em>. Si es <strong>el único</strong>, hay dos caminos:</p>
+  <p><strong>a) Desde Supabase</strong> (<em>Authentication → Users</em>, elegir el usuario): si tu panel ofrece cambiar la contraseña, usalo. Si no, el camino b.</p>
+  <p><strong>b) Con un script</strong> que usa la clave de servicio (corrélo en tu máquina, con las variables cargadas; <strong>nunca</strong> lo subas al repo):</p>
+  <pre><code>// cambiar-contrasena.mjs — node cambiar-contrasena.mjs &lt;usuario&gt; &lt;contraseña nueva&gt;
+import { createClient } from "@supabase/supabase-js";
+
+const [usuario, contrasena] = process.argv.slice(2);
+const admin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
+  { auth: { persistSession: false } },
+);
+
+const { data: perfil } = await admin.from("perfiles").select("id").eq("usuario", usuario).single();
+const { error } = await admin.auth.admin.updateUserById(perfil.id, { password: contrasena });
+console.log(error ? error.message : "Listo.");</code></pre>
+  <p>La contraseña tiene que tener <strong>al menos 8 caracteres</strong>.</p>
+  <h3 id="nadie-es-dueño-o-el-dueño-quedó-desactivado">Nadie es dueño (o el dueño quedó desactivado)</h3>
+  <p>El sistema impide dejar la base sin dueño activo, pero un reinicio o un error pueden dejarla así. Desde el SQL Editor:</p>
+  <pre><code>update public.perfiles
+set rol = 'duenio', activo = true
+where usuario = 'goro';</code></pre>
+  <h3 id="una-persona-ve-la-pantalla-de-ingreso-en-bucle-o-no-tiene-perfil">Una persona ve la pantalla de ingreso en bucle, o "no tiene perfil"</h3>
+  <p>El usuario existe en Authentication pero <strong>no tiene fila en <code>perfiles</code></strong> (pasa después de reiniciar la base) o está <strong>desactivado</strong>. Mirá <code>select usuario, rol, activo from public.perfiles;</code> y, si falta, usá el <code>insert</code> del nivel 2 (capítulo 11).</p>
+  <h3 id="alguien-se-registró-solo-registro-público-abierto">Alguien se registró solo (registro público abierto)</h3>
+  <p>Si encontrás cuentas que nadie creó, el registro público estaba abierto. <strong>Cerralo ya</strong> (4.2), desactivá o borrá esas cuentas desde <em>Usuarios</em> y revisá <em>Historial</em> por si alguna vendió algo.</p>
+  <h3 id="un-colaborador-no-ve-un-botón">Un colaborador "no ve" un botón</h3>
+  <p>No es un error: le falta un permiso. Se le da en <em>Usuarios → Editar</em> (guía de uso, capítulo 10).</p>
+</section>
+
+<section id="13-solución-de-problemas">
+  <h2><span class="n">13</span>Solución de problemas</h2>
+  <p>Buscá el síntoma. Casi todo tiene una causa conocida.</p>
+  <div class="tabla-scroll"><table><thead><tr><th>Síntoma</th><th>Causa probable</th><th>Qué hacer</th></tr></thead><tbody><tr><td><strong>Nadie puede entrar</strong> justo después de publicar.</td><td>El código nuevo usa algo que la base todavía no tiene (por ejemplo <code>perfiles.permisos</code>).</td><td>Aplicar las migraciones pendientes (capítulo 14 para saber cuáles faltan). Orden: migración primero.</td></tr><tr><td>Pantalla de error con <code>Falta NEXT_PUBLIC_SUPABASE_URL…</code>.</td><td>Falta una variable de entorno en Vercel.</td><td>Cargarla y <strong>redesplegar</strong> (las <code>NEXT_PUBLIC_</code> van incrustadas).</td></tr><tr><td><code>Invalid API key</code>.</td><td>Clave pegada con un espacio o salto de línea, o de otro proyecto.</td><td>Volver a copiarla desde <em>Project Settings → API</em>; redesplegar.</td></tr><tr><td><strong>Crear, renombrar o borrar un usuario falla.</strong></td><td>Falta <code>SUPABASE_SERVICE_ROLE_KEY</code> en Vercel.</td><td>Cargarla y redesplegar. El resto del sistema anda igual sin ella.</td></tr><tr><td>Entra y vuelve a la pantalla de ingreso, o rebota a <code>/salir</code>.</td><td>Perfil inexistente o desactivado.</td><td>Capítulo 12.</td></tr><tr><td><strong>Pantallas vacías</strong> (sin sabores, sin ventas) sin ningún error.</td><td>Una consulta falla y la pantalla muestra lista vacía: migración sin aplicar o clave incorrecta.</td><td>Revisar los <em>Logs</em> de Vercel y las migraciones aplicadas.</td></tr><tr><td><code>permission denied</code> / código <code>42501</code>.</td><td>Falta el <code>grant</code> o la política en una tabla o función nueva.</td><td>Revisar la migración: cada tabla lleva <code>enable row level security</code>, <code>grant</code> a <code>authenticated</code>, <code>revoke</code> a <code>anon</code> y su política.</td></tr><tr><td><code>relation … does not exist</code> / <code>Could not find the function …</code>.</td><td>Migración sin aplicar, o la API no recargó el esquema.</td><td>Aplicar la migración, y correr <code>notify pgrst, 'reload schema';</code>.</td></tr><tr><td>El sidebar dice "Caja abierta" y Ventas dice "cerrada" (o al revés).</td><td>Pantalla desactualizada (el menú vive en el layout).</td><td><strong>F5</strong>. Si persiste, mirar el estado real en <em>Caja</em> y en la consulta de turnos (capítulo 14).</td></tr><tr><td>"<strong>Ya hay una caja abierta</strong>" al abrir.</td><td>Quedó un turno sin cerrar.</td><td>Cerrarlo desde <em>Caja → Cerrar caja</em>. Si es de pruebas, nivel 1 del capítulo 11.</td></tr><tr><td><code>npm run test:rls</code> falla con "<strong>Hay una caja abierta</strong>".</td><td>Es una protección del test de caja, que abre y cierra turnos.</td><td>No correrlos contra una base en uso. Cerrar la caja o usar el proyecto de pruebas.</td></tr><tr><td><code>test:rls</code>: falla un solo test por un <strong>texto de error</strong> distinto.</td><td>Cambió el mensaje de una función y el test espera el viejo.</td><td>Actualizar el texto que espera el test (ya pasó con <code>registrar_venta</code>).</td></tr><tr><td>Un <strong>código de barras dice "no está cargado"</strong>.</td><td>Etiqueta de un balde o pote que ya no existe (borrado, o de antes de limpiar la base).</td><td>Reimprimir la etiqueta correcta.</td></tr><tr><td><strong>Un Excel no baja</strong>, o da 403.</td><td>La descarga es solo del dueño.</td><td>Entrar con un usuario dueño. Si da 500, mirar el log (<code>Excel de …</code>) en Vercel.</td></tr><tr><td>El <strong>Excel de ventas</strong> parece incompleto.</td><td>No lo es: trae todas las del período. Revisar el filtro de fechas y de medio de pago de la pantalla.</td><td>Ajustar el filtro y volver a bajar.</td></tr><tr><td><strong>Imprimir etiquetas</strong> saca todo el menú.</td><td>La hoja de etiquetas no está en pantalla (el CSS de impresión deja solo <code>#hoja-de-etiquetas</code>).</td><td>Estar en una pestaña con hoja (Códigos) o en Potes con potes tildados. Usar Chrome.</td></tr><tr><td>Las <strong>horas de las ventas</strong> salen corridas.</td><td>Zona horaria incorrecta.</td><td>Revisar <code>ZONA_HORARIA</code> en <code>src/config/comercio.ts</code>.</td></tr><tr><td><strong>Un deploy falla</strong> en Vercel pero anda en tu máquina.</td><td>Versión de Node distinta, o tipos de Next sin generar.</td><td>Fijar Node 22 en Vercel. Reproducir con <code>npm ci &amp;&amp; npm run verificar &amp;&amp; npm run build</code>.</td></tr><tr><td>El proyecto de Supabase <strong>no responde</strong>.</td><td>Plan gratuito: se pausó por inactividad.</td><td>Reanudarlo desde el panel de Supabase; la primera consulta puede tardar. Es una razón más para un plan de pago.</td></tr><tr><td>Dos personas cobran <strong>el mismo pote</strong> a la vez.</td><td>No pasa: solo una venta lo toma. La otra recibe "ese pote ya no está en el freezer".</td><td>Nada que hacer.</td></tr><tr><td>El cajero toca <strong>Cobrar dos veces</strong>.</td><td>No duplica: la venta entra una sola vez (clave de cobro).</td><td>Nada que hacer.</td></tr></tbody></table></div>
+  <h3 id="dónde-mirar-cuando-algo-falla">Dónde mirar cuando algo falla</h3>
+  <ol><li><strong>Vercel → Logs</strong>: errores del servidor (acciones, Excel, páginas).</li><li><strong>Supabase → Logs → Postgres</strong> (y <em>API</em>): errores de la base, políticas, funciones.</li><li><strong>El mensaje en pantalla</strong>: casi siempre está escrito para decir qué paso falta.</li><li>La <strong>bitácora</strong> (<code>BITACORA.md</code>) y el <strong>roadmap</strong> (<code>ROADMAP.md</code>) dicen en qué estado quedó cada cosa y por qué.</li></ol>
+</section>
+
+<section id="14-consultas-sql-útiles">
+  <h2><span class="n">14</span>Consultas SQL útiles</h2>
+  <p>Todas se corren en el <strong>SQL Editor</strong>. Las de lectura son seguras.</p>
+  <h3 id="qué-migraciones-están-aplicadas">¿Qué migraciones están aplicadas?</h3>
+  <p>No hay una tabla de control (se aplican a mano), así que se mira qué existe. Cada fila tiene que dar <code>true</code>:</p>
+  <pre><code>select 'permisos (20261003110000)' as migracion,
+       exists (select 1 from information_schema.columns
+               where table_schema = 'public' and table_name = 'perfiles' and column_name = 'permisos') as aplicada
+union all
+select 'clave de cobro (20261003100000)',
+       exists (select 1 from information_schema.columns
+               where table_schema = 'public' and table_name = 'ventas' and column_name = 'clave_idempotencia')
+union all
+select 'ciclo del balde (20261003120000)',
+       exists (select 1 from information_schema.columns
+               where table_schema = 'public' and table_name = 'venta_items' and column_name = 'balde_id')
+union all
+select 'potes (20261004100000)',
+       exists (select 1 from information_schema.tables
+               where table_schema = 'public' and table_name = 'potes');</code></pre>
+  <h3 id="hay-una-caja-abierta">¿Hay una caja abierta?</h3>
+  <pre><code>select id, abierto_por, abierto_en from public.turnos_caja where cerrado_en is null;</code></pre>
+  <h3 id="quién-puede-entrar-y-con-qué-permisos">¿Quién puede entrar y con qué permisos?</h3>
+  <pre><code>select usuario, nombre, rol, activo, permisos from public.perfiles order by usuario;</code></pre>
+  <h3 id="cuánto-hay-de-cada-cosa-control-de-volumen">¿Cuánto hay de cada cosa? (control de volumen)</h3>
+  <pre><code>select 'ventas' as tabla, count(*) from public.ventas
+union all select 'baldes', count(*) from public.baldes
+union all select 'potes', count(*) from public.potes
+union all select 'insumos', count(*) from public.insumos
+union all select 'usuarios', count(*) from public.perfiles;</code></pre>
+  <h3 id="recargar-el-esquema-de-la-api">Recargar el esquema de la API</h3>
+  <pre><code>notify pgrst, 'reload schema';</code></pre>
+  <h3 id="dar-o-quitar-permisos-de-un-colaborador-a-mano">Dar o quitar permisos de un colaborador a mano</h3>
+  <pre><code>-- todos
+update public.perfiles set permisos = array['anular_ventas','movimientos_caja','cargar_inventario'] where usuario = 'ana';
+-- ninguno (solo vender)
+update public.perfiles set permisos = '{}' where usuario = 'ana';</code></pre>
+  <h3 id="ver-el-stock-de-insumos-con-problemas">Ver el stock de insumos con problemas</h3>
+  <pre><code>select nombre, cantidad, minimo from public.insumos
+where activo and cantidad &lt;= minimo order by nombre;</code></pre>
+</section>
+
+<section id="15-ajustes-que-se-hacen-en-el-código">
+  <h2><span class="n">15</span>Ajustes que se hacen en el código</h2>
+  <p>Lo que cambia con el comercio vive en pocos archivos:</p>
+  <div class="tabla-scroll"><table><thead><tr><th>Qué</th><th>Dónde</th></tr></thead><tbody><tr><td><strong>Nombre del comercio</strong> (hoy "Goro", provisorio)</td><td><code>src/config/comercio.ts</code> → <code>NOMBRE_COMERCIO</code></td></tr><tr><td><strong>Zona horaria</strong></td><td><code>src/config/comercio.ts</code> → <code>ZONA_HORARIA</code></td></tr><tr><td><strong>Dominio de los correos internos</strong></td><td><code>src/config/comercio.ts</code>. <strong>No lo cambies una vez que hay usuarios.</strong></td></tr><tr><td><strong>Colores y tipografías</strong></td><td><code>src/estilos/tema.css</code> (único archivo con colores)</td></tr><tr><td><strong>Fondo del ingreso</strong></td><td><code>public/fondo-login-escritorio.svg</code></td></tr><tr><td><strong>Módulos del menú</strong> y quién los ve</td><td><code>src/config/navegacion.ts</code></td></tr><tr><td><strong>Permisos por acción</strong></td><td><code>src/modulos/auth/permisos.ts</code> <strong>y</strong> el <code>check</code> de <code>perfiles.permisos</code> <strong>y</strong> la función de Postgres que lo exige</td></tr></tbody></table></div>
+  <p>Las reglas del código (idioma, tamaño de archivos, colores, reglas de base de datos) están en <code>AGENTS.md</code> y se repasan <strong>antes</strong> de escribir. El plan y lo que falta está en <code>ROADMAP.md</code>; la historia de cada decisión, en <code>BITACORA.md</code>.</p>
+  <h3 id="lo-que-sigue-pendiente-del-producto">Lo que sigue pendiente del producto</h3>
+  <ul><li>La <strong>pistola</strong> de códigos de barras: prueba de lectura y etiqueta aguantando 24 horas en el freezer (pasos 0.2 y 0.3 del roadmap).</li><li>Decidir la <strong>impresora de etiquetas</strong> (hoy se imprime en hoja A4).</li><li>Cosas fuera de alcance por ahora: clientes y cuenta corriente, delivery, promos, facturación electrónica, tickets impresos.</li></ul>
+  <p><em>Guía de traspaso del sistema Goro. Si algo de acá no coincide con lo que ves en Supabase, Vercel o GitHub, probablemente cambió su panel: la intención de cada paso se mantiene, el nombre del menú puede variar.</em></p>
+</section>
+
+</main>
+</div>
+
+<footer>Guía de traspaso del sistema Goro · generada desde guia-de-traspaso.md</footer>
+
+</body>
+</html>

@@ -80,6 +80,10 @@ demás no depende de esto y sigue andando a mano.
   `descartar_pote`, `cobrar_item_pote`, `resolver_codigo`, y los potes dentro de
   los kilos, el costo y el ranking del Panel.
 - 258 tests unitarios; `npm run verificar` y `npm run build` pasan.
+- **Para dejar el sistema listo para entregar:** `supabase/limpiar_datos_de_prueba.sql` (vuelve
+  todo a 0 y conserva usuarios y catálogo), `docs/guia-de-uso.html` (guía para quien usa
+  el sistema) y `docs/guia-de-traspaso.md` / `.html` (guía para quien lo mantiene: entregar
+  GitHub, Supabase y Vercel, backups, vaciar la base, recuperar accesos, problemas).
 
 ### Qué se decidió
 
