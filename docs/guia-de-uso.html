@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guía de uso — Sistema Goro</title>
+<meta name="description" content="Guía paso a paso para usar el sistema de la heladería: caja, ventas, inventario, potes, códigos, usuarios y reportes.">
+<style>
+  :root {
+    --marco: #2a1b12;
+    --marco-suave: #3b2a1e;
+    --fondo: #f7f1e4;
+    --superficie: #fffcf6;
+    --honda: #ede4d1;
+    --linea: #e2d7c0;
+    --texto: #2a1b12;
+    --suave: #6e5f4e;
+    --acento: #3f6b3a;
+    --acento-fondo: #e4eddc;
+    --acento-texto: #fffcf6;
+    --destacado: #c97b34;
+    --destacado-texto: #8a5620;
+    --destacado-fondo: #f8ecd9;
+    --alerta: #a83232;
+    --alerta-fondo: #f9e5e2;
+    --ok: #2c4c28;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 1rem; }
+  body {
+    margin: 0;
+    background: var(--fondo);
+    color: var(--texto);
+    font: 17px/1.65 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* ---------- Estructura ---------- */
+  .portada {
+    background: var(--marco);
+    color: var(--fondo);
+    padding: 2.5rem 1.25rem 2rem;
+    text-align: center;
+  }
+  .portada .arco {
+    display: inline-block;
+    background: var(--acento);
+    color: var(--acento-texto);
+    border-radius: 999px 999px 10px 10px;
+    padding: 1rem 2rem .75rem;
+    margin-bottom: 1.25rem;
+  }
+  .portada .arco b { display: block; font-size: 1.5rem; letter-spacing: .02em; }
+  .portada .arco span { font-size: .72rem; letter-spacing: .16em; text-transform: uppercase; opacity: .85; }
+  .portada h1 { margin: 0 0 .4rem; font-size: clamp(1.6rem, 4vw, 2.3rem); line-height: 1.2; }
+  .portada p { margin: 0 auto; max-width: 40rem; opacity: .85; }
+
+  .pagina {
+    max-width: 74rem;
+    margin: 0 auto;
+    padding: 1.5rem 1.25rem 4rem;
+    display: grid;
+    grid-template-columns: 17rem minmax(0, 1fr);
+    gap: 2.5rem;
+    align-items: start;
+  }
+
+  nav.indice {
+    position: sticky;
+    top: 1rem;
+    background: var(--superficie);
+    border: 1px solid var(--linea);
+    border-radius: 18px;
+    padding: 1rem;
+    font-size: .93rem;
+    max-height: calc(100vh - 2rem);
+    overflow: auto;
+  }
+  nav.indice h2 { margin: 0 0 .5rem; font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--suave); }
+  nav.indice ol { list-style: none; margin: 0; padding: 0; }
+  nav.indice a {
+    display: block;
+    padding: .3rem .6rem;
+    border-radius: 8px;
+    color: var(--texto);
+    text-decoration: none;
+  }
+  nav.indice a:hover { background: var(--honda); }
+  nav.indice summary { cursor: pointer; font-weight: 700; }
+
+  @media (max-width: 62rem) {
+    .pagina { grid-template-columns: 1fr; gap: 1rem; }
+    nav.indice { position: static; max-height: none; }
+  }
+
+  main section {
+    background: var(--superficie);
+    border: 1px solid var(--linea);
+    border-radius: 18px;
+    padding: 1.5rem 1.5rem 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (max-width: 40rem) { main section { padding: 1.1rem 1rem; } }
+
+  h2 { font-size: 1.55rem; line-height: 1.25; margin: 0 0 .25rem; }
+  h2 .n {
+    display: inline-grid; place-items: center;
+    width: 2rem; height: 2rem; margin-right: .5rem;
+    border-radius: 50%; background: var(--acento); color: var(--acento-texto);
+    font-size: 1rem; vertical-align: middle;
+  }
+  h3 { font-size: 1.15rem; margin: 1.6rem 0 .3rem; }
+  p { margin: .5rem 0; }
+  .bajada { color: var(--suave); margin-top: 0; }
+  ul, ol { padding-left: 1.3rem; }
+  li { margin: .25rem 0; }
+  a { color: var(--acento); }
+  code { background: var(--honda); padding: .08rem .35rem; border-radius: 6px; font-size: .92em; }
+
+  /* ---------- Piezas ---------- */
+  .btn {
+    display: inline-block;
+    background: var(--acento);
+    color: var(--acento-texto);
+    border-radius: 999px;
+    padding: .05rem .7rem;
+    font-size: .88em;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .btn.suave { background: var(--superficie); color: var(--texto); border: 1px solid var(--linea); }
+  .btn.peligro { background: var(--alerta-fondo); color: var(--alerta); }
+  .campo {
+    display: inline-block;
+    border: 1px solid var(--linea);
+    background: var(--superficie);
+    border-radius: 8px;
+    padding: 0 .5rem;
+    font-size: .9em;
+    white-space: nowrap;
+  }
+  .pill {
+    display: inline-block; border-radius: 999px; padding: 0 .6rem;
+    font-size: .8em; font-weight: 700; white-space: nowrap;
+  }
+  .pill.ok { background: var(--acento-fondo); color: var(--ok); }
+  .pill.aviso { background: var(--destacado-fondo); color: var(--destacado-texto); }
+  .pill.alerta { background: var(--alerta-fondo); color: var(--alerta); }
+
+  .caja-aviso {
+    border-radius: 14px;
+    padding: .8rem 1rem;
+    margin: 1rem 0;
+    border: 1px solid transparent;
+  }
+  .caja-aviso > b:first-child { display: block; margin-bottom: .1rem; }
+  .ejemplo { background: var(--acento-fondo); border-color: #cfdcc4; }
+  .ojo { background: var(--destacado-fondo); border-color: #ecd5b0; }
+  .peligro-caja { background: var(--alerta-fondo); border-color: #ecc4be; }
+  .tip { background: var(--honda); border-color: var(--linea); }
+  .caja-aviso p:last-child, .caja-aviso ol:last-child, .caja-aviso ul:last-child { margin-bottom: 0; }
+
+  .pasos { counter-reset: paso; list-style: none; padding: 0; }
+  .pasos > li {
+    counter-increment: paso;
+    position: relative;
+    padding: .15rem 0 .15rem 2.6rem;
+    margin: .7rem 0;
+  }
+  .pasos > li::before {
+    content: counter(paso);
+    position: absolute; left: 0; top: .1rem;
+    width: 1.9rem; height: 1.9rem; border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--marco); color: var(--fondo); font-weight: 700; font-size: .9rem;
+  }
+
+  .tabla-scroll { overflow-x: auto; margin: .8rem 0; }
+  table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+  th, td { text-align: left; padding: .5rem .65rem; border-bottom: 1px solid var(--linea); vertical-align: top; }
+  th { font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; color: var(--suave); }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  tr.total td { border-top: 2px solid var(--marco); border-bottom: 0; font-weight: 700; }
+
+  .ticket {
+    background: #fff;
+    border: 1px dashed var(--suave);
+    border-radius: 10px;
+    padding: .8rem 1rem;
+    max-width: 24rem;
+    font-family: ui-monospace, Menlo, Consolas, monospace;
+    font-size: .88rem;
+    margin: .8rem 0;
+  }
+  .ticket .f { display: flex; justify-content: space-between; gap: 1rem; }
+  .ticket .t { border-top: 2px solid var(--marco); margin-top: .4rem; padding-top: .4rem; font-weight: 700; }
+  .ticket small { color: var(--suave); }
+
+  .codigo {
+    display: inline-flex; flex-direction: column; align-items: center; gap: 0;
+    background: #fff; border: 1px solid var(--linea); border-radius: 8px;
+    padding: .4rem .7rem; margin: .2rem .3rem .2rem 0;
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem;
+  }
+  .codigo i {
+    display: block; width: 7.5rem; height: 1.6rem;
+    background: repeating-linear-gradient(90deg, #000 0 2px, #fff 2px 4px, #000 4px 5px, #fff 5px 8px, #000 8px 11px, #fff 11px 12px);
+  }
+
+  .tarjetas { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: .8rem; margin: 1rem 0; }
+  .tarjetas > div { border: 1px solid var(--linea); border-radius: 14px; padding: .8rem 1rem; background: var(--fondo); }
+  .tarjetas b { display: block; }
+
+  details.faq { border-bottom: 1px solid var(--linea); padding: .2rem 0; }
+  details.faq summary { cursor: pointer; font-weight: 700; padding: .55rem 0; }
+  details.faq[open] summary { color: var(--acento); }
+  details.faq p, details.faq ul { margin-top: 0; }
+
+  .rol { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--destacado-texto); }
+
+  footer { text-align: center; color: var(--suave); font-size: .9rem; padding: 0 1rem 2rem; }
+
+  @media print {
+    nav.indice { display: none; }
+    .pagina { display: block; }
+    main section { break-inside: avoid-page; border: 0; padding: 0; }
+    details.faq:not([open]) > :not(summary) { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<header class="portada">
+  <div class="arco"><b>Goro</b><span>Heladería artesanal</span></div>
+  <h1>Guía de uso del sistema</h1>
+  <p>Todo lo que hace falta para trabajar un día completo en el local: abrir la caja, vender, controlar el helado, armar potes y cerrar. Con ejemplos, sin palabras raras.</p>
+</header>
+
+<div class="pagina">
+
+<nav class="indice" aria-label="Índice de la guía">
+  <details open>
+    <summary>Índice</summary>
+    <ol>
+      <li><a href="#empezar">1 · Antes de empezar</a></li>
+      <li><a href="#dia">2 · Un día de trabajo</a></li>
+      <li><a href="#caja">3 · La caja</a></li>
+      <li><a href="#ventas">4 · Vender</a></li>
+      <li><a href="#historial">5 · Historial de ventas</a></li>
+      <li><a href="#inventario">6 · Inventario</a></li>
+      <li><a href="#baldes">7 · El ciclo del balde</a></li>
+      <li><a href="#potes">8 · Potes armados</a></li>
+      <li><a href="#codigos">9 · Códigos y pistola</a></li>
+      <li><a href="#usuarios">10 · Usuarios y permisos</a></li>
+      <li><a href="#panel">11 · El Panel del dueño</a></li>
+      <li><a href="#excel">12 · Bajar a Excel</a></li>
+      <li><a href="#faq">13 · Si algo sale mal</a></li>
+      <li><a href="#glosario">14 · Glosario</a></li>
+      <li><a href="#limites">15 · Lo que el sistema no hace</a></li>
+    </ol>
+  </details>
+</nav>
+
+<main>
+
+<!-- ======================================================= -->
+<section id="empezar">
+  <h2><span class="n">1</span>Antes de empezar</h2>
+  <p class="bajada">Cómo se entra, qué se ve en pantalla y qué puede hacer cada persona.</p>
+
+  <h3>Entrar al sistema</h3>
+  <p>En la pantalla de ingreso escribís tu <b>usuario</b> y tu <b>contraseña</b>. No hace falta ningún correo: el usuario es una sola palabra, por ejemplo <code>ana</code> o <code>goro</code>. Las mayúsculas y los espacios no molestan: el sistema los arregla solo.</p>
+  <p>La contraseña te la da el dueño. Si la olvidás, él te la cambia desde <i>Usuarios</i> (no hay recuperación por mail).</p>
+
+  <h3>El menú de la izquierda</h3>
+  <p>En el celular o la tablet el menú pasa arriba. Siempre ves cuatro cosas: el nombre del local, si la <b>caja está abierta o cerrada</b>, los módulos, y abajo tu nombre y tu rol, con el enlace <u>Salir</u>.</p>
+
+  <div class="tabla-scroll"><table>
+    <tr><th>Módulo</th><th>Para qué sirve</th><th>Quién lo ve</th></tr>
+    <tr><td><b>Inicio</b></td><td>El dueño ve el Panel con los números. El resto ve atajos.</td><td>Todos</td></tr>
+    <tr><td><b>Ventas</b></td><td>Armar el ticket y cobrar.</td><td>Todos</td></tr>
+    <tr><td><b>Historial</b></td><td>Buscar una venta vieja, ver su ticket, anularla.</td><td>Todos</td></tr>
+    <tr><td><b>Caja</b></td><td>Abrir el turno, gastos y retiros, cerrar.</td><td>Todos</td></tr>
+    <tr><td><b>Inventario</b></td><td>Baldes, sabores, insumos, productos y precios.</td><td>Todos (editar casi todo: el dueño)</td></tr>
+    <tr><td><b>Potes</b></td><td>Armar potes, pesarlos y sacar su etiqueta.</td><td>Todos</td></tr>
+    <tr><td><b>Códigos</b></td><td>Imprimir etiquetas de insumos y baldes.</td><td>Todos</td></tr>
+    <tr><td><b>Usuarios</b></td><td>Dar de alta gente y decidir qué puede hacer.</td><td>Solo el dueño</td></tr>
+  </table></div>
+
+  <h3>Dos tipos de persona: dueño y colaborador</h3>
+  <ul>
+    <li><b>El dueño</b> puede todo: ve el Panel, edita precios y formatos, maneja usuarios y baja los archivos de Excel.</li>
+    <li><b>El colaborador</b> vende, abre y cierra la caja, abre baldes y arma potes. Tres cosas más (anular ventas, mover plata de la caja a mano y cargar mercadería) <b>las decide el dueño persona por persona</b>. Ver el capítulo <a href="#usuarios">Usuarios y permisos</a>.</li>
+  </ul>
+  <div class="caja-aviso tip"><b>Si un botón no aparece</b>No es un error: significa que tu usuario no tiene ese permiso. Pedíselo al dueño.</div>
+
+  <h3>Cómo avisa el sistema</h3>
+  <ul>
+    <li><span class="pill ok">Verde</span> es que salió bien o que está todo en orden.</li>
+    <li><span class="pill aviso">Naranja</span> es "ojo, se está por acabar".</li>
+    <li><span class="pill alerta">Rojo</span> es un problema o algo anulado.</li>
+  </ul>
+  <p>Los errores se escriben en castellano y dicen qué hacer, por ejemplo <i>"No hay un balde abierto de Frutilla"</i>. Si no lo entendés, leelo de nuevo: casi siempre te dice el paso que falta.</p>
+</section>
+
+<!-- ======================================================= -->
+<section id="dia">
+  <h2><span class="n">2</span>Un día de trabajo</h2>
+  <p class="bajada">El recorrido completo, de punta a punta. Cada paso tiene su capítulo más abajo.</p>
+
+  <ol class="pasos">
+    <li><b>Entrá y abrí la caja.</b> Contás la plata del cajón y la escribís. Hasta que no esté abierta, no se puede cobrar.</li>
+    <li><b>Revisá el helado.</b> En <i>Inventario</i> mirá que cada sabor tenga un balde abierto. Si falta uno, lo abrís con un toque.</li>
+    <li><b>Vendé.</b> En <i>Ventas</i> armás el ticket, elegís cómo paga y apretás <span class="btn">Cobrar</span>.</li>
+    <li><b>Registrá lo que sale o entra de la caja que no es una venta</b> (un gasto, un retiro de Goro).</li>
+    <li><b>Cuando un balde se termina</b>, tocás <i>Se terminó</i>. Después abrís el siguiente.</li>
+    <li><b>Si llega mercadería</b>, la cargás para que el stock sea real.</li>
+    <li><b>Cerrá la caja.</b> Contás todo lo que hay, decís cuánto queda de fondo y listo. El sistema no te muestra si sobra o falta (ver el capítulo de Caja para saber por qué).</li>
+  </ol>
+</section>
+
+<!-- ======================================================= -->
+<section id="caja">
+  <h2><span class="n">3</span>La caja</h2>
+  <p class="bajada">Un turno es el tiempo entre que se abre y se cierra el cajón. Hay un solo cajón, así que hay un solo turno abierto: si Ana abre, Lucas puede cerrar.</p>
+
+  <h3>Abrir la caja</h3>
+  <ol class="pasos">
+    <li>Andá a <b>Caja</b> (o tocá <span class="pill alerta">Caja cerrada</span> en el menú) y apretá <span class="btn">Abrir caja</span>.</li>
+    <li>Contá la plata que hay en el cajón y escribila en <span class="campo">¿Cuánto hay en el cajón?</span></li>
+    <li>Apretá <span class="btn">Abrir caja</span>. El cartel del menú pasa a <span class="pill ok">Caja abierta</span>.</li>
+  </ol>
+  <div class="caja-aviso ojo"><b>Contá de verdad</b>El sistema no te dice cuánto "debería" haber. Es a propósito: si te lo mostrara, tocarías confirmar sin contar. El dueño después compara con el cierre anterior y ve si falta o sobra.</div>
+
+  <h3>Mover plata sin vender: ingresos, gastos y retiros</h3>
+  <p>En la pantalla de Caja hay tres botones. Cada uno pide un <b>detalle</b> y un <b>monto</b> (siempre positivo: el sistema ya sabe si entra o sale).</p>
+  <div class="tabla-scroll"><table>
+    <tr><th>Botón</th><th>Cuándo se usa</th><th>Ejemplo</th></tr>
+    <tr><td><span class="btn suave">Ingreso</span></td><td>Entra plata al cajón que no es una venta.</td><td>"Cambio que trajo Goro" — $20.000</td></tr>
+    <tr><td><span class="btn suave">Gasto</span></td><td>Sale plata para pagar algo del local.</td><td>"Hielo seco" — $4.500</td></tr>
+    <tr><td><span class="btn suave">Retiro</span></td><td>Alguien se lleva plata del cajón.</td><td>"Se lo llevó Goro" — $50.000</td></tr>
+  </table></div>
+  <p>Si te equivocaste, el movimiento tiene un enlace <i>Anular</i> mientras el turno siga abierto. Queda tachado, no se borra, así que queda constancia.</p>
+  <p class="rol">Permiso: «registrar gastos, ingresos y retiros». Sin él no aparecen estos botones.</p>
+
+  <h3>Ver lo que pasó en el turno</h3>
+  <p>Debajo de los botones ves la lista de movimientos del turno (ventas en efectivo, gastos, retiros). Con las pastillas de arriba filtrás por tipo. Las ventas con tarjeta o transferencia no están en el cajón y por eso no suman acá.</p>
+
+  <h3>Cerrar la caja</h3>
+  <ol class="pasos">
+    <li>Apretá <span class="btn peligro">Cerrar caja</span>.</li>
+    <li>Contá <b>toda</b> la plata del cajón y escribila en <span class="campo">¿Cuánto contaste?</span></li>
+    <li>En <span class="campo">¿Cuánto queda de fondo para el próximo turno?</span> poné lo que dejás en el cajón (el resto se lo lleva Goro).</li>
+    <li>Confirmá. El sistema <b>no te dice</b> si cerró justo: el dueño lo ve en el historial de turnos.</li>
+  </ol>
+
+  <div class="caja-aviso ejemplo"><b>Ejemplo</b>
+    <p>Abrís con $20.000. Durante el día cobrás $86.500 en efectivo y registrás un gasto de $4.500. El cajón debería tener $102.000 ($20.000 + $86.500 − $4.500).</p>
+    <p>Contás y hay $101.800: escribís <i>101800</i>. Dejás $20.000 de fondo. El dueño, en su historial, verá: <b>esperado $102.000, contado $101.800 → faltan $200</b>.</p>
+  </div>
+
+  <h3>Para el dueño: turnos cerrados</h3>
+  <p>Al final de la pantalla de Caja aparece <b>Turnos cerrados</b> con el esperado, lo contado y la diferencia de cada turno (también cuando cierra justo), y un aviso si al abrir faltaba o sobraba plata respecto del cierre anterior. Con <i>Ver</i> abrís el detalle de un turno. Ahí mismo hay un botón para <b>descargar el Excel de la caja</b> de un período.</p>
+</section>
+
+<!-- ======================================================= -->
+<section id="ventas">
+  <h2><span class="n">4</span>Vender</h2>
+  <p class="bajada">A la izquierda lo que vendés, a la derecha el ticket. Toda venta registra sola el helado que sale, los envases, la plata de la caja y todo lo demás.</p>
+
+  <div class="caja-aviso ojo"><b>Si dice "La caja está cerrada"</b>Aparece un cartel arriba con el botón <span class="btn">Abrir caja</span>. Abrila ahí mismo: <b>no perdés el ticket que ya armaste</b>.</div>
+
+  <h3>Un helado: formato + sabores</h3>
+  <ol class="pasos">
+    <li>En <b>1 · Formato</b> tocá lo que pidió el cliente (cucurucho doble, vasito, 1/4 kilo…). Cada uno muestra su precio.</li>
+    <li>En <b>2 · Sabores</b> elegí los sabores. Cada sabor muestra cuántos kilos quedan en el balde abierto, o dice <i>agotado</i>. El cartel te recuerda cuántos podés elegir: <i>"elegí hasta 2, llevás 1"</i>.</li>
+    <li>Cuando elegís el último sabor que entra, <b>se agrega solo al ticket</b>. Si el cliente quiere menos sabores de los que entran, tocá <span class="btn suave">Agregar con estos sabores</span>.</li>
+  </ol>
+  <p>El precio <b>no depende del sabor</b>: un cucurucho doble vale lo mismo lleve lo que lleve.</p>
+
+  <h3>Productos: bombones, palitos, sándwiches…</h3>
+  <p>Abajo, en <b>Productos</b>, cada botón es una presentación con su precio, por ejemplo <i>Bombón · Unidad</i> o <i>Bombón · Docena ×12</i>. Un toque lo agrega. Aparecen solo los que están activos y con precio.</p>
+
+  <h3>Cobrar</h3>
+  <ol class="pasos">
+    <li>Revisá el ticket de la derecha. Para sacar algo, tocá la <b>✕</b> de esa línea.</li>
+    <li>Elegí el medio de pago: <b>Efectivo</b>, <b>Tarjeta</b> o <b>Transferencia</b>.</li>
+    <li>Apretá <span class="btn">Cobrar</span>. El ticket queda vacío, listo para el próximo cliente, y arriba aparece el aviso verde con lo cobrado y el número de venta.</li>
+  </ol>
+
+  <div class="caja-aviso ejemplo"><b>Ejemplo 1 · Un cucurucho doble y una docena de bombones, en efectivo</b>
+    <div class="ticket">
+      <div class="f"><span>Cucurucho doble</span><span>$5.500</span></div>
+      <small>● Frutilla ● Dulce de leche</small>
+      <div class="f"><span>Bombón · Docena ×12</span><span>$9.000</span></div>
+      <div class="f t"><span>TOTAL</span><span>$14.500</span></div>
+    </div>
+    <p>Tocás <i>Cucurucho doble</i>, <i>Frutilla</i>, <i>Dulce de leche</i> (se agrega solo), después <i>Bombón · Docena</i>, dejás <i>Efectivo</i> y apretás <i>Cobrar</i>. Aviso: <b>Cobrado: $14.500 · Efectivo · #38</b>. Esa plata entra sola a la caja.</p>
+  </div>
+
+  <h3>Si no hay balde abierto</h3>
+  <p>El helado sale de un <b>balde abierto</b> de cada sabor. Si el cliente pide Frutilla y no hay uno abierto, el sistema no cobra y te lo dice: <i>"No hay un balde abierto de Frutilla"</i>. Si hay un balde cerrado de ese sabor, aparece el botón <span class="btn suave">Abrir balde de Frutilla</span>: lo tocás y volvés a apretar <i>Cobrar</i>. El ticket sigue como estaba.</p>
+  <div class="caja-aviso tip"><b>El stock no frena una venta</b>Si el sistema cree que quedan 0,1 kg pero en el balde hay helado de sobra, igual se vende. Lo que se descuenta es una estimación (los gramos del formato, repartidos entre los sabores); después se corrige con un ajuste. Con el cliente esperando, lo que está mal es el conteo, no la venta.</div>
+
+  <h3>Vender un balde entero</h3>
+  <p>Si hay baldes <b>cerrados</b>, aparece la sección <b>Balde entero</b> con un botón por sabor: nombre, cuántos baldes cerrados hay y el precio. Un toque lo suma al ticket. El sistema entrega el balde cerrado más viejo.</p>
+  <ul>
+    <li>Un balde abierto no se ofrece: ya se está sirviendo.</li>
+    <li>Si el botón dice <b>Sin precio</b>, el dueño todavía no le puso precio al balde entero (ver <a href="#baldes">El ciclo del balde</a>).</li>
+  </ul>
+  <div class="caja-aviso ojo"><b>Vender un balde entero deja menos margen de lo que parece</b>El cliente se queda con el envase y Goro tiene que comprar otro. El Panel ya lo suma al costo, para que veas la ganancia real.</div>
+
+  <h3>Con código de barras (o tipeando el código)</h3>
+  <p>Arriba de todo hay un campo <span class="campo">Código de barras</span>. Es donde "suena" la pistola: escanea el código y aprieta Enter solo. Sin pistola, tipeás el código (está impreso debajo de las barras) y apretás <b>Enter</b>.</p>
+  <ul>
+    <li><b>Un pote armado</b> (<code>GP…</code>) se agrega al ticket con el precio que tenía su etiqueta.</li>
+    <li><b>Un balde cerrado</b> (<code>GB…</code>) se vende entero: ese balde en particular.</li>
+    <li><b>Un producto</b> (<code>GA…</code>, como un bombón) se agrega por unidad.</li>
+  </ul>
+  <p>Debajo del campo el sistema dice qué hizo: <i>"Agregado: Pote 1/2 kilo · Frutilla"</i>, o por qué no: <i>"Ese pote ya se vendió"</i>, <i>"Ese código no está cargado"</i>. Un pote no puede entrar dos veces al mismo ticket. El campo queda listo para escanear el siguiente.</p>
+
+  <h3>Doble clic y reintentos: no se cobra dos veces</h3>
+  <p>Si tocás <span class="btn">Cobrar</span> dos veces seguidas, o se corta internet justo al cobrar y volvés a tocar, <b>la venta entra una sola vez</b>. Si aparece <i>"No llegó la respuesta. Tocá Cobrar de nuevo"</i>, hacelo con confianza.</p>
+
+  <h3>Últimas ventas: anular o corregir</h3>
+  <p>Abajo de todo ves las <b>últimas 5 ventas</b>. Tocá una para abrir su ticket.</p>
+  <ul>
+    <li><b>Corregir un sabor.</b> El cliente cambió de idea: en el sabor que quiere cambiar elegí <i>cambiar a…</i> y el nuevo sabor, y tocá <span class="btn suave">Cambiar</span>. El helado se devuelve al balde del sabor viejo y se saca del nuevo. <b>El precio no cambia.</b></li>
+    <li><b>Anular.</b> El enlace <i>Anular</i> deshace la venta entera: el helado y los envases vuelven al stock y, si fue en efectivo, la plata sale de la caja. Una venta anulada queda marcada en rojo, no se borra.</li>
+  </ul>
+  <p class="rol">Permiso: «anular ventas y corregir sabores». Sin él, estas opciones no aparecen.</p>
+  <div class="caja-aviso ojo"><b>Anular una venta en efectivo pide caja abierta</b>Porque la plata sale del cajón de <i>hoy</i>, aunque la venta sea de otro día.</div>
+  <p>Un <b>balde entero</b> no tiene sabores para corregir: si te equivocaste de balde, anulá la venta y cobrala de nuevo.</p>
+</section>
+
+<!-- ======================================================= -->
+<section id="historial">
+  <h2><span class="n">5</span>Historial de ventas</h2>
+  <p class="bajada">Para buscar una venta que no es de hace un rato.</p>
+  <ol class="pasos">
+    <li>Elegí el período con los botones <b>Hoy</b>, <b>Esta semana</b>, <b>Este mes</b>, o escribí las fechas en <span class="campo">Desde</span> y <span class="campo">Hasta</span>.</li>
+    <li>Si querés, filtrá por <span class="campo">Medio de pago</span> (por ejemplo, solo transferencias).</li>
+    <li>Apretá <span class="btn suave">Buscar</span>.</li>
+  </ol>
+  <p>Arriba ves el resumen: <i>"12 ventas · $148.000 cobrado · 1 anulada"</i>. Cada fila se abre para ver el ticket, igual que en Ventas: ahí mismo se puede anular o corregir un sabor.</p>
+  <div class="caja-aviso ojo"><b>Se muestran hasta 100 ventas</b>Si el rango tiene más, el sistema lo avisa en rojo: acotá las fechas. El resumen de arriba es de las filas que ves. Para tener <b>todas</b>, el dueño las baja en Excel.</div>
+  <p>La búsqueda queda guardada en la dirección de la página: podés guardarla como favorito (por ejemplo, "transferencias de esta semana").</p>
+  <div class="caja-aviso ejemplo"><b>Ejemplo</b> El cliente dice que pagó $5.500 con tarjeta "como a las 4". Entrás a Historial, tocás <i>Hoy</i>, medio de pago <i>Tarjeta</i>, <i>Buscar</i>. Ves la lista, abrís la venta de las 16:05 y ahí está el ticket.</div>
+</section>
+
+<!-- ======================================================= -->
+<section id="inventario">
+  <h2><span class="n">6</span>Inventario</h2>
+  <p class="bajada">Lo que hay en el local. Tiene dos pestañas: <b>Ver</b> (cómo está todo) y <b>Cargar</b> (agregar cosas nuevas).</p>
+
+  <h3>Qué se maneja acá</h3>
+  <div class="tarjetas">
+    <div><b>Sabores y baldes</b>El helado. Cada sabor tiene uno o más baldes; <i>el balde</i> es la unidad real, no el sabor.</div>
+    <div><b>Insumos</b>Lo que se consume: cucharitas, servilletas, potes vacíos.</div>
+    <div><b>Productos</b>Lo que se vende por unidad o docena: bombón, palito, sándwich.</div>
+    <div><b>Formatos</b>Cucurucho, vasito, 1/4, 1/2, kilo: con su precio y cuántos sabores entran.</div>
+  </div>
+
+  <h3>Ver → Sabores</h3>
+  <p>Una fila por sabor, con una cubetita de color que muestra cuánto queda, los kilos del balde abierto, el mínimo de alerta y un estado:</p>
+  <ul>
+    <li><span class="pill ok">Ok</span> todo en orden.</li>
+    <li><span class="pill aviso">Se está por acabar</span> el balde abierto bajó del mínimo. Es hora de abrir otro.</li>
+    <li><span class="pill alerta">Sin balde abierto</span> no se puede vender ese sabor hasta abrir uno.</li>
+  </ul>
+  <p>Arriba hay un buscador y una opción de vista cómoda o compacta. Con la <b>▼</b> de la fila se abre el detalle de los baldes:</p>
+  <div class="tabla-scroll"><table>
+    <tr><th>Botón</th><th>Qué hace</th></tr>
+    <tr><td><span class="btn">Abrir</span></td><td>Pasa un balde cerrado al mostrador. <b>Solo puede haber uno abierto por sabor.</b></td></tr>
+    <tr><td><i>Ajustar</i> (±&nbsp;kg)</td><td>Corrige los kilos del balde abierto. Lo usás a fin de día, cuando mirás el balde y no coincide con lo que dice el sistema. Positivo suma, negativo resta.</td></tr>
+    <tr><td><i>Se terminó</i></td><td>El balde abierto se acabó: sale del mostrador y queda esperando el canje con el proveedor. Ver <a href="#baldes">El ciclo del balde</a>.</td></tr>
+    <tr><td><span class="btn suave">Reponer</span> (en la fila)</td><td>Suma o corrige kilos del balde abierto sin abrir el detalle. Un número negativo corrige para abajo.</td></tr>
+    <tr><td><i>Borrar</i> (dueño)</td><td>Solo un balde <b>cerrado</b> y cargado por error. Uno abierto no se borra: se ajusta.</td></tr>
+  </table></div>
+  <p class="rol">Permiso: «cargar mercadería, baldes y ajustes». Abrir un balde lo puede hacer cualquiera.</p>
+  <p>El <b>dueño</b>, en ese mismo detalle, además puede cambiar el color del sabor, su nombre, el mínimo de alerta (en kg; vacío = el del comercio), el <b>precio del balde entero</b> (vacío = el del comercio), desactivarlo o borrarlo si nunca se usó.</p>
+
+  <h3>Ver → Insumos y Productos</h3>
+  <p>Cada fila muestra el stock, un estado (Ok, bajo o agotado) y el botón <i>Cargar</i>. Con él se abre una ventanita con tres datos:</p>
+  <ul>
+    <li><b>Tipo</b>: <i>Entrada</i> (llegó mercadería: siempre suma) o <i>Ajuste</i> (corregir el conteo: suma o resta).</li>
+    <li><b>Cantidad</b>.</li>
+    <li><b>Motivo</b> (opcional): "Pedido del martes", "Se rompieron 3".</li>
+  </ul>
+  <p>El stock <b>nunca se pisa con un número</b>: cada entrada o ajuste queda anotado como un movimiento. Si un día algo no cierra, se puede reconstruir qué pasó.</p>
+  <p>El dueño, con la ▼, edita el nombre, el mínimo y el costo, y en los productos los <b>precios de cada presentación</b> (Unidad, Docena…).</p>
+  <div class="caja-aviso ojo"><b>Un producto nuevo se carga "apagado" y sin precio</b>No aparece en Ventas hasta que el dueño le pone precio a su presentación y la activa. Es a propósito: nada sale a la venta a $0 por descuido.</div>
+
+  <h3>Ver → Formatos</h3>
+  <p>Al pie de la pantalla están los formatos con su precio. Los que se sirven en cono, canasta o vasito tienen además su <b>envase</b>: ese stock baja solo con cada venta, y el envase también se puede vender suelto ("sin helado") con su propio precio. Un formato nunca se borra si ya tiene ventas: se <b>desactiva</b> y deja de aparecer en Ventas, pero el historial sigue intacto.</p>
+  <div class="caja-aviso tip"><b>El precio queda congelado en cada venta</b>Si en marzo el kilo costaba $21.000 y en junio $24.000, la venta de marzo sigue diciendo $21.000. Cambiar precios no toca nada de lo ya vendido.</div>
+
+  <h3>Cargar</h3>
+  <p>La pestaña <b>Cargar</b> tiene un formulario por cosa:</p>
+  <div class="tabla-scroll"><table>
+    <tr><th>Formulario</th><th>Qué pide</th><th>Quién</th></tr>
+    <tr><td><b>Recibir mercadería</b></td><td>El código del artículo (se escanea o se tipea) y cuántos llegaron. Ver abajo.</td><td>Con permiso de cargar</td></tr>
+    <tr><td><b>Balde nuevo</b></td><td>Sabor, <b>Kg</b> que trae, <b>Costo</b> del balde lleno y <b>Costo envase</b> (lo que cuesta reponer el envase si se vende).</td><td>Con permiso de cargar</td></tr>
+    <tr><td><b>Sabor nuevo</b></td><td>El nombre y un color.</td><td>Dueño</td></tr>
+    <tr><td><b>Insumo nuevo</b></td><td>Nombre, unidad (unidades o kilos), cantidad actual, mínimo y costo.</td><td>Dueño</td></tr>
+    <tr><td><b>Producto nuevo</b></td><td>Nombre, costo por unidad (lo que pagás) y stock inicial.</td><td>Dueño</td></tr>
+    <tr><td><b>Formato nuevo</b></td><td>Nombre, gramos, cantidad de sabores y precio.</td><td>Dueño</td></tr>
+  </table></div>
+  <p>Todo balde nace <b>cerrado</b> y lleno, con su código de balde ya generado. Cada insumo y producto nace con su código.</p>
+
+  <div class="caja-aviso ejemplo"><b>Ejemplo · Llegó el pedido del proveedor</b>
+    <ol>
+      <li>Entran dos baldes de Frutilla de 10 kg a $40.000 cada uno, con envase de $9.000. En <i>Cargar → Balde nuevo</i> elegís Frutilla, Kg <i>10</i>, Costo <i>40000</i>, Costo envase <i>9000</i> y <i>Dar de alta</i>. Lo repetís para el segundo.</li>
+      <li>También llegaron 3 cajas de cucuruchos (hay 40 en cada caja): en <i>Recibir mercadería</i> escaneás el código de "Cucurucho" y cargás <i>120</i>.</li>
+      <li>En <i>Ver → Sabores</i> abrís Frutilla → ▼ y tocás <i>Abrir</i> en el primer balde. Ya se puede vender.</li>
+    </ol>
+  </div>
+
+  <h3>Recibir mercadería por código</h3>
+  <p>Cuando llega un pedido grande, buscar cada artículo en una lista es un fastidio. En <i>Cargar → Recibir mercadería</i>:</p>
+  <ol class="pasos">
+    <li>Escaneá (o tipeá) el <b>código del artículo</b> y apretá Enter. El cursor pasa solo a la cantidad.</li>
+    <li>Escribí <b>cuántos llegaron</b> y Enter.</li>
+    <li>El sistema responde, por ejemplo: <i>"Entraron 120 de Cucurucho. Ahora hay 160"</i>. El cursor vuelve al código para el siguiente artículo.</li>
+  </ol>
+  <p>Si el código es de un balde o de un pote, el sistema te avisa que ahí no es: los baldes se cargan en <i>Balde nuevo</i>.</p>
+
+  <h3>Cartel de los vacíos</h3>
+  <p>Cuando hay baldes terminados esperando al proveedor, arriba aparece <b>Vacíos para entregar al proveedor</b>. Es el tema del próximo capítulo.</p>
+</section>
+
+<!-- ======================================================= -->
+<section id="baldes">
+  <h2><span class="n">7</span>El ciclo del balde</h2>
+  <p class="bajada">Un balde tiene un recorrido, y las dos salidas posibles no cuestan lo mismo. Por eso el sistema sigue a cada balde por separado.</p>
+
+  <div class="tabla-scroll"><table>
+    <tr><th>Estado</th><th>Qué significa</th></tr>
+    <tr><td><span class="pill">Cerrado</span></td><td>Entero, en la cámara. Se puede abrir o vender entero.</td></tr>
+    <tr><td><span class="pill ok">Abierto</span></td><td>El del mostrador. Es del que se sirve. Solo uno por sabor.</td></tr>
+    <tr><td><span class="pill aviso">Vacío</span></td><td>Se terminó. Espera ser entregado al proveedor.</td></tr>
+    <tr><td><span class="pill">Canjeado</span></td><td>Se entregó al proveedor a cambio de uno lleno. <b>El envase volvió: no costó nada.</b></td></tr>
+    <tr><td><span class="pill">Vendido</span></td><td>Se vendió entero. <b>El cliente se llevó el envase</b> y hay que comprar otro.</td></tr>
+  </table></div>
+
+  <h3>Cuando un balde se termina</h3>
+  <p>En el detalle del sabor, tocá <i>Se terminó</i>. El sistema pregunta; si creía que todavía quedaban kilos, te lo dice (<i>"El sistema creía que quedaban 0,4 kg. Si se terminó, esos kilos se dan de baja"</i>): confirmá. Esa diferencia es normal, porque cada venta descuenta una estimación. Después abrís el siguiente balde.</p>
+
+  <h3>Cuando entregás los vacíos al proveedor</h3>
+  <p>En <i>Inventario → Ver</i>, arriba, el cuadro <b>Vacíos para entregar al proveedor</b> lista los baldes terminados, todos tildados. Cuando los entregás, tocá <span class="btn suave">Los entregué al proveedor</span>. Podés destildar los que todavía no entregaste. Los baldes llenos que te dan a cambio se cargan por <i>Balde nuevo</i>, como siempre.</p>
+  <p class="rol">Permiso: «cargar mercadería, baldes y ajustes».</p>
+
+  <h3>Vender un balde entero</h3>
+  <p>Se hace desde <a href="#ventas">Ventas</a> (sección <i>Balde entero</i>) o escaneando el balde. Para que funcione, el dueño tiene que poner el <b>precio del balde entero</b>:</p>
+  <ul>
+    <li>Un precio para <b>todos</b> los sabores: en <i>Inventario → Ver</i>, el campo <span class="campo">Precio del balde entero ($)</span>.</li>
+    <li>Un precio distinto para un sabor (por ejemplo, el pistacho): en el detalle de ese sabor, <i>Guardar precio</i>. Si queda vacío, usa el de todos.</li>
+  </ul>
+  <p>Si alguien vende un balde por error, <b>anular la venta</b> lo devuelve a la cámara con todos sus kilos.</p>
+  <p>El <a href="#panel">Panel</a> te cuenta cuántos baldes se terminaron y cuántos se vendieron enteros en el período, y suma el envase de los vendidos al costo.</p>
+</section>
+
+<!-- ======================================================= -->
+<section id="potes">
+  <h2><span class="n">8</span>Potes armados</h2>
+  <p class="bajada">Los potes de 1/4, 1/2 o 1 kilo que quedan listos en el freezer para llevar. Cada uno tiene su etiqueta con código de barras, así se cobra en un segundo.</p>
+
+  <h3>Por qué cada pote tiene su identidad</h3>
+  <p>Un pote de 1/4 no pesa siempre 250 g: pesa 238, o 262. El sistema guarda <b>el peso real de cada uno</b> y el precio que tenía cuando se armó. Así sabés cuánto helado salió de verdad, y un cambio de precios no hace mentir a las etiquetas ya pegadas.</p>
+
+  <h3>Armar un pote</h3>
+  <ol class="pasos">
+    <li>Entrá a <b>Potes</b>.</li>
+    <li>Elegí el <span class="campo">Formato</span> y el <span class="campo">Sabor</span> (los sabores son los que tienen balde abierto, con lo que les queda).</li>
+    <li>Llená el pote, <b>pesalo en la balanza</b> y escribí lo que marcó en <span class="campo">Lo que marcó la balanza (g)</span>. Enter o <span class="btn">Armar pote</span>.</li>
+    <li>El pote aparece abajo, ya tildado para imprimir. Tocá <span class="btn suave">🖨 Imprimir 1 etiqueta</span>, pegala y al freezer.</li>
+  </ol>
+  <p>Para el pote siguiente, el cursor vuelve solo al peso: si es del mismo sabor y formato, pesás, escribís y Enter.</p>
+  <div class="caja-aviso ejemplo"><b>Ejemplo</b>
+    <p>Armás un <i>1/4 kilo</i> de <i>Frutilla</i> y la balanza marca <b>262</b>. La etiqueta dice:</p>
+    <div class="ticket"><b>1/4 kilo · Frutilla</b><br>262 g · $6.500<br><span class="codigo"><i></i>GP0000012</span></div>
+    <p>El balde de Frutilla baja 0,262 kg y el pote queda registrado como "en el freezer".</p>
+  </div>
+  <div class="caja-aviso ojo"><b>El sistema te frena si el peso parece un error</b>Un 2620 donde iba 262 no se acepta, y tampoco armar un pote si al balde le queda menos de lo que pesa el pote (te dice que repongas o ajustes el balde). Solo se arman potes con un balde <b>abierto</b>.</div>
+
+  <h3>La lista "En el freezer"</h3>
+  <p>Muestra todos los potes armados que todavía no se vendieron: código, qué es, peso, precio y cuándo se armó. Tildás los que querés imprimir y debajo ves la <b>vista previa de la hoja</b>: se imprime exactamente eso (sin el menú ni los botones). Podés mandar varias etiquetas juntas a una hoja A4.</p>
+
+  <h3>Cobrar un pote</h3>
+  <p>En <a href="#ventas">Ventas</a>, escaneá la etiqueta (o tipeá el código) en el campo <span class="campo">Código de barras</span>. El pote entra al ticket al precio de su etiqueta. Un pote <b>no se puede cobrar dos veces</b>: aunque dos personas lo escaneen a la vez, solo una venta lo toma.</p>
+  <p>Si anulás esa venta, el pote <b>vuelve al freezer</b> y se puede vender de nuevo. El helado no vuelve al balde, porque el pote sigue existiendo.</p>
+
+  <h3>Anular o descartar un pote</h3>
+  <div class="tabla-scroll"><table>
+    <tr><th>Opción</th><th>Cuándo</th><th>Qué pasa con el helado</th></tr>
+    <tr><td><b>Anular</b></td><td>Lo armaste por error: pesaste mal, era otro sabor.</td><td><b>Vuelve al balde.</b> Cualquiera puede hacerlo.</td></tr>
+    <tr><td><b>Descartar</b></td><td>Se venció, se cayó, se tiró.</td><td><b>No vuelve:</b> es merma. Solo quien tiene permiso de cargar/ajustar stock.</td></tr>
+  </table></div>
+  <p>Ambas opciones piden confirmación y valen solo mientras el pote sigue en el freezer.</p>
+  <div class="caja-aviso tip"><b>Un solo sabor por pote</b>Un pote sale de un único balde. Un formato de varios sabores (como el cucurucho doble) se sigue cobrando a mano en Ventas.</div>
+</section>
+
+<!-- ======================================================= -->
+<section id="codigos">
+  <h2><span class="n">9</span>Códigos de barras y la pistola</h2>
+  <p class="bajada">Cada cosa del local tiene un código propio, creado por el sistema. Nada depende de códigos de fábrica: el proveedor no los trae.</p>
+
+  <h3>Cómo son los códigos</h3>
+  <p>Empiezan con <b>G</b>, siguen con una letra que dice qué es, seis números y un dígito de control. Ese último dígito sirve para que, si tipeás mal un código, el sistema lo detecte en vez de traerte otra cosa.</p>
+  <div class="tabla-scroll"><table>
+    <tr><th>Código</th><th>Qué identifica</th><th>Cuántos hay</th></tr>
+    <tr><td><span class="codigo"><i></i>GA0000014</span></td><td><b>A</b>rtículo: un <i>tipo</i> de cosa (insumos y productos). "Cucurucho", "Bombón".</td><td>Uno solo, para siempre. Va pegado en el estante.</td></tr>
+    <tr><td><span class="codigo"><i></i>GB0000003</span></td><td><b>B</b>alde: <i>este</i> balde en particular.</td><td>Uno por balde. Se crea cuando el balde entra.</td></tr>
+    <tr><td><span class="codigo"><i></i>GP0000012</span></td><td><b>P</b>ote: <i>este</i> pote armado.</td><td>Uno por pote. Se crea al armarlo.</td></tr>
+  </table></div>
+  <div class="caja-aviso tip"><b>El código no lleva el precio adentro</b>Solo identifica. El precio, el peso y el sabor están en el sistema. Por eso podés cambiar la lista de precios sin que las etiquetas ya impresas queden mintiendo.</div>
+
+  <h3>La pistola es un teclado</h3>
+  <p>La pistola lee las barras y "tipea" el código seguido de Enter. Por eso <b>no hace falta configurar nada</b>: donde se pueda escribir un código (el campo de Ventas, Recibir mercadería), apuntás y disparás. Y si no hay pistola, o una etiqueta no lee, <b>el código está impreso en números debajo de las barras</b>: se tipea igual.</p>
+
+  <h3>Imprimir etiquetas (módulo Códigos)</h3>
+  <p>El módulo <b>Códigos</b> tiene tres pestañas, cada una con su botón <span class="btn suave">🖨 Imprimir esta hoja</span>:</p>
+  <ul>
+    <li><b>Insumos y productos</b>: una etiqueta por artículo. Se imprime una vez, se pega en el estante donde para cada cosa y se cuelga una hoja donde se recibe la mercadería.</li>
+    <li><b>Baldes</b>: una etiqueta por cada balde que hay en el local, para pegarla en el balde.</li>
+    <li><b>Prueba de la pistola</b>: unos códigos de muestra para verificar que la pistola los lee.</li>
+  </ul>
+  <p>Los potes se imprimen desde su propia pantalla, justo al armarlos.</p>
+  <p>Las etiquetas miden lo de una hoja autoadhesiva común de A4 (63,5 × 38 mm, tres por fila), así que sirven tanto en hojas con adhesivo como en papel normal recortado.</p>
+  <div class="caja-aviso ojo"><b>Etiquetas en el freezer</b>El adhesivo común se despega con la condensación y el frío. Antes de etiquetar todo, probá una: pegala en un pote, dejala 24 horas en el freezer y volvé a leerla con la pistola. Si se despega, hace falta papel adhesivo para congelados.</div>
+  <div class="caja-aviso tip"><b>Primera vez con la pistola</b>Imprimí la pestaña <i>Prueba de la pistola</i> y escaneá cada código con el cursor en un bloc de notas. Fijate qué códigos lee, si agrega Enter al final y qué tan rápido tipea.</div>
+</section>
+
+<!-- ======================================================= -->
+<section id="usuarios">
+  <h2><span class="n">10</span>Usuarios y permisos <span class="rol">solo el dueño</span></h2>
+  <p class="bajada">Cada persona entra con su propio usuario, así cada venta y cada movimiento quedan a nombre de quien los hizo.</p>
+
+  <h3>Dar de alta a alguien</h3>
+  <ol class="pasos">
+    <li>En <b>Usuarios</b> apretá <span class="btn">Nuevo usuario</span>.</li>
+    <li>Completá <b>Nombre</b> (cómo se muestra, "Ana Ruiz"), <b>Usuario</b> (cómo entra: una palabra) y <b>Contraseña</b> (mínimo 8 caracteres; tildá <i>Mostrar</i> para verla mientras la escribís).</li>
+    <li>Elegí el <b>Rol</b>: Colaborador o Dueño. Si es colaborador, tildá lo que puede hacer además de vender (ver abajo).</li>
+    <li><span class="btn">Crear usuario</span>. Después le decís su usuario y su contraseña.</li>
+  </ol>
+  <p>Debajo del campo Usuario el sistema muestra cómo va a quedar: <i>"Va a entrar como ana.ruiz"</i>.</p>
+
+  <h3>Los tres permisos de un colaborador</h3>
+  <p>Todo colaborador puede vender, abrir y cerrar la caja, abrir baldes, vaciar un balde terminado y armar potes. Lo siguiente lo tilda el dueño en <b>Editar</b>, persona por persona:</p>
+  <div class="tabla-scroll"><table>
+    <tr><th>Permiso</th><th>Qué le deja hacer</th></tr>
+    <tr><td><b>Anular ventas y corregir sabores</b></td><td>Anular una venta, o cambiarle un sabor a un ticket.</td></tr>
+    <tr><td><b>Registrar gastos, ingresos y retiros de caja</b></td><td>Los tres botones de movimientos de la Caja, y anularlos.</td></tr>
+    <tr><td><b>Cargar mercadería, baldes y ajustes de stock</b></td><td>Dar de alta baldes, recibir mercadería, ajustar kilos o unidades, canjear baldes, descartar potes.</td></tr>
+  </table></div>
+  <p>En la tabla de usuarios, la columna <b>Puede, además de vender</b> resume lo que tiene cada uno ("Todo", "Solo vender" o la lista). Un colaborador nuevo arranca con <b>todos tildados</b>, para no sacarle nada sin querer.</p>
+  <div class="caja-aviso ejemplo"><b>Ejemplo</b> Ana está aprendiendo y querés que venda pero que no toque la plata ni el stock. Entrás a <i>Usuarios → Editar</i> en su fila y destildás los tres permisos. A partir de ese momento Ana ve Ventas, abre y cierra la caja, pero no ve los botones de anular, de gastos ni de cargar. Cuando le tengas confianza, se los volvés a tildar. Los cambios se aplican enseguida, incluso con su sesión abierta.</div>
+
+  <h3>Otras acciones</h3>
+  <ul>
+    <li><b>Contraseña</b>: se la cambiás a quien la olvidó. La anterior deja de servir.</li>
+    <li><b>Desactivar / Activar</b>: una persona desactivada no puede entrar, pero sus ventas siguen a su nombre. Es lo que corresponde cuando alguien deja de trabajar.</li>
+    <li><b>Borrar</b>: solo si nunca vendió ni movió la caja. Si ya tiene historial, no se puede borrar; queda desactivado.</li>
+    <li><b>Cambiar el usuario</b> (cómo entra) desde <i>Editar</i>.</li>
+  </ul>
+  <div class="caja-aviso ojo"><b>Dos protecciones</b>Nadie puede cambiarse el rol ni desactivarse a sí mismo, y siempre tiene que quedar <b>al menos un dueño activo</b>. Así un toque equivocado no te deja afuera de tu propio sistema.</div>
+</section>
+
+<!-- ======================================================= -->
+<section id="panel">
+  <h2><span class="n">11</span>El Panel del dueño <span class="rol">solo el dueño</span></h2>
+  <p class="bajada">Es lo primero que ves al entrar a Inicio. Sirve para decidir: cuánta gente poner, qué sabor comprar, qué día rinde más.</p>
+  <p>Arriba elegís el período (<b>Hoy</b>, <b>Esta semana</b>, <b>Este mes</b> o fechas a mano) y todo se recalcula. Cada bloque:</p>
+  <div class="tabla-scroll"><table>
+    <tr><th>Bloque</th><th>Qué te dice</th></tr>
+    <tr><td><b>Lo vendido</b></td><td>Cuánto se cobró, cuántas ventas, el ticket promedio, por medio de pago y <b>comparado con el período anterior</b> (los mismos días, justo antes), con las fechas a la vista.</td></tr>
+    <tr><td><b>Margen</b></td><td>Lo cobrado menos lo que costó lo que salió: el helado, los envases y los productos, y los envases de los baldes vendidos enteros. Es <b>margen bruto</b>: no descuenta sueldos, alquiler ni gastos de la caja.</td></tr>
+    <tr><td><b>Ventas por hora</b></td><td>Un gráfico de barras con lo cobrado en cada hora. La barra más alta (el pico) va destacada. Si el período tiene varios días, los suma.</td></tr>
+    <tr><td><b>Días de la semana</b></td><td>El promedio de cada día. Un sábado puede valer el triple de un martes: sirve para decidir el personal del finde.</td></tr>
+    <tr><td><b>Sabores</b></td><td>Los kilos que salieron de cada sabor, de mayor a menor. Es lo que sirve para comprar.</td></tr>
+    <tr><td><b>Artículos</b></td><td>Qué se vendió en unidades y plata: formatos, productos, baldes enteros y potes.</td></tr>
+    <tr><td><b>Baldes</b></td><td>Cuántos se terminaron (vuelven al proveedor) y cuántos se vendieron enteros (envases por reponer).</td></tr>
+  </table></div>
+  <div class="caja-aviso ojo"><b>Una venta anulada no cuenta en ningún número.</b> Y si corregís el sabor de un ticket, los kilos y el costo pasan al sabor correcto sin tocar la plata.</div>
+  <div class="caja-aviso tip"><b>Los costos no se mueven con el tiempo</b>El costo de cada insumo queda anotado en el momento de la venta. Si mañana sube el cucurucho, el margen del mes pasado no cambia.</div>
+  <p>El colaborador, en Inicio, ve tres atajos grandes: <i>Cobrar</i>, <i>Caja</i> e <i>Inventario</i>.</p>
+</section>
+
+<!-- ======================================================= -->
+<section id="excel">
+  <h2><span class="n">12</span>Bajar a Excel <span class="rol">solo el dueño</span></h2>
+  <p class="bajada">Un archivo de Excel de verdad (.xlsx): se abre con doble clic, con los números como números y las fechas como fechas. No hace falta configurar nada.</p>
+  <div class="tabla-scroll"><table>
+    <tr><th>Qué</th><th>Dónde está el botón</th><th>Qué trae</th></tr>
+    <tr><td><b>Inventario</b></td><td>Inventario → Ver, arriba a la derecha: <span class="btn suave">⬇ Descargar inventario en Excel</span></td><td>Cinco hojas: <i>Sabores</i> (kilos en stock, baldes cerrados, mínimo y precio de balde), <i>Baldes</i>, <i>Insumos</i>, <i>Productos y envases</i> y <i>Formatos</i>.</td></tr>
+    <tr><td><b>Ventas</b></td><td>Historial, debajo del resumen: <span class="btn suave">⬇ Descargar este período en Excel</span></td><td>Dos hojas: <i>Ventas</i> (una fila por venta, con quién cobró y quién anuló) y <i>Detalle</i> (qué se vendió en cada una). Respeta el período y el medio de pago que tengas filtrados, y trae <b>todas</b> las ventas, no solo las 100 de la pantalla.</td></tr>
+    <tr><td><b>Caja</b></td><td>Caja → Turnos cerrados: elegís <span class="campo">Desde</span> / <span class="campo">Hasta</span> y <span class="btn suave">Descargar Excel</span></td><td>Dos hojas: <i>Turnos</i> (con el arqueo: esperado, contado y diferencia) y <i>Movimientos</i> (cada peso que entró o salió).</td></tr>
+  </table></div>
+  <div class="caja-aviso ejemplo"><b>Ejemplo</b> Querés saber cuánto se vendió por transferencia en septiembre. En <i>Historial</i> ponés Desde <i>01/09</i>, Hasta <i>30/09</i>, medio <i>Transferencia</i>, <i>Buscar</i>, y bajás el Excel. En la hoja <i>Ventas</i> filtrás la columna Estado por <i>Cobrada</i> y sumás la columna Total.</div>
+  <p>Las ventas anuladas aparecen marcadas (no se esconden) para que el archivo cierre con la caja. Si un texto empieza con <code>=</code>, <code>+</code>, <code>-</code> o <code>@</code>, el archivo le antepone una comilla: es una protección para que Excel nunca lo tome por una fórmula.</p>
+</section>
+
+<!-- ======================================================= -->
+<section id="faq">
+  <h2><span class="n">13</span>Si algo sale mal</h2>
+  <p class="bajada">Las situaciones de todos los días, con qué hacer.</p>
+
+  <details class="faq"><summary>Dice "La caja está cerrada" pero el menú dice "Caja abierta" (o al revés)</summary>
+    <p>La pantalla quedó desactualizada. Apretá <b>F5</b> (recargar). Si sigue igual, entrá a <i>Caja</i> y mirá cuál es el estado real.</p></details>
+
+  <details class="faq"><summary>Me equivoqué de sabor en un ticket que ya cobré</summary>
+    <p>En <i>Últimas ventas</i> (o en el Historial) abrí la venta y en el sabor equivocado elegí <i>cambiar a…</i> el correcto → <i>Cambiar</i>. El precio no cambia. Hace falta el permiso de anular y corregir.</p></details>
+
+  <details class="faq"><summary>Cobré mal o el cliente se arrepintió</summary>
+    <p>Abrí la venta y tocá <i>Anular</i>. Todo vuelve: helado, envases, productos y la plata de la caja (si fue en efectivo, tiene que haber caja abierta). Después cobrás de nuevo, bien.</p></details>
+
+  <details class="faq"><summary>Un sabor aparece "agotado" o dice "No hay un balde abierto"</summary>
+    <p>No hay un balde abierto de ese sabor. Si hay uno cerrado, en Ventas aparece el botón <i>Abrir balde de…</i>; si no, andá a <i>Inventario</i>, buscá el sabor, abrí el detalle (▼) y tocá <i>Abrir</i>. Si no tenés ninguno, hay que cargar uno nuevo.</p></details>
+
+  <details class="faq"><summary>El balde se terminó antes de lo que decía el sistema (o después)</summary>
+    <p>Es normal: cada venta descuenta una estimación. Cuando se termina, tocá <i>Se terminó</i>. Si todavía queda helado y el sistema dice que no, usá <i>Ajustar</i> con un número positivo para sumar los kilos que faltan.</p></details>
+
+  <details class="faq"><summary>El stock de un insumo figura en negativo</summary>
+    <p>Está permitido a propósito: nunca se frena una venta por un conteo. Significa que se vendió más de lo que estaba cargado, por lo general porque falta cargar un pedido. Cargá la entrada que falta o un ajuste.</p></details>
+
+  <details class="faq"><summary>Un producto nuevo no aparece en Ventas</summary>
+    <p>Un producto recién cargado está inactivo y sin precio. El dueño tiene que ir a <i>Inventario → Ver → Productos</i>, abrir el producto (▼) y ponerle precio y activar su presentación (Unidad o Docena).</p></details>
+
+  <details class="faq"><summary>Un formato no aparece en Ventas</summary>
+    <p>Está desactivado o a $0. El dueño lo activa y le pone precio en <i>Inventario → Ver → Formatos</i>.</p></details>
+
+  <details class="faq"><summary>Dice "Ese código no es de este sistema"</summary>
+    <p>El código está mal tipeado (el dígito de control no cierra) o no es uno nuestro. Mirá los números impresos debajo de las barras y probá de nuevo. Si lo que escaneás es un producto con código de fábrica, esos no los usa el sistema.</p></details>
+
+  <details class="faq"><summary>Dice "Ese código no está cargado"</summary>
+    <p>El código tiene el formato correcto pero no existe: por ejemplo, una etiqueta de un balde o pote que ya no está (borrado, o de antes de una limpieza de la base). Hay que reimprimir la etiqueta correcta.</p></details>
+
+  <details class="faq"><summary>Al armar un pote dice que el peso está muy lejos del formato</summary>
+    <p>Revisá que hayas escrito el peso en <b>gramos</b> y sin errores (262, no 2620 ni 26). Solo se acepta un peso razonable para el formato. Si de verdad pesa tanto, el formato probablemente esté mal cargado: avisale al dueño.</p></details>
+
+  <details class="faq"><summary>Al armar un pote dice que al balde le queda menos de lo que pesa</summary>
+    <p>El sistema cree que el balde está casi vacío. Si en realidad tiene helado, sumale los kilos con <i>Reponer</i> o <i>Ajustar</i>. Si se terminó, marcalo con <i>Se terminó</i> y abrí otro.</p></details>
+
+  <details class="faq"><summary>"Falta ponerle precio al balde entero"</summary>
+    <p>El dueño tiene que cargar el precio del balde entero (general o por sabor). Ver <a href="#baldes">El ciclo del balde</a>.</p></details>
+
+  <details class="faq"><summary>"No tenés permiso para…"</summary>
+    <p>Tu usuario no tiene esa acción habilitada. Pedile al dueño que te la tilde en <i>Usuarios → Editar</i>.</p></details>
+
+  <details class="faq"><summary>No puedo entrar</summary>
+    <ul>
+      <li>Revisá el usuario (una palabra, sin correo) y la contraseña.</li>
+      <li>Si te la cambiaron, la anterior ya no sirve.</li>
+      <li>Si el dueño te desactivó, no podés entrar hasta que te active.</li>
+    </ul></details>
+
+  <details class="faq"><summary>Se cortó internet mientras cobraba</summary>
+    <p>Volvé a tocar <span class="btn">Cobrar</span> cuando vuelva: si la venta ya había entrado, el sistema no la cobra otra vez. Si aun así dudás, mirá <i>Últimas ventas</i>.</p></details>
+
+  <details class="faq"><summary>La etiqueta impresa no la lee la pistola</summary>
+    <ul>
+      <li>Tipeá el código que está impreso debajo de las barras.</li>
+      <li>Imprimí con la calidad más alta y sin achicar la hoja ("tamaño real", no "ajustar a la página").</li>
+      <li>Si se despegó o se empañó en el freezer, hace falta papel adhesivo para congelados.</li>
+    </ul></details>
+</section>
+
+<!-- ======================================================= -->
+<section id="glosario">
+  <h2><span class="n">14</span>Glosario</h2>
+  <div class="tabla-scroll"><table>
+    <tr><th>Palabra</th><th>Qué quiere decir acá</th></tr>
+    <tr><td>Turno</td><td>El período entre abrir y cerrar la caja.</td></tr>
+    <tr><td>Arqueo ciego</td><td>Contar el cajón sin que el sistema te diga cuánto debería haber. La diferencia solo la ve el dueño.</td></tr>
+    <tr><td>Fondo</td><td>La plata que queda en el cajón para el próximo turno.</td></tr>
+    <tr><td>Balde</td><td>La unidad real del helado. De un sabor puede haber varios a la vez.</td></tr>
+    <tr><td>Balde abierto</td><td>El que está en el mostrador. Uno por sabor.</td></tr>
+    <tr><td>Canje</td><td>Entregar un balde vacío al proveedor a cambio de uno lleno.</td></tr>
+    <tr><td>Formato</td><td>Una forma de vender helado: cucurucho, vasito, 1/4, 1/2, kilo. Tiene precio, gramos y cantidad de sabores.</td></tr>
+    <tr><td>Presentación</td><td>Una forma de vender un producto: Unidad, Docena…, cada una con su precio.</td></tr>
+    <tr><td>Envase "sin helado"</td><td>El cono, canasta o vasito de un formato, que también se vende suelto.</td></tr>
+    <tr><td>Pote armado</td><td>Un pote de 1/4, 1/2 o 1 kg listo en el freezer, con peso real, precio y etiqueta propios.</td></tr>
+    <tr><td>Ajuste</td><td>Una corrección del stock (suma o resta). Queda anotada, no pisa nada.</td></tr>
+    <tr><td>Entrada</td><td>Mercadería que llegó. Suma stock.</td></tr>
+    <tr><td>Mínimo</td><td>Cuánto es poco. Por debajo, el sistema avisa "se está por acabar".</td></tr>
+    <tr><td>Margen bruto</td><td>Lo cobrado menos lo que costó lo vendido. No descuenta sueldos, alquiler ni gastos.</td></tr>
+    <tr><td>Anular</td><td>Deshacer algo dejando constancia: queda tachado, no se borra.</td></tr>
+    <tr><td>Desactivar</td><td>Sacar algo de circulación sin borrarlo, para no perder el historial.</td></tr>
+  </table></div>
+</section>
+
+<!-- ======================================================= -->
+<section id="limites">
+  <h2><span class="n">15</span>Lo que el sistema no hace (todavía)</h2>
+  <p class="bajada">Para que no lo busques:</p>
+  <ul>
+    <li><b>Clientes y cuenta corriente</b>: hoy se cobra al contado.</li>
+    <li><b>Delivery o pedidos por WhatsApp.</b></li>
+    <li><b>Promos y combos</b> (2x1, happy hour, precio por cantidad).</li>
+    <li><b>Facturación electrónica.</b></li>
+    <li><b>Imprimir tickets para el cliente</b> y pantalla para el cliente.</li>
+    <li><b>Conectarse a la balanza</b>: la balanza pesa y muestra; el peso de los potes se escribe a mano.</li>
+    <li><b>Producción por bachadas</b> (qué se elaboró y cuánto rindió).</li>
+    <li><b>Varios locales</b>: el sistema es para un solo local.</li>
+  </ul>
+  <p>Cuando haya algo de esto que haga falta, se puede sumar sin tocar lo que ya funciona.</p>
+</section>
+
+</main>
+</div>
+
+<footer>
+  Guía del sistema Goro · si algo de esta guía no coincide con lo que ves en pantalla, avisá: probablemente el sistema se actualizó.
+</footer>
+
+</body>
+</html>

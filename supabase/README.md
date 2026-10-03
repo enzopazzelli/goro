@@ -49,6 +49,14 @@ todos los arreglos ya integrados. Es una excepción a la regla de no editar migr
 hizo porque el sistema todavía no tenía datos reales. De acá en adelante vuelve a valer: una migración
 aplicada no se toca, se agrega otra.
 
+## Limpiar los datos de prueba (cuando se termina de probar)
+
+`supabase/limpiar_datos_de_prueba.sql` deja la base lista para usar: **borra** ventas, caja, baldes,
+potes y el stock (todo vuelve a 0), y **conserva** usuarios, sabores, formatos, insumos, productos,
+presentaciones, precios y la configuración. Se pega en el SQL Editor y se puede repetir. Al final
+muestra un conteo para comprobar el resultado. Después hay que abrir la caja y cargar el stock real.
+No es lo mismo que `reiniciar_base.sql`, que borra `public` entero (incluido el catálogo).
+
 ## Reiniciar la base (una sola vez, para pasar al esquema renovado)
 
 **Borra todo lo de `public`, datos incluidos.** Los usuarios de Authentication no se tocan.
