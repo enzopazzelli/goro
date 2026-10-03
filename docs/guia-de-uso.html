@@ -565,6 +565,42 @@
   <h2><span class="n">8</span>Potes armados</h2>
   <p class="bajada">Los potes de 1/4, 1/2 o 1 kilo que quedan listos en el freezer para llevar. Cada uno tiene su etiqueta con código de barras, así se cobra en un segundo.</p>
 
+  <h3>Potes y baldes: no son lo mismo</h3>
+  <p>Es la duda más común, así que va primero. <b>El balde es de donde sale el helado; el pote es un producto ya envasado que se lleva el cliente.</b></p>
+  <div class="tabla-scroll"><table>
+    <tr><th></th><th>Balde</th><th>Pote armado</th></tr>
+    <tr><td><b>Qué es</b></td><td>El envase grande que llega del proveedor (por ejemplo, 10 kg de Frutilla).</td><td>Un envase chico de 1/4, 1/2 o 1 kg que <b>armás vos</b> llenándolo desde un balde.</td></tr>
+    <tr><td><b>Cómo entra al sistema</b></td><td>Se carga en <i>Inventario → Cargar → Balde nuevo</i>.</td><td>Se arma en <i>Potes</i>, con un balde abierto.</td></tr>
+    <tr><td><b>Código</b></td><td><code>GB…</code></td><td><code>GP…</code></td></tr>
+    <tr><td><b>Para qué sirve</b></td><td>Servir helado suelto (cucurucho, vasito, formatos) o venderse <b>entero</b>.</td><td>Venderse cerrado, escaneando su etiqueta.</td></tr>
+    <tr><td><b>Cuánto pesa</b></td><td>Los kilos que trae; va bajando con cada helado que se sirve.</td><td>El peso real que marcó la balanza al armarlo (262 g, no "250").</td></tr>
+    <tr><td><b>Precio</b></td><td>El del formato; si se vende entero, el precio del balde entero.</td><td>El del formato, <b>congelado</b> al armarlo.</td></tr>
+  </table></div>
+
+  <p><b>Tres situaciones, tres caminos:</b></p>
+  <ul>
+    <li><b>Un cliente pide un cucurucho.</b> El helado sale de un <b>balde abierto</b>. Siempre.</li>
+    <li><b>Un cliente se lleva un pote.</b> Es un pote que armaste antes y estaba en el freezer; se cobra escaneando la etiqueta.</li>
+    <li><b>Un cliente compra un balde entero.</b> Se vende un balde cerrado, con su envase.</li>
+  </ul>
+
+  <div class="caja-aviso ojo"><b>Un pote no se "abre"</b>
+    <p>El helado suelto <b>nunca sale de un pote</b>: sale de los baldes. Y un pote se vende entero o no se vende: no tiene kilos que se vayan gastando. Cuando un balde se termina, tocás <i>Se terminó</i> y abrís el siguiente; los potes no funcionan así.</p>
+    <p>Los gramos de un pote <b>salen del balde en el momento de armarlo</b>. Por eso solo se arman potes con un balde abierto.</p>
+  </div>
+
+  <div class="caja-aviso ejemplo"><b>Ejemplo · Un sábado de Frutilla</b>
+    <p>Tenés un balde de Frutilla abierto en el mostrador, dos cerrados en la cámara y cinco potes de 1/4 en el freezer. Son tres cosas distintas, con códigos distintos.</p>
+    <ul>
+      <li>Piden dos cucuruchos de Frutilla: el helado sale <b>del balde abierto</b>.</li>
+      <li>Llega alguien que quiere un 1/4 para llevar: le das <b>uno de los potes</b> y lo cobrás escaneando.</li>
+      <li>Quedan 3 potes. Por la tarde armás dos más <b>desde el balde abierto</b>: ese balde baja lo que pesaron.</li>
+      <li>El balde abierto se termina: <i>Se terminó</i> y abrís uno de los cerrados. Los potes del freezer no se tocan.</li>
+    </ul>
+  </div>
+
+  <p><b>Qué hacer con un pote que ya no sirve:</b> si lo armaste por error, <i>Anular</i> (el helado vuelve al balde); si se venció o se cayó, <i>Descartar</i> (merma, no vuelve). No existe la opción de "abrir un pote para servirlo suelto".</p>
+
   <h3>Por qué cada pote tiene su identidad</h3>
   <p>Un pote de 1/4 no pesa siempre 250 g: pesa 238, o 262. El sistema guarda <b>el peso real de cada uno</b> y el precio que tenía cuando se armó. Así sabés cuánto helado salió de verdad, y un cambio de precios no hace mentir a las etiquetas ya pegadas.</p>
 
@@ -735,6 +771,12 @@
   <details class="faq"><summary>Dice "Ese código no está cargado"</summary>
     <p>El código tiene el formato correcto pero no existe: por ejemplo, una etiqueta de un balde o pote que ya no está (borrado, o de antes de una limpieza de la base). Hay que reimprimir la etiqueta correcta.</p></details>
 
+  <details class="faq"><summary>¿Puedo abrir un pote para servir helado suelto?</summary>
+    <p>No. El helado suelto sale siempre de los baldes abiertos. Un pote se vende entero, escaneando su etiqueta. Si te quedaste sin helado en el mostrador, abrí un balde cerrado del sabor (<i>Inventario → Ver</i>, <b>▼</b> del sabor, <i>Abrir</i>).</p></details>
+
+  <details class="faq"><summary>Armé un pote y me equivoqué de sabor o de peso</summary>
+    <p>En <i>Potes</i>, en la fila de ese pote tocá <i>Anular</i>: el helado vuelve al balde y el pote deja de existir. Después armás uno nuevo, bien. Solo se puede anular mientras el pote sigue en el freezer.</p></details>
+
   <details class="faq"><summary>Al armar un pote dice que el peso está muy lejos del formato</summary>
     <p>Revisá que hayas escrito el peso en <b>gramos</b> y sin errores (262, no 2620 ni 26). Solo se acepta un peso razonable para el formato. Si de verdad pesa tanto, el formato probablemente esté mal cargado: avisale al dueño.</p></details>
 
@@ -779,6 +821,7 @@
     <tr><td>Formato</td><td>Una forma de vender helado: cucurucho, vasito, 1/4, 1/2, kilo. Tiene precio, gramos y cantidad de sabores.</td></tr>
     <tr><td>Presentación</td><td>Una forma de vender un producto: Unidad, Docena…, cada una con su precio.</td></tr>
     <tr><td>Envase "sin helado"</td><td>El cono, canasta o vasito de un formato, que también se vende suelto.</td></tr>
+    <tr><td>Balde vs. pote</td><td>El balde es el envase grande del proveedor, de donde sale el helado suelto. El pote es un envase chico que se arma desde un balde abierto y se vende cerrado.</td></tr>
     <tr><td>Pote armado</td><td>Un pote de 1/4, 1/2 o 1 kg listo en el freezer, con peso real, precio y etiqueta propios.</td></tr>
     <tr><td>Ajuste</td><td>Una corrección del stock (suma o resta). Queda anotada, no pisa nada.</td></tr>
     <tr><td>Entrada</td><td>Mercadería que llegó. Suma stock.</td></tr>
