@@ -49,6 +49,7 @@ export function TablaUsuarios({ perfiles, yoId }: { perfiles: Perfil[]; yoId: st
               <th className="p-3 font-normal">Usuario</th>
               <th className="p-3 font-normal">Nombre</th>
               <th className="p-3 font-normal">Rol</th>
+              <th className="p-3 font-normal">Puede, además de vender</th>
               <th className="p-3 font-normal">Estado</th>
               <th className="p-3 font-normal"></th>
             </tr>

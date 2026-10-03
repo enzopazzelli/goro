@@ -4,6 +4,7 @@ import {
   esRol,
   LARGO_MINIMO_CONTRASENA,
   leerEdicion,
+  leerPermisos,
   validarContrasena,
   validarNombre,
 } from "./alta";
@@ -89,5 +90,19 @@ describe("esIdDeUsuario", () => {
     for (const valor of ["", "1", "3f2504e0", "3f2504e0-4f89-41d3-9a0c-0305e82c3301; drop"]) {
       expect(esIdDeUsuario(valor)).toBe(false);
     }
+  });
+});
+
+describe("leerPermisos", () => {
+  it("lee los tildados y descarta lo que no es un permiso", () => {
+    const datos = new FormData();
+    datos.append("permisos", "anular_ventas");
+    datos.append("permisos", "borrar_todo");
+    datos.append("permisos", "anular_ventas");
+    expect(leerPermisos(datos)).toEqual(["anular_ventas"]);
+  });
+
+  it("sin nada tildado es una lista vacía, no un error", () => {
+    expect(leerPermisos(new FormData())).toEqual([]);
   });
 });

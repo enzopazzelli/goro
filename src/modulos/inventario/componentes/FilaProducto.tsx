@@ -1,8 +1,10 @@
 "use client";
 
+import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { useState } from "react";
 import { etiquetaPresentacion, textoPrecio } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
+import { formatearPlata } from "@/lib/plata";
 import { PresentacionesInsumo } from "@/modulos/productos/componentes/PresentacionesInsumo";
 import type { Insumo } from "../tipos";
 import { FormularioEdicionInsumo } from "./FormularioEdicionInsumo";
@@ -26,7 +28,7 @@ export function FilaProducto({
       <tr className="border-b border-linea last:border-0">
         <td className="px-2 py-[var(--fila-y)] font-semibold">{producto.nombre}</td>
         <td className="numero px-2 py-[var(--fila-y)]">{producto.cantidad} u</td>
-        <td className="numero px-2 py-[var(--fila-y)]">${producto.costo}</td>
+        <td className="numero px-2 py-[var(--fila-y)]">{formatearPlata(producto.costo)}</td>
         <td className="px-2 py-[var(--fila-y)]">
           <div className="flex flex-wrap gap-x-3 gap-y-0.5">
             {presentaciones.map((presentacion) => (
@@ -41,13 +43,15 @@ export function FilaProducto({
           <InsigniaStock cantidad={producto.cantidad} minimo={producto.minimo} />
         </td>
         <td className="px-2 py-[var(--fila-y)]">
-          <button
-            type="button"
-            onClick={() => setModalAbierto(true)}
-            className="text-xs underline opacity-70"
-          >
-            Cargar
-          </button>
+          <SiPuede permiso="cargar_inventario">
+            <button
+              type="button"
+              onClick={() => setModalAbierto(true)}
+              className="text-xs underline opacity-70"
+            >
+              Cargar
+            </button>
+          </SiPuede>
         </td>
         <td className="px-2 py-[var(--fila-y)]">
           {esDuenio && (

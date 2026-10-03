@@ -1,3 +1,4 @@
+import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { Insignia } from "@/componentes/Insignia";
 import type { Balde } from "@/lib/baldes";
 import { BotonAbrirBalde } from "./BotonAbrirBalde";
@@ -29,7 +30,11 @@ export function DetalleBaldes({ baldes, esDuenio }: { baldes: Balde[]; esDuenio:
               {esDuenio && <BotonBorrarBalde baldeId={balde.id} codigo={balde.codigo} />}
             </>
           )}
-          {balde.estado === "abierto" && <BotonAjustarBalde baldeId={balde.id} />}
+          {balde.estado === "abierto" && (
+            <SiPuede permiso="cargar_inventario">
+              <BotonAjustarBalde baldeId={balde.id} />
+            </SiPuede>
+          )}
         </li>
       ))}
     </ul>

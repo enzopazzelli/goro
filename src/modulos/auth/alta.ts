@@ -1,3 +1,4 @@
+import { esPermiso, type Permiso } from "./permisos";
 import type { Rol } from "./tipos";
 import { normalizarUsuario, validarUsuario } from "./usuario";
 
@@ -56,4 +57,14 @@ const FORMA_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12
 /** El id de un usuario llega de un campo oculto del formulario: se revisa antes de mandarlo a ningún lado. */
 export function esIdDeUsuario(valor: string): boolean {
   return FORMA_UUID.test(valor);
+}
+
+/**
+ * Los permisos tildados en el formulario. Lo que no está en la lista fija se
+ * descarta en silencio: un campo inventado a mano no llega a la base. Una lista
+ * vacía es válida y quiere decir "solo vender".
+ */
+export function leerPermisos(datos: FormData): Permiso[] {
+  const tildados = datos.getAll("permisos").map(String).filter(esPermiso);
+  return [...new Set(tildados)];
 }

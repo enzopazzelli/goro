@@ -5,6 +5,7 @@ import { Boton } from "@/componentes/Boton";
 import { CampoChico } from "@/componentes/CampoChico";
 import { Insignia } from "@/componentes/Insignia";
 import type { Formato } from "@/lib/formatos";
+import { formatearPlata } from "@/lib/plata";
 import { editarFormato, eliminarFormato } from "../consultas/accionesFormatos";
 
 const INICIAL = { error: null };
@@ -21,7 +22,7 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
           {formato.gramos} g · {formato.cantidadSabores} sabor
           {formato.cantidadSabores > 1 ? "es" : ""}
         </span>
-        <span className="numero">${formato.precio}</span>
+        <span className="numero">{formatearPlata(formato.precio)}</span>
         {!formato.activo && <Insignia variante="neutra">Inactivo</Insignia>}
       </div>
     );

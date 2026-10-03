@@ -1,5 +1,6 @@
 "use client";
 
+import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { useState } from "react";
 import { etiquetaPresentacion, textoPrecio } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
@@ -7,6 +8,7 @@ import { BotonLlevaEnvase } from "@/modulos/productos/componentes/BotonLlevaEnva
 import { PresentacionesInsumo } from "@/modulos/productos/componentes/PresentacionesInsumo";
 import type { Insumo } from "../tipos";
 import { FormularioEdicionInsumo } from "./FormularioEdicionInsumo";
+import { formatearPlata } from "@/lib/plata";
 import { InsigniaStock } from "./InsigniaStock";
 import { ModalCargarInsumo } from "./ModalCargarInsumo";
 
@@ -39,7 +41,7 @@ export function EnvaseFormato({
         <span className="numero">{envase.cantidad} en stock</span>
         <InsigniaStock cantidad={envase.cantidad} minimo={envase.minimo} />
         <span className="text-texto-suave">
-          Costo por unidad <span className="numero">${envase.costo}</span>
+          Costo por unidad <span className="numero">{formatearPlata(envase.costo)}</span>
         </span>
         {presentaciones.map((presentacion) => (
           <span key={presentacion.id} className="whitespace-nowrap">
@@ -47,13 +49,15 @@ export function EnvaseFormato({
             <span className="numero font-semibold">{textoPrecio(presentacion)}</span>
           </span>
         ))}
-        <button
-          type="button"
-          onClick={() => setModalAbierto(true)}
-          className="underline opacity-70"
-        >
-          Cargar
-        </button>
+        <SiPuede permiso="cargar_inventario">
+          <button
+            type="button"
+            onClick={() => setModalAbierto(true)}
+            className="underline opacity-70"
+          >
+            Cargar
+          </button>
+        </SiPuede>
         {esDuenio && (
           <button
             type="button"

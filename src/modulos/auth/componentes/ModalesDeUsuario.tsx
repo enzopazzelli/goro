@@ -5,7 +5,8 @@ import { Modal } from "@/componentes/Modal";
 import { borrarUsuario } from "../consultas/accionesBaja";
 import { cambiarContrasena, crearUsuario, editarUsuario } from "../consultas/accionesUsuarios";
 import type { Perfil } from "../tipos";
-import { CampoContrasena, CampoUsuario, SelectorRol } from "./CamposDeUsuario";
+import { CampoContrasena, CampoUsuario } from "./CamposDeUsuario";
+import { RolYPermisos } from "./CamposDePermisos";
 import { PieDeModal } from "./PieDeModal";
 import { useAccionDeUsuario } from "./useAccionDeUsuario";
 
@@ -20,7 +21,7 @@ export function ModalNuevoUsuario({ onCerrar, alTerminar }: Cierre) {
         <Campo etiqueta="Nombre" name="nombre" placeholder="Ana Ruiz" required />
         <CampoUsuario />
         <CampoContrasena />
-        <SelectorRol inicial="colaborador" />
+        <RolYPermisos rolInicial="colaborador" />
         <PieDeModal
           error={estado.error}
           enviando={enviando}
@@ -52,7 +53,11 @@ export function ModalEditarUsuario({
         <input type="hidden" name="id" value={perfil.id} />
         <Campo etiqueta="Nombre" name="nombre" defaultValue={perfil.nombre} required />
         <CampoUsuario inicial={perfil.usuario} />
-        <SelectorRol inicial={perfil.rol} fijo={esPropio} />
+        <RolYPermisos
+          rolInicial={perfil.rol}
+          permisosIniciales={perfil.permisos}
+          rolFijo={esPropio}
+        />
         <PieDeModal
           error={estado.error}
           enviando={enviando}

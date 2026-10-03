@@ -1,5 +1,6 @@
 "use client";
 
+import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { useState } from "react";
 import type { Insumo } from "../tipos";
 import { FormularioEdicionInsumo } from "./FormularioEdicionInsumo";
@@ -24,13 +25,15 @@ export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esD
           <InsigniaStock cantidad={insumo.cantidad} minimo={insumo.minimo} />
         </td>
         <td className="px-2 py-[var(--fila-y)]">
-          <button
-            type="button"
-            onClick={() => setModalAbierto(true)}
-            className="text-xs underline opacity-70"
-          >
-            Cargar
-          </button>
+          <SiPuede permiso="cargar_inventario">
+            <button
+              type="button"
+              onClick={() => setModalAbierto(true)}
+              className="text-xs underline opacity-70"
+            >
+              Cargar
+            </button>
+          </SiPuede>
         </td>
         <td className="px-2 py-[var(--fila-y)]">
           {esDuenio && (

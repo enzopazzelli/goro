@@ -11,7 +11,7 @@ export async function listarPerfiles(): Promise<Perfil[]> {
   const supabase = await clienteServidor();
   const { data } = await supabase
     .from("perfiles")
-    .select("id, usuario, nombre, rol, activo")
+    .select("id, usuario, nombre, rol, activo, permisos")
     .order("usuario");
 
   return (data as Perfil[] | null) ?? [];

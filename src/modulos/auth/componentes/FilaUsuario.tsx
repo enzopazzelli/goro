@@ -5,6 +5,7 @@ import { Insignia } from "@/componentes/Insignia";
 import { cambiarActivo } from "../consultas/accionesBaja";
 import type { EstadoUsuario } from "../consultas/administracion";
 import { ETIQUETA_ROL, type Perfil } from "../tipos";
+import { resumenDePermisos } from "../permisos";
 
 const INICIAL: EstadoUsuario = { error: null };
 const ENLACE = "text-xs underline opacity-70 hover:opacity-100 disabled:opacity-40";
@@ -30,6 +31,7 @@ export function FilaUsuario({
       </td>
       <td className="p-3">{perfil.nombre}</td>
       <td className="p-3">{ETIQUETA_ROL[perfil.rol]}</td>
+      <td className="p-3 text-texto-suave">{resumenDePermisos(perfil)}</td>
       <td className="p-3">
         <Insignia variante={perfil.activo ? "ok" : "alerta"}>
           {perfil.activo ? "Activo" : "Inactivo"}

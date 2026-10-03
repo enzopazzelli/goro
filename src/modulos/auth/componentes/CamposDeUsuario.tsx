@@ -63,7 +63,15 @@ export function CampoContrasena({ etiqueta = "Contraseña" }: { etiqueta?: strin
   );
 }
 
-export function SelectorRol({ inicial, fijo = false }: { inicial: Rol; fijo?: boolean }) {
+export function SelectorRol({
+  inicial,
+  fijo = false,
+  onCambiar,
+}: {
+  inicial: Rol;
+  fijo?: boolean;
+  onCambiar?: (rol: Rol) => void;
+}) {
   return (
     <label className="flex flex-col gap-1">
       <span className={ROTULO}>Rol</span>
@@ -71,6 +79,7 @@ export function SelectorRol({ inicial, fijo = false }: { inicial: Rol; fijo?: bo
         name="rol"
         defaultValue={inicial}
         disabled={fijo}
+        onChange={(evento) => onCambiar?.(evento.target.value as Rol)}
         className="rounded-(--r) border border-linea bg-superficie px-3 py-2 disabled:opacity-55"
       >
         {(Object.keys(ETIQUETA_ROL) as Rol[]).map((rol) => (

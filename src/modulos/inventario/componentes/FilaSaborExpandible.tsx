@@ -1,5 +1,6 @@
 "use client";
 
+import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { useState } from "react";
 import { Boton } from "@/componentes/Boton";
 import { Cubeta } from "@/componentes/Cubeta";
@@ -49,14 +50,16 @@ export function FilaSaborExpandible({
           <Insignia variante={insignia.variante}>{insignia.texto}</Insignia>
         </td>
         <td className="px-2 py-[var(--fila-y)]">
-          <Boton
-            type="button"
-            variante="suave"
-            onClick={() => setModalAbierto(true)}
-            className="px-3 py-1.5 text-xs"
-          >
-            Reponer
-          </Boton>
+          <SiPuede permiso="cargar_inventario">
+            <Boton
+              type="button"
+              variante="suave"
+              onClick={() => setModalAbierto(true)}
+              className="px-3 py-1.5 text-xs"
+            >
+              Reponer
+            </Boton>
+          </SiPuede>
         </td>
         <td className="px-2 py-[var(--fila-y)]">
           <button

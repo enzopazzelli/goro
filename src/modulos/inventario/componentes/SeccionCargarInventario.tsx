@@ -1,3 +1,4 @@
+import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { Tarjeta } from "@/componentes/Tarjeta";
 import type { Sabor } from "@/lib/sabores";
 import { FormularioProducto } from "@/modulos/productos/componentes/FormularioProducto";
@@ -21,10 +22,12 @@ export function SeccionCargarInventario({
           <FormularioSabor />
         </Tarjeta>
       )}
-      <Tarjeta compacta>
-        <h2 className="font-display text-base font-semibold">Balde nuevo</h2>
-        <FormularioBalde sabores={saboresActivos} />
-      </Tarjeta>
+      <SiPuede permiso="cargar_inventario">
+        <Tarjeta compacta>
+          <h2 className="font-display text-base font-semibold">Balde nuevo</h2>
+          <FormularioBalde sabores={saboresActivos} />
+        </Tarjeta>
+      </SiPuede>
       {esDuenio && (
         <Tarjeta compacta>
           <h2 className="font-display text-base font-semibold">Insumo nuevo</h2>

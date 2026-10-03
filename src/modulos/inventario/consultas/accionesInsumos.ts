@@ -1,5 +1,6 @@
 "use server";
 
+import { esFaltaDePermiso } from "@/lib/errores";
 import { revalidatePath } from "next/cache";
 import { generarCodigo } from "@/lib/codigos/codigo";
 import { clienteServidor } from "@/lib/supabase/servidor";
@@ -167,7 +168,10 @@ export async function registrarMovimiento(
     p_motivo: motivo,
   });
 
-  if (error) return { error: "No se pudo registrar el movimiento." };
+  if (error) {
+    if (esFaltaDePermiso(error)) return { error: error.message };
+    return { error: "No se pudo registrar el movimiento." };
+  }
 
   revalidatePath("/inventario");
   return SIN_ERROR;

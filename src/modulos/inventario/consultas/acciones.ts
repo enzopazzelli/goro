@@ -1,5 +1,6 @@
 "use server";
 
+import { esFaltaDePermiso } from "@/lib/errores";
 import { revalidatePath } from "next/cache";
 import { generarCodigo } from "@/lib/codigos/codigo";
 import { clienteServidor } from "@/lib/supabase/servidor";
@@ -8,10 +9,12 @@ export type EstadoFormulario = { error: string | null };
 
 const SIN_ERROR: EstadoFormulario = { error: null };
 
-export async function darDeAltaBalde(
-  _previo: EstadoFormulario,
-  datos: FormData,
-): Promise<EstadoFormulario> {
+/** Lee y valida el formulario del balde: los datos, o el problema escrito para mostrarlo. */
+type BaldeLeido =
+  | { error: string }
+  | { error?: undefined; saborId: number; kgInicial: number; costo: number; costoEnvase: number };
+
+function leerBalde(datos: FormData): BaldeLeido {
   const saborId = Number(datos.get("saborId"));
   const kgInicial = Number(datos.get("kgInicial"));
   const costo = Number(datos.get("costo"));
@@ -24,6 +27,17 @@ export async function darDeAltaBalde(
   if (!Number.isInteger(costo) || costo < 0 || !Number.isInteger(costoEnvase) || costoEnvase < 0) {
     return { error: "Costo y costo de envase tienen que ser números enteros positivos." };
   }
+
+  return { saborId, kgInicial, costo, costoEnvase };
+}
+
+export async function darDeAltaBalde(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const balde = leerBalde(datos);
+  if (balde.error !== undefined) return { error: balde.error };
+  const { saborId, kgInicial, costo, costoEnvase } = balde;
 
   const supabase = await clienteServidor();
   const { data: numero, error: errorSecuencia } = await supabase.rpc("siguiente_numero_balde");
@@ -39,7 +53,11 @@ export async function darDeAltaBalde(
     costo_envase: costoEnvase,
   });
 
-  if (error) return { error: "No se pudo dar de alta el balde." };
+  if (error) {
+    // La política de alta pide el permiso: sin él, Postgres responde 42501.
+    if (error.code === "42501") return { error: "No tenés permiso para cargar baldes." };
+    return { error: "No se pudo dar de alta el balde." };
+  }
 
   revalidatePath("/inventario");
   return SIN_ERROR;
@@ -60,6 +78,7 @@ export async function registrarAjusteBalde(
   const { error } = await supabase.rpc("registrar_ajuste_balde", { p_balde_id: baldeId, p_kg: kg });
 
   if (error) {
+    if (esFaltaDePermiso(error)) return { error: error.message };
     if (error.code === "23514") return { error: "Ese ajuste deja el balde fuera de rango." };
     return { error: "No se pudo ajustar el balde." };
   }

@@ -2,9 +2,11 @@
 
 import { useActionState, useState } from "react";
 import { Insignia } from "@/componentes/Insignia";
+import { usePuede } from "@/modulos/auth/componentes/Permisos";
 import type { Sabor } from "@/lib/sabores";
 import { ETIQUETA_MEDIO_PAGO, type VentaConTicket } from "../tipos";
 import { anularVenta } from "../consultas/acciones";
+import { formatearPlata } from "@/lib/plata";
 import { CorregirSaborItem } from "./CorregirSaborItem";
 import { DetalleTicket, type ItemParaDetalle } from "./DetalleTicket";
 
@@ -12,6 +14,7 @@ const INICIAL = { error: null };
 
 export function FilaVenta({ venta, sabores }: { venta: VentaConTicket; sabores: Sabor[] }) {
   const [estado, accion, enviando] = useActionState(anularVenta, INICIAL);
+  const puedeAnular = usePuede("anular_ventas");
   const [expandida, setExpandida] = useState(false);
 
   const itemsParaDetalle: ItemParaDetalle[] = venta.items.map((item) => ({
@@ -24,7 +27,7 @@ export function FilaVenta({ venta, sabores }: { venta: VentaConTicket; sabores: 
         ventaItemId={item.id}
         saborActual={sabor}
         sabores={sabores}
-        disabled={venta.estado !== "cobrada"}
+        disabled={venta.estado !== "cobrada" || !puedeAnular}
       />
     )),
   }));
@@ -42,7 +45,7 @@ export function FilaVenta({ venta, sabores }: { venta: VentaConTicket; sabores: 
         </span>
         <span className="flex items-center gap-2">
           {venta.estado === "anulada" && <Insignia variante="alerta">Anulada</Insignia>}
-          <span className="numero font-semibold">${venta.total}</span>
+          <span className="numero font-semibold">{formatearPlata(venta.total)}</span>
           <span aria-hidden="true" className="text-texto-suave">
             {expandida ? "▲" : "▼"}
           </span>
@@ -57,7 +60,7 @@ export function FilaVenta({ venta, sabores }: { venta: VentaConTicket; sabores: 
 
           <DetalleTicket items={itemsParaDetalle} medioPago={venta.medioPago} total={venta.total} />
 
-          {venta.estado === "cobrada" && (
+          {venta.estado === "cobrada" && puedeAnular && (
             <form action={accion}>
               <input type="hidden" name="ventaId" value={venta.id} />
               <button type="submit" disabled={enviando} className="text-xs underline opacity-70">

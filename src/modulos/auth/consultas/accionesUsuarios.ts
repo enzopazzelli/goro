@@ -3,8 +3,16 @@
 import { revalidatePath } from "next/cache";
 import { clienteServicio } from "@/lib/supabase/servicio";
 import { clienteServidor } from "@/lib/supabase/servidor";
-import { esIdDeUsuario, esRol, leerEdicion, validarContrasena, validarNombre } from "../alta";
+import {
+  esIdDeUsuario,
+  esRol,
+  leerEdicion,
+  leerPermisos,
+  validarContrasena,
+  validarNombre,
+} from "../alta";
 import { correoDesdeUsuario, normalizarUsuario, validarUsuario } from "../usuario";
+import type { Rol } from "../tipos";
 import { duenioQuePide, mensajeDeAuth, SOLO_DUENIO, type EstadoUsuario } from "./administracion";
 
 /*
@@ -41,21 +49,8 @@ export async function crearUsuario(
 
   revalidatePath("/usuarios");
 
-  // El trigger crea el perfil SIEMPRE como colaborador (el rol nunca se lee de
-  // los metadatos). Promoverlo es un update del dueño, por RLS.
-  if (rol === "duenio") {
-    const supabase = await clienteServidor();
-    const { error: errorRol } = await supabase
-      .from("perfiles")
-      .update({ rol })
-      .eq("id", data.user.id);
-    if (errorRol) {
-      return {
-        error:
-          "El usuario se creó como colaborador, pero no se pudo hacerlo dueño. Cambiale el rol desde Editar.",
-      };
-    }
-  }
+  const problemaDelPerfil = await completarPerfil(data.user.id, rol, datos);
+  if (problemaDelPerfil) return { error: problemaDelPerfil };
 
   return { error: null, aviso: `Se creó el usuario ${normalizarUsuario(usuario)}.` };
 }
@@ -88,7 +83,14 @@ export async function editarUsuario(
 
   // El rol propio no se manda: el trigger lo rechaza, y así editar el propio
   // nombre no falla por un rol que ni cambió.
-  const cambios = id === yo.id ? { nombre } : { nombre, rol };
+  // Los permisos solo se guardan para un colaborador: el dueño puede todo y su
+  // lista no se usa.
+  const cambios =
+    id === yo.id
+      ? { nombre }
+      : rol === "colaborador"
+        ? { nombre, rol, permisos: leerPermisos(datos) }
+        : { nombre, rol };
   const { error } = await supabase.from("perfiles").update(cambios).eq("id", id);
 
   revalidatePath("/usuarios");
@@ -129,4 +131,28 @@ export async function cambiarContrasena(
   if (error) return { error: mensajeDeAuth(error) };
 
   return { error: null, aviso: "Contraseña cambiada." };
+}
+
+/**
+ * El trigger crea el perfil SIEMPRE como colaborador y con todos los permisos
+ * (el rol nunca se lee de los metadatos). Promoverlo, o quitarle permisos, es un
+ * update del dueño, por RLS. Devuelve el problema, o `null` si salió bien.
+ */
+async function completarPerfil(id: string, rol: Rol, datos: FormData): Promise<string | null> {
+  const supabase = await clienteServidor();
+
+  if (rol === "duenio") {
+    const { error } = await supabase.from("perfiles").update({ rol }).eq("id", id);
+    return error
+      ? "El usuario se creó como colaborador, pero no se pudo hacerlo dueño. Cambiale el rol desde Editar."
+      : null;
+  }
+
+  const { error } = await supabase
+    .from("perfiles")
+    .update({ permisos: leerPermisos(datos) })
+    .eq("id", id);
+  return error
+    ? "El usuario se creó, pero no se pudieron guardar sus permisos. Revisalos desde Editar."
+    : null;
 }

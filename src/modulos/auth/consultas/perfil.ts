@@ -28,7 +28,7 @@ async function leerSesion(): Promise<Sesion> {
   // RLS ya limita la fila a la propia; el filtro por id es para pedir una sola.
   const { data } = await supabase
     .from("perfiles")
-    .select("id, usuario, nombre, rol, activo")
+    .select("id, usuario, nombre, rol, activo, permisos")
     .eq("id", user.id)
     .maybeSingle<Perfil>();
 

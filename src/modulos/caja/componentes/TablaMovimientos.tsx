@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Pildora } from "@/componentes/Pildora";
+import { usePuede } from "@/modulos/auth/componentes/Permisos";
 import { ETIQUETA_TIPO, type MovimientoCaja, type TipoMovimientoCaja } from "../tipos";
 import { FilaMovimiento } from "./FilaMovimiento";
 
@@ -18,6 +19,8 @@ export function TablaMovimientos({
   sePuedeAnular: boolean;
 }) {
   const [filtro, setFiltro] = useState<TipoMovimientoCaja | null>(null);
+  // Anular un gasto o un retiro es de quien puede registrarlos.
+  const puedeMover = usePuede("movimientos_caja");
 
   // Solo se ofrecen los tipos que el turno tiene: un filtro que da vacío no ayuda.
   const presentes = ORDEN.filter((tipo) => movimientos.some((m) => m.tipo === tipo));
@@ -55,7 +58,7 @@ export function TablaMovimientos({
                 key={movimiento.id}
                 movimiento={movimiento}
                 quien={nombres?.[movimiento.creadoPor]}
-                sePuedeAnular={sePuedeAnular}
+                sePuedeAnular={sePuedeAnular && puedeMover}
               />
             ))}
           </tbody>
