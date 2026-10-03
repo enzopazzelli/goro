@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { itemsParaServidor, saborIdsDe, totalDelCarrito } from "./ticket";
+import { itemsParaServidor, mismoObjeto, saborIdsDe, totalDelCarrito } from "./ticket";
 import type { ItemEnCarrito } from "./tipos";
 
 const cucurucho: ItemEnCarrito = {
@@ -63,5 +63,33 @@ describe("totalDelCarrito", () => {
 
   it("un carrito vacío vale cero", () => {
     expect(totalDelCarrito([])).toBe(0);
+  });
+});
+
+const pote: ItemEnCarrito = {
+  tipo: "pote",
+  poteId: 12,
+  nombre: "Pote 1/2 kilo · Frutilla",
+  precio: 6500,
+  saboresNombres: ["Frutilla"],
+};
+
+describe("items que se escanean", () => {
+  it("un pote viaja solo con su id, y un balde puntual con el suyo", () => {
+    expect(itemsParaServidor([pote])).toEqual([{ pote_id: 12 }]);
+    expect(itemsParaServidor([{ ...baldeEntero, baldeId: 9 }])).toEqual([
+      { balde_sabor_id: 4, balde_id: 9 },
+    ]);
+  });
+
+  it("un pote o un balde puntual no entran dos veces al ticket", () => {
+    expect(mismoObjeto(pote, { ...pote })).toBe(true);
+    expect(mismoObjeto(pote, { ...pote, poteId: 13 })).toBe(false);
+    expect(mismoObjeto({ ...baldeEntero, baldeId: 9 }, { ...baldeEntero, baldeId: 9 })).toBe(true);
+  });
+
+  it('un balde "del sabor" y un cucurucho se pueden repetir: no son un objeto puntual', () => {
+    expect(mismoObjeto(baldeEntero, baldeEntero)).toBe(false);
+    expect(mismoObjeto(cucurucho, cucurucho)).toBe(false);
   });
 });

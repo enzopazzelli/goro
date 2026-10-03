@@ -22,6 +22,8 @@ type FilaArticulo = {
   presentacion_unidades: number | null;
   insumo_nombre: string | null;
   balde_sabor_nombre: string | null;
+  pote_formato_nombre: string | null;
+  pote_sabor_nombre: string | null;
   unidades: number;
   total: number;
 };
@@ -52,6 +54,12 @@ function articulos(data: unknown): ArticuloVendido[] {
     nombre: nombreDeItem({
       formatos: fila.formato_nombre ? { nombre: fila.formato_nombre } : null,
       baldes: fila.balde_sabor_nombre ? { sabores: { nombre: fila.balde_sabor_nombre } } : null,
+      potes: fila.pote_formato_nombre
+        ? {
+            formatos: { nombre: fila.pote_formato_nombre },
+            baldes: { sabores: fila.pote_sabor_nombre ? { nombre: fila.pote_sabor_nombre } : null },
+          }
+        : null,
       presentaciones_insumo: fila.presentacion_nombre
         ? {
             nombre: fila.presentacion_nombre,

@@ -14,6 +14,10 @@ type FilaItem = {
   precio: number;
   formatos: { nombre: string } | null;
   baldes: { sabores: { nombre: string } | null } | null;
+  potes: {
+    formatos: { nombre: string } | null;
+    baldes: { sabores: { nombre: string } | null } | null;
+  } | null;
   presentaciones_insumo: {
     nombre: string;
     unidades: number;
@@ -41,7 +45,7 @@ export type FilaDeVenta = {
  */
 function mapearItem(fila: FilaItem): ItemDeVenta {
   // Un balde entero no tiene sabores que corregir: es EL balde, no una elección.
-  if (fila.baldes) {
+  if (fila.baldes || fila.potes) {
     return { id: fila.id, nombre: nombreDeItem(fila), precio: fila.precio, sabores: [] };
   }
 
@@ -82,6 +86,7 @@ export const SELECCION_DE_VENTAS = `id, medio_pago, total, estado, creado_en, cr
      id, precio,
      formatos ( nombre ),
      baldes ( sabores ( nombre ) ),
+     potes ( formatos ( nombre ), baldes ( sabores ( nombre ) ) ),
      presentaciones_insumo ( nombre, unidades, insumos ( nombre ) ),
      movimientos_balde ( kg, baldes ( sabores ( id, nombre ) ) )
    )`;

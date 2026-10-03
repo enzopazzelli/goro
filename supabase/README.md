@@ -28,6 +28,7 @@ acá abajo cuál fue la última aplicada.
 | `20261003100000_ventas_robustas.sql`    | **Clave de cobro** (un cobro no se registra dos veces) y **costo congelado** en cada movimiento de insumo; reemplaza `registrar_venta` |
 | `20261003110000_permisos.sql`           | **Permisos por acción** de cada colaborador (`perfiles.permisos`, `tiene_permiso()`); reemplaza `anular_venta`, `corregir_sabor_venta_item`, `registrar_movimiento_caja`, `anular_movimiento_caja`, `registrar_ajuste_balde` y `registrar_movimiento_insumo` |
 | `20261003120000_ciclo_balde.sql`        | **Ciclo del balde**: vaciar, canjear y vender entero; precio del balde entero; reemplaza `registrar_venta`, `anular_venta`, `corregir_sabor_venta_item` y las funciones del Panel |
+| `20261004100000_potes_y_codigos.sql`    | **Potes armados** (tabla, armar / anular / descartar / cobrar), `resolver_codigo()` para el lector, balde puntual en la venta y los potes dentro de las cuentas del Panel; reemplaza `registrar_venta`, `anular_venta`, `cobrar_item_balde` y `aplicar_movimiento_balde` |
 
 **Caja cambia cómo se vende:** desde esa migración no se cobra sin una caja abierta. Hay que
 aplicarla **antes** de desplegar el código que la usa; al revés, Ventas muestra "La caja está

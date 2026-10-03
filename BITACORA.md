@@ -51,6 +51,67 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ---
 
+## 2026-10-04 — Todo lo de los códigos que se puede hacer sin la pistola
+
+### Qué se hizo
+
+Goro todavía no tiene la pistola, y Enzo tiene que mostrarle el sistema, así que
+se adelantó todo lo que no depende del hardware. Una pistola de código de barras
+es un teclado que tipea el código y aprieta Enter: **todo se prueba tipeando el
+código**, y cuando llegue la pistola no se cambia nada. La venta de cucuruchos y
+demás no depende de esto y sigue andando a mano.
+
+- **Potes armados (pantalla `/potes`).** Se elige formato y sabor, se pesa, se
+  tipea lo que marcó la balanza y se arma: el pote nace con su código, su peso
+  real y su precio congelado, y el helado sale del balde abierto por el ledger.
+  Se imprime su etiqueta, y se puede anular (armado por error: el helado vuelve)
+  o descartar (merma: no vuelve, y lo decide quien tiene `cargar_inventario`).
+- **Campo de código en Ventas.** Se escanea o se tipea; `resolver_codigo` dice
+  qué es: un pote se cobra a su precio congelado, un balde cerrado se vende
+  entero (ESE balde, no el más viejo del sabor), un producto se vende por unidad.
+  Un pote o balde puntual no entra dos veces al mismo ticket.
+- **Etiquetas imprimibles (`/codigos`).** Hoja de artículos (insumos y productos,
+  para pegar en el estante), hoja de baldes y la prueba de la pistola. Se imprime
+  solo la hoja (CSS de impresión), con etiquetas de 63,5 × 38 mm, tres por fila.
+- **Recibir mercadería por código** (Inventario → Cargar): se escanea el insumo,
+  se tipea cuántos llegaron, Enter. El Enter de la pistola pasa a la cantidad.
+- **Migración `20261004100000_potes_y_codigos.sql`** (escrita, con sus tests;
+  **falta aplicarla**): tabla `potes`, `armar_pote`, `anular_pote`,
+  `descartar_pote`, `cobrar_item_pote`, `resolver_codigo`, y los potes dentro de
+  los kilos, el costo y el ranking del Panel.
+- 258 tests unitarios; `npm run verificar` y `npm run build` pasan.
+
+### Qué se decidió
+
+- **El pote es de UN balde (un sabor).** Un formato de varios sabores se sigue
+  cobrando a mano en Ventas, como hasta ahora.
+- **El peso se tipea.** La balanza solo pesa y muestra. La base frena un peso
+  fuera de 50 %–150 % del formato (un 2620 donde iba 262) y un balde al que no le
+  queda lo que pesa el pote.
+- **Un pote no se cobra dos veces:** `for update` y cambio de estado en la misma
+  transacción (el cobro simultáneo lo ve vendido y avisa), probado con dos cobros
+  a la vez. Anular la venta lo devuelve al freezer; el helado sigue fuera del balde.
+- **El envase de un pote se descuenta al venderlo**, como en cualquier formato; un
+  pote descartado no lo descuenta (hoy es una imprecisión chica, anotada).
+- **El código sigue sin llevar datos adentro.** El precio y el peso van impresos
+  en la etiqueta para leerlos a ojo; lo que cobra el sistema sale de la base.
+- **Impresión en hoja A4.** La impresora de etiquetas sigue sin decidirse (0.3);
+  la salida es una hoja con el `id` `hoja-de-etiquetas` y se cambia sin tocar nada más.
+
+### Qué queda pendiente
+
+1. **Aplicar `20261004100000_potes_y_codigos.sql` ANTES de desplegar el código**
+   (la pantalla de Potes y el historial de ventas la necesitan) y correr
+   `npm run test:rls`: los tests nuevos están en `potes/rls.test.ts`. El SQL no se
+   pudo ejecutar desde acá.
+2. Con la pistola real: la prueba de lectura (0.2) y la etiqueta 24 h en el
+   freezer (0.3). Es lo único que no se adelantó.
+3. Decidir la impresora de etiquetas; hoy se imprime en hoja A4.
+4. Probar a mano: armar un pote, imprimir su etiqueta, cobrarlo tipeando el
+   código, anular la venta, recibir mercadería por código.
+
+---
+
 ## 2026-10-03 — Los pendientes del Panel y las Fases 8, 9 y 10
 
 ### Qué se hizo

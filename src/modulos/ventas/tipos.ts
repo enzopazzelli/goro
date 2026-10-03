@@ -22,8 +22,13 @@ export const ETIQUETA_MEDIO_PAGO: Record<MedioPago, string> = {
 export type ItemDeTicket =
   | { tipo: "formato"; formatoId: number; saborIds: number[] }
   | { tipo: "producto"; presentacionId: number }
-  /** Un balde entero de este sabor: la base elige cuál de los cerrados sale. */
-  | { tipo: "balde"; saborId: number };
+  /**
+   * Un balde entero de este sabor. Sin `baldeId`, la base elige el cerrado más
+   * viejo; con él (se escaneó un balde puntual), vende ESE.
+   */
+  | { tipo: "balde"; saborId: number; baldeId?: number }
+  /** Un pote armado, que se cobra por su código al precio que se congeló al armarlo. */
+  | { tipo: "pote"; poteId: number };
 
 /** Lo que necesita la pantalla para mostrar el ticket en construcción. */
 export type ItemEnCarrito = ItemDeTicket & {

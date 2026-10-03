@@ -26,4 +26,24 @@ describe("nombreDeItem", () => {
     ).toBe("Docena ×12");
     expect(nombreDeItem({ formatos: null, presentaciones_insumo: null })).toBe("");
   });
+
+  it("un pote armado se llama por su formato y el sabor de su balde", () => {
+    expect(
+      nombreDeItem({
+        formatos: null,
+        presentaciones_insumo: null,
+        potes: { formatos: { nombre: "1/2 kilo" }, baldes: { sabores: { nombre: "Frutilla" } } },
+      }),
+    ).toBe("Pote 1/2 kilo · Frutilla");
+  });
+
+  it("un balde entero se llama por su sabor", () => {
+    expect(
+      nombreDeItem({
+        formatos: null,
+        presentaciones_insumo: null,
+        baldes: { sabores: { nombre: "Chocolate" } },
+      }),
+    ).toBe("Balde entero · Chocolate");
+  });
 });

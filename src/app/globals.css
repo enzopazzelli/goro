@@ -56,3 +56,35 @@ body {
   font-family: var(--fuente-dato);
   font-variant-numeric: tabular-nums;
 }
+
+/* Al imprimir se deja SOLO la hoja de etiquetas: sin el menú, sin botones, sin
+   el resto de la pantalla. `visibility` y no `display: none` para no tener que
+   listar todo lo que sobra, y la hoja se saca del flujo para que arranque en el
+   borde de la página en lugar de dejar el hueco de lo que escondió. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #hoja-de-etiquetas,
+  #hoja-de-etiquetas * {
+    visibility: visible;
+  }
+
+  #hoja-de-etiquetas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .etiqueta {
+    break-inside: avoid;
+  }
+}
+
+@page {
+  size: A4;
+  margin: 10mm;
+}

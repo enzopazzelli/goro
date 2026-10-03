@@ -95,7 +95,7 @@ export async function borrarTurnoDePrueba(turnoId: number | null) {
  * barre todas las ventas que tocaron estos formatos o presentaciones.
  */
 export async function limpiarVentasDe(
-  columna: "formato_id" | "presentacion_id" | "balde_id",
+  columna: "formato_id" | "presentacion_id" | "balde_id" | "pote_id",
   ids: number[],
 ) {
   const { data } = await servicio.from("venta_items").select("venta_id").in(columna, ids);

@@ -8,6 +8,8 @@ import type { Presentacion } from "@/lib/presentaciones";
 import type { Sabor } from "@/lib/sabores";
 import type { Cobrado, ItemEnCarrito, MedioPago } from "../tipos";
 import { registrarVenta, type EstadoTicket } from "../consultas/acciones";
+import { mismoObjeto } from "../ticket";
+import { CampoDeCodigo } from "./CampoDeCodigo";
 import { CarritoTicket } from "./CarritoTicket";
 import { SelectorDeBaldes } from "./SelectorDeBaldes";
 import { SelectorDeProductos } from "./SelectorDeProductos";
@@ -94,6 +96,10 @@ export function FormularioTicket({
           vuelve, y lo que se hubiera agregado en el medio se perdería sin que
           quien cobra sepa si entró o no. */}
       <fieldset disabled={enviando} className="flex min-w-0 flex-col gap-4">
+        <CampoDeCodigo
+          yaEnElTicket={(item) => carrito.some((actual) => mismoObjeto(actual, item))}
+          onAgregar={(item) => cambiarCarrito((actuales) => [...actuales, item])}
+        />
         <SelectorFormatoYSabores
           formatos={formatos.filter((formato) => formato.activo)}
           sabores={sabores}

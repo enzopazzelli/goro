@@ -234,6 +234,8 @@ describe("Panel: las sumas del período", () => {
         presentacion_unidades: null,
         insumo_nombre: null,
         balde_sabor_nombre: null,
+        pote_formato_nombre: null,
+        pote_sabor_nombre: null,
         unidades: 2,
         total: 6000,
       },

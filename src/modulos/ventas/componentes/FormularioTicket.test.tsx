@@ -15,6 +15,7 @@ const { registrarVenta } = vi.hoisted(() => {
 });
 
 vi.mock("../consultas/acciones", () => ({ registrarVenta }));
+vi.mock("../consultas/porCodigo", () => ({ buscarPorCodigo: vi.fn() }));
 vi.mock("@/lib/accionesCaja", () => ({ abrirCaja: vi.fn() }));
 vi.mock("@/lib/accionesBaldes", () => ({ abrirBalde: vi.fn() }));
 

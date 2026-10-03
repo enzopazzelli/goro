@@ -6,6 +6,7 @@ import { FormularioBalde } from "./FormularioBalde";
 import { FormularioFormato } from "./FormularioFormato";
 import { FormularioInsumo } from "./FormularioInsumo";
 import { FormularioSabor } from "./FormularioSabor";
+import { RecibirPorCodigo } from "./RecibirPorCodigo";
 
 export function SeccionCargarInventario({
   esDuenio,
@@ -22,6 +23,15 @@ export function SeccionCargarInventario({
           <FormularioSabor />
         </Tarjeta>
       )}
+      <SiPuede permiso="cargar_inventario">
+        <Tarjeta compacta>
+          <h2 className="font-display text-base font-semibold">Recibir mercadería</h2>
+          <p className="text-sm text-texto-suave">
+            Escaneá el código del artículo (o tipealo) y decí cuántos llegaron.
+          </p>
+          <RecibirPorCodigo />
+        </Tarjeta>
+      </SiPuede>
       <SiPuede permiso="cargar_inventario">
         <Tarjeta compacta>
           <h2 className="font-display text-base font-semibold">Balde nuevo</h2>
