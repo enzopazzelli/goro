@@ -6,7 +6,7 @@ el local lleno.
 
 Se apoya en dos documentos que ya existen y no se rediscuten acá:
 
-- `../_metodo/reglas.md` — el núcleo: las ocho reglas que no se negocian (cada
+- `../_metodo/reglas.md` — el núcleo: las diez reglas que no se negocian (cada
   una con el error real del que salió), el sistema de diseño, las convenciones
   y el plan de testing. Se repasan **antes** de escribir cada función, no
   después.

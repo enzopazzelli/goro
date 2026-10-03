@@ -14,7 +14,7 @@ Sistema de gestión para una heladería artesanal de **un solo local**.
 El plan está en `ROADMAP.md`; el mockup de venta, en `index.html` (HTML plano,
 no es código del sistema y no se toca con estas reglas).
 
-Antes de escribir una función nueva, repasar `../_metodo/reglas.md` §1. Las ocho
+Antes de escribir una función nueva, repasar `../_metodo/reglas.md` §1. Las diez
 reglas de ahí son un checklist previo, no una auditoría posterior: cada una tiene
 al lado el error real del que salió.
 
@@ -71,7 +71,7 @@ token nombrado **por su rol** (`--alerta`), nunca por su color (`--rojo`).
 
 ## Base de datos
 
-Cuatro reglas que salen de errores reales, no de teoría:
+Seis reglas que salen de errores reales, no de teoría:
 
 1. **Una operación de negocio = una transacción del lado del servidor.**
    Registrar una venta toca kilos, insumos, caja y cuenta corriente. Va en una
@@ -84,11 +84,20 @@ Cuatro reglas que salen de errores reales, no de teoría:
 4. **Toda validación de negocio existe también como `check` en la columna.**
    La del formulario es comodidad de UX, no una barrera.
 
+5. **Toda acción que crea plata se puede repetir sin duplicarse.** La pantalla manda
+   una clave de idempotencia (que cambia con el pedido) y la función devuelve lo ya
+   registrado si ya la tiene. La unicidad es un índice único parcial, no un `select`.
+6. **Se congela el dato cuando pasa, no cuando se lo mira.** Precio y costo van en el
+   movimiento: un reporte nunca lee "el valor de hoy" de algo que cambia.
+
 Y en cualquier función `security definer`, comparar roles con
 `coalesce(auth_rol() = 'duenio', false)`. Un `NULL` pelado en un `if` de
 PL/pgSQL **no** dispara la excepción, al revés que en una política RLS.
 
 ## Exportar a Excel
+
+Se baja un `.xlsx` real (no CSV: depende de la configuración regional), solo para el dueño, leyendo de a mil
+filas y fallando entero si una página falla.
 
 Todo texto cargado por una persona (nombre de sabor, detalle de un gasto, nota)
 se sanea antes de escribir la celda: si empieza con `=`, `+`, `-` o `@`, se le
