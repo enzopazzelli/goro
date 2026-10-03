@@ -2,6 +2,8 @@
 
 import { unzipSync, strFromU8 } from "fflate";
 import { describe, expect, it, vi } from "vitest";
+import { NOMBRE_COMERCIO } from "@/config/comercio";
+import { aSlug } from "@/lib/slug";
 import { entero, fechaYHora, kilos, plata, siNo, texto } from "./celdas";
 import { construirLibro, respuestaDeExcel } from "./libro";
 
@@ -91,8 +93,11 @@ describe("respuestaDeExcel", () => {
   it("se baja como archivo, con el nombre del libro y la fecha de hoy, y sin caché", async () => {
     const respuesta = await respuestaDeExcel({ nombre: "inventario", hojas: HOJAS });
 
+    // El prefijo es el nombre del comercio de la configuración: renombrarlo no rompe este test.
     expect(respuesta.headers.get("Content-Disposition")).toMatch(
-      /^attachment; filename="goro-inventario-\d{4}-\d{2}-\d{2}\.xlsx"$/,
+      new RegExp(
+        `^attachment; filename="${aSlug(NOMBRE_COMERCIO)}-inventario-\\d{4}-\\d{2}-\\d{2}\\.xlsx"$`,
+      ),
     );
     expect(respuesta.headers.get("Content-Type")).toContain("spreadsheetml.sheet");
     expect(respuesta.headers.get("Cache-Control")).toBe("no-store");

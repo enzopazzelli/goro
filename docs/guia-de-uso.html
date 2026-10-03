@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Guía de uso — Sistema Goro</title>
+<title>Guía de uso del sistema</title>
 <meta name="description" content="Guía paso a paso para usar el sistema de la heladería: caja, ventas, inventario, potes, códigos, usuarios y reportes.">
 <style>
   :root {
@@ -231,7 +231,7 @@
 <body>
 
 <header class="portada">
-  <div class="arco"><b>Goro</b><span>Heladería artesanal</span></div>
+  <div class="arco"><b class="nc">Goro</b><span class="rubro">Heladería artesanal</span></div>
   <h1>Guía de uso del sistema</h1>
   <p>Todo lo que hace falta para trabajar un día completo en el local: abrir la caja, vender, controlar el helado, armar potes y cerrar. Con ejemplos, sin palabras raras.</p>
 </header>
@@ -269,7 +269,7 @@
   <p class="bajada">Cómo se entra, qué se ve en pantalla y qué puede hacer cada persona.</p>
 
   <h3>Entrar al sistema</h3>
-  <p>En la pantalla de ingreso escribís tu <b>usuario</b> y tu <b>contraseña</b>. No hace falta ningún correo: el usuario es una sola palabra, por ejemplo <code>ana</code> o <code>goro</code>. Las mayúsculas y los espacios no molestan: el sistema los arregla solo.</p>
+  <p>En la pantalla de ingreso escribís tu <b>usuario</b> y tu <b>contraseña</b>. No hace falta ningún correo: el usuario es una sola palabra, por ejemplo <code>ana</code> o <code>lucas</code>. Las mayúsculas y los espacios no molestan: el sistema los arregla solo.</p>
   <p>La contraseña te la da el dueño. Si la olvidás, él te la cambia desde <i>Usuarios</i> (no hay recuperación por mail).</p>
 
   <h3>El menú de la izquierda</h3>
@@ -312,7 +312,7 @@
     <li><b>Entrá y abrí la caja.</b> Contás la plata del cajón y la escribís. Hasta que no esté abierta, no se puede cobrar.</li>
     <li><b>Revisá el helado.</b> En <i>Inventario</i> mirá que cada sabor tenga un balde abierto. Si falta uno, lo abrís con un toque.</li>
     <li><b>Vendé.</b> En <i>Ventas</i> armás el ticket, elegís cómo paga y apretás <span class="btn">Cobrar</span>.</li>
-    <li><b>Registrá lo que sale o entra de la caja que no es una venta</b> (un gasto, un retiro de Goro).</li>
+    <li><b>Registrá lo que sale o entra de la caja que no es una venta</b> (un gasto, un retiro del dueño).</li>
     <li><b>Cuando un balde se termina</b>, tocás <i>Se terminó</i>. Después abrís el siguiente.</li>
     <li><b>Si llega mercadería</b>, la cargás para que el stock sea real.</li>
     <li><b>Cerrá la caja.</b> Contás todo lo que hay, decís cuánto queda de fondo y listo. El sistema no te muestra si sobra o falta (ver el capítulo de Caja para saber por qué).</li>
@@ -336,9 +336,9 @@
   <p>En la pantalla de Caja hay tres botones. Cada uno pide un <b>detalle</b> y un <b>monto</b> (siempre positivo: el sistema ya sabe si entra o sale).</p>
   <div class="tabla-scroll"><table>
     <tr><th>Botón</th><th>Cuándo se usa</th><th>Ejemplo</th></tr>
-    <tr><td><span class="btn suave">Ingreso</span></td><td>Entra plata al cajón que no es una venta.</td><td>"Cambio que trajo Goro" — $20.000</td></tr>
+    <tr><td><span class="btn suave">Ingreso</span></td><td>Entra plata al cajón que no es una venta.</td><td>"Cambio que trajo el dueño" — $20.000</td></tr>
     <tr><td><span class="btn suave">Gasto</span></td><td>Sale plata para pagar algo del local.</td><td>"Hielo seco" — $4.500</td></tr>
-    <tr><td><span class="btn suave">Retiro</span></td><td>Alguien se lleva plata del cajón.</td><td>"Se lo llevó Goro" — $50.000</td></tr>
+    <tr><td><span class="btn suave">Retiro</span></td><td>Alguien se lleva plata del cajón.</td><td>"Se lo llevó el dueño" — $50.000</td></tr>
   </table></div>
   <p>Si te equivocaste, el movimiento tiene un enlace <i>Anular</i> mientras el turno siga abierto. Queda tachado, no se borra, así que queda constancia.</p>
   <p class="rol">Permiso: «registrar gastos, ingresos y retiros». Sin él no aparecen estos botones.</p>
@@ -350,7 +350,7 @@
   <ol class="pasos">
     <li>Apretá <span class="btn peligro">Cerrar caja</span>.</li>
     <li>Contá <b>toda</b> la plata del cajón y escribila en <span class="campo">¿Cuánto contaste?</span></li>
-    <li>En <span class="campo">¿Cuánto queda de fondo para el próximo turno?</span> poné lo que dejás en el cajón (el resto se lo lleva Goro).</li>
+    <li>En <span class="campo">¿Cuánto queda de fondo para el próximo turno?</span> poné lo que dejás en el cajón (el resto se lo lleva el dueño).</li>
     <li>Confirmá. El sistema <b>no te dice</b> si cerró justo: el dueño lo ve en el historial de turnos.</li>
   </ol>
 
@@ -408,7 +408,7 @@
     <li>Un balde abierto no se ofrece: ya se está sirviendo.</li>
     <li>Si el botón dice <b>Sin precio</b>, el dueño todavía no le puso precio al balde entero (ver <a href="#baldes">El ciclo del balde</a>).</li>
   </ul>
-  <div class="caja-aviso ojo"><b>Vender un balde entero deja menos margen de lo que parece</b>El cliente se queda con el envase y Goro tiene que comprar otro. El Panel ya lo suma al costo, para que veas la ganancia real.</div>
+  <div class="caja-aviso ojo"><b>Vender un balde entero deja menos margen de lo que parece</b>El cliente se queda con el envase y hay que comprar otro. El Panel ya lo suma al costo, para que veas la ganancia real.</div>
 
   <h3>Con código de barras (o tipeando el código)</h3>
   <p>Arriba de todo hay un campo <span class="campo">Código de barras</span>. Es donde "suena" la pistola: escanea el código y aprieta Enter solo. Sin pistola, tipeás el código (está impreso debajo de las barras) y apretás <b>Enter</b>.</p>
@@ -810,8 +810,17 @@
 </div>
 
 <footer>
-  Guía del sistema Goro · si algo de esta guía no coincide con lo que ves en pantalla, avisá: probablemente el sistema se actualizó.
+  Guía del sistema <span class="nc">Goro</span> · si algo de esta guía no coincide con lo que ves en pantalla, avisá: probablemente el sistema se actualizó.
 </footer>
 
+<script>
+  // ÚNICO lugar para cambiar el nombre en esta guía: el del comercio y su leyenda.
+  // Aparecen en la portada, en el título de la pestaña y en el pie.
+  var COMERCIO = { nombre: "Goro", rubro: "Heladería artesanal" };
+
+  document.querySelectorAll(".nc").forEach(function (e) { e.textContent = COMERCIO.nombre; });
+  document.querySelectorAll(".rubro").forEach(function (e) { e.textContent = COMERCIO.rubro; });
+  document.title = "Guía de uso — " + COMERCIO.nombre;
+</script>
 </body>
 </html>

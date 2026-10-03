@@ -2,14 +2,36 @@
  * Todo lo que cambia si el comercio se llama distinto vive acá y en
  * `src/estilos/tema.css` (los colores). Renombrar el negocio tiene que ser
  * tocar estos dos archivos, nunca buscar y reemplazar por todo el código.
+ *
+ * PONERLE NOMBRE AL COMERCIO — la lista completa:
+ *   1. `NOMBRE_COMERCIO` y `RUBRO_COMERCIO`, acá abajo. De ahí salen solos el
+ *      menú, el ingreso, el título de la pestaña, la descripción del sitio y el
+ *      nombre de los archivos de Excel (`<nombre>-ventas-2026-10-04.xlsx`).
+ *   2. `docs/guia-de-uso.html`: el bloque `COMERCIO` al final del archivo.
+ *   3. Si hay logo o fondo propio: `public/` (el fondo del ingreso es
+ *      `fondo-login-escritorio.svg`).
+ *
+ * LO QUE NO SE TOCA, a propósito:
+ *   - `DOMINIO_INTERNO` (abajo): queda grabado en cada cuenta.
+ *   - El prefijo `G` de los códigos de barras (`src/lib/codigos/codigo.ts`): es
+ *     una marca técnica, no el nombre. Está en el `check` de las columnas de
+ *     código de la base y en todas las etiquetas ya impresas: cambiarlo obliga
+ *     a una migración y a reimprimir todo.
+ *   - El nombre de la carpeta, del repositorio y del paquete (`goro`): es el
+ *     nombre interno del proyecto, no se muestra en ninguna pantalla.
+ *
+ * "Goro" a secas, en el código, es el dueño como persona; en las pantallas se
+ * lo llama "el dueño", para que el texto no dependa de quién lo sea.
  */
 
-/**
- * El nombre que se muestra. PROVISORIO: "Goro" es Gorosito, el dueño — el
- * nombre de la heladería todavía no está definido. Cuando lo diga, se cambia
- * esta línea y listo.
- */
+/** El nombre que se muestra. PROVISORIO: todavía no está definido el de la heladería. */
 export const NOMBRE_COMERCIO = "Goro";
+
+/** La leyenda que va debajo del nombre en el menú. */
+export const RUBRO_COMERCIO = "Heladería artesanal";
+
+/** La descripción que ven los buscadores y al compartir el enlace del sitio. */
+export const DESCRIPCION_DEL_SISTEMA = `Sistema de gestión de ${NOMBRE_COMERCIO}.`;
 
 /**
  * Dominio de los correos internos que Supabase Auth exige para crear una

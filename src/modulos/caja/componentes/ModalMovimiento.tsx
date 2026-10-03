@@ -10,9 +10,9 @@ import type { TipoManual } from "../tipos";
 const INICIAL: EstadoFormulario = { error: null };
 
 const TEXTOS: Record<TipoManual, { titulo: string; ejemplo: string }> = {
-  ingreso: { titulo: "Registrar un ingreso", ejemplo: "Cambio que trajo Goro…" },
+  ingreso: { titulo: "Registrar un ingreso", ejemplo: "Cambio que trajo el dueño…" },
   gasto: { titulo: "Registrar un gasto", ejemplo: "Hielo seco, delivery, proveedor…" },
-  retiro: { titulo: "Registrar un retiro", ejemplo: "Se lo llevó Goro…" },
+  retiro: { titulo: "Registrar un retiro", ejemplo: "Se lo llevó el dueño…" },
 };
 
 export function ModalMovimiento({ tipo, onCerrar }: { tipo: TipoManual; onCerrar: () => void }) {

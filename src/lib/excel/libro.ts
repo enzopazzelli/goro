@@ -1,6 +1,8 @@
 import "server-only";
 import writeXlsxFile, { type Cell } from "write-excel-file/node";
+import { NOMBRE_COMERCIO } from "@/config/comercio";
 import { diaLocal } from "@/lib/periodos";
+import { aSlug } from "@/lib/slug";
 import { titulo } from "./celdas";
 
 /** Una hoja del libro: sus columnas con título y ancho, y una fila por registro. */
@@ -32,14 +34,14 @@ export async function construirLibro(hojas: Hoja[]): Promise<Buffer> {
   ).toBuffer();
 }
 
-/** La respuesta HTTP que el navegador baja como archivo, con la fecha de hoy en el nombre. */
+/** La respuesta HTTP que el navegador baja como archivo: el nombre del comercio, qué es y la fecha de hoy. */
 export async function respuestaDeExcel(libro: Libro): Promise<Response> {
   const buffer = await construirLibro(libro.hojas);
 
   return new Response(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": `attachment; filename="goro-${libro.nombre}-${diaLocal()}.xlsx"`,
+      "Content-Disposition": `attachment; filename="${aSlug(NOMBRE_COMERCIO)}-${libro.nombre}-${diaLocal()}.xlsx"`,
       // Es el estado de hoy: que ningún caché intermedio entregue el de ayer.
       "Cache-Control": "no-store",
     },

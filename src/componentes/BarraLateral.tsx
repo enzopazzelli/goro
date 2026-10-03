@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NOMBRE_COMERCIO } from "@/config/comercio";
+import { NOMBRE_COMERCIO, RUBRO_COMERCIO } from "@/config/comercio";
 import { modulosDe } from "@/config/navegacion";
 import { salir } from "@/modulos/auth/consultas/acciones";
 import { ETIQUETA_ROL, type Perfil } from "@/modulos/auth/tipos";
@@ -16,7 +16,7 @@ export function BarraLateral({ perfil, cajaAbierta }: { perfil: Perfil; cajaAbie
       <div className="rounded-(--radius-arco) bg-acento px-4 pt-4 pb-3 text-center">
         <div className="font-display text-lg font-bold text-acento-texto">{NOMBRE_COMERCIO}</div>
         <div className="font-mono text-xs tracking-[0.16em] text-acento-texto/80 uppercase">
-          Heladería artesanal
+          {RUBRO_COMERCIO}
         </div>
       </div>
 

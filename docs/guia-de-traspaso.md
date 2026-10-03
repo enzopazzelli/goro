@@ -651,7 +651,7 @@ Lo que cambia con el comercio vive en pocos archivos:
 
 | Qué | Dónde |
 | --- | --- |
-| **Nombre del comercio** (hoy "Goro", provisorio) | `src/config/comercio.ts` → `NOMBRE_COMERCIO` |
+| **Nombre del comercio** (hoy "Goro", provisorio) y su leyenda | `src/config/comercio.ts` → `NOMBRE_COMERCIO` y `RUBRO_COMERCIO`. De ahí salen el menú, el ingreso, el título, la descripción del sitio y el nombre de los Excel. Además, el bloque `COMERCIO` al final de `docs/guia-de-uso.html`. |
 | **Zona horaria** | `src/config/comercio.ts` → `ZONA_HORARIA` |
 | **Dominio de los correos internos** | `src/config/comercio.ts`. **No lo cambies una vez que hay usuarios.** |
 | **Colores y tipografías** | `src/estilos/tema.css` (único archivo con colores) |

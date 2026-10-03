@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { COLOR_NAVEGADOR, NOMBRE_COMERCIO } from "@/config/comercio";
+import { COLOR_NAVEGADOR, DESCRIPCION_DEL_SISTEMA, NOMBRE_COMERCIO } from "@/config/comercio";
 import { dato, display, texto } from "@/lib/fuentes";
 import "./globals.css";
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     default: `${NOMBRE_COMERCIO} — Sistema de gestión`,
     template: `%s · ${NOMBRE_COMERCIO}`,
   },
-  description: "Sistema de gestión para la heladería.",
+  description: DESCRIPCION_DEL_SISTEMA,
 };
 
 export const viewport: Viewport = {

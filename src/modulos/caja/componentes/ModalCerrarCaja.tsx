@@ -27,7 +27,7 @@ export function ModalCerrarCaja({ onCerrar }: { onCerrar: () => void }) {
     <Modal abierto onCerrar={onCerrar} titulo="Cerrar caja" cerrarConClicAfuera={false}>
       <form action={accion} className="flex flex-col gap-3">
         <p className="text-sm text-texto-suave">
-          Contá toda la plata del cajón. Lo que no quede de fondo se lo lleva Goro.
+          Contá toda la plata del cajón. Lo que no quede de fondo se lo lleva el dueño.
         </p>
         <Campo
           etiqueta="¿Cuánto contaste?"
