@@ -85,6 +85,14 @@ demás no depende de esto y sigue andando a mano.
   el sistema) y `docs/guia-de-traspaso.md` / `.html` (guía para quien lo mantiene: entregar
   GitHub, Supabase y Vercel, backups, vaciar la base, recuperar accesos, problemas).
 
+- **El nombre del comercio, en un solo lugar.** El nombre todavía es provisorio, así que se
+  centralizó en `src/config/comercio.ts` (`NOMBRE_COMERCIO`, `RUBRO_COMERCIO`, descripción): de ahí
+  salen el menú, el ingreso, el título, la descripción del sitio y el nombre de los Excel
+  (`lib/slug.ts`). "Goro" como persona pasó a "el dueño" en las pantallas. La guía de uso tiene un
+  bloque `COMERCIO` al final. No se tocan a propósito el dominio de correos internos, el prefijo `G`
+  de los códigos (está en `check`s de la base y en las etiquetas impresas) ni el nombre del paquete.
+- **README de la raíz reescrito:** decía que no había núcleo ni auth.
+
 ### Qué se decidió
 
 - **El pote es de UN balde (un sabor).** Un formato de varios sabores se sigue
