@@ -56,9 +56,9 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 ### Qué se hizo
 
 Se empezó por lo que quedó señalado al revisar el Panel, y después las tres
-fases que faltaban de la lista de módulos pedidos. **Todo está escrito y probado
-del lado del código, pero las tres migraciones nuevas todavía no están
-aplicadas en Supabase** (ver "Qué queda pendiente").
+fases que faltaban de la lista de módulos pedidos. Las tres migraciones nuevas ya están aplicadas en Supabase y
+`npm run test:rls` pasa entero (108 tests; el único ajuste fue el mensaje de
+`registrar_venta`, que ahora nombra también al balde).
 
 - **El doble cobro.** Cada ticket lleva una clave al azar (`lib/claveUnica.ts`)
   que cambia con cualquier cambio del carrito o del medio de pago, y
@@ -122,13 +122,7 @@ aplicadas en Supabase** (ver "Qué queda pendiente").
 
 ### Qué queda pendiente
 
-1. **Aplicar las tres migraciones, en orden, ANTES de desplegar el código:**
-   `20261003100000_ventas_robustas.sql`, `20261003110000_permisos.sql` y
-   `20261003120000_ciclo_balde.sql`. Sin la de permisos nadie puede entrar (el
-   código lee `perfiles.permisos` en cada pantalla). El SQL no se pudo ejecutar
-   desde acá: **no está probado contra Postgres**. Después, `npm run test:rls`
-   (los tests nuevos están en `ventas/`, `auth/permisos/`, `inventario/ciclo/` y
-   `panel/`) y probar a mano: cobrar, anular, vender un balde entero, sacarle un
+1. Probar a mano (las migraciones ya están aplicadas y los tests de base pasan): cobrar, anular, vender un balde entero, sacarle un
    permiso a un colaborador, y bajar los tres Excel.
 2. Abrir un Excel en la compu de Goro: lo único que no se puede comprobar desde
    acá es cómo lo muestra Excel (anchos, formatos de plata, hojas).
