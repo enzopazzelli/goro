@@ -5,6 +5,7 @@ import type { Balde } from "@/lib/baldes";
 import type { Formato } from "@/lib/formatos";
 import { kgPorSabor } from "@/lib/kgPorSabor";
 import type { Sabor } from "@/lib/sabores";
+import { formatearPlata } from "@/lib/plata";
 import type { ItemEnCarrito } from "../tipos";
 import { SelectorDeSabores } from "./SelectorDeSabores";
 
@@ -80,7 +81,7 @@ export function SelectorFormatoYSabores({
               <span className="font-mono text-xs opacity-70">
                 {f.gramos} g · {f.cantidadSabores} sabor{f.cantidadSabores > 1 ? "es" : ""}
               </span>
-              <span className="numero">${f.precio}</span>
+              <span className="numero">{formatearPlata(f.precio)}</span>
             </button>
           ))}
         </div>

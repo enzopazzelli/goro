@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { formatearPlata } from "@/lib/plata";
 import { ETIQUETA_MEDIO_PAGO, type MedioPago } from "../tipos";
 
 export type ItemParaDetalle = {
@@ -27,7 +28,7 @@ export function DetalleTicket({
           >
             <div className="flex justify-between gap-2">
               <span className="font-semibold">{item.nombre}</span>
-              <span className="numero">${item.precio}</span>
+              <span className="numero">{formatearPlata(item.precio)}</span>
             </div>
             <div className="flex flex-wrap gap-2 text-xs text-texto-suave">{item.sabores}</div>
           </li>
@@ -37,7 +38,7 @@ export function DetalleTicket({
         <span className="text-xs tracking-wide text-texto-suave uppercase">
           {ETIQUETA_MEDIO_PAGO[medioPago]}
         </span>
-        <span className="numero text-xl font-semibold">${total}</span>
+        <span className="numero text-xl font-semibold">{formatearPlata(total)}</span>
       </div>
     </div>
   );

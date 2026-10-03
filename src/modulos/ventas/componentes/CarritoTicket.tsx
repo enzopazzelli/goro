@@ -3,6 +3,7 @@
 import { ArcoCab } from "@/componentes/ArcoCab";
 import { Boton } from "@/componentes/Boton";
 import { BotonAbrirCaja } from "@/componentes/ModalAbrirCaja";
+import { formatearMiles } from "@/lib/plata";
 import type { Sabor } from "@/lib/sabores";
 import type { EstadoTicket } from "../consultas/acciones";
 import { totalDelCarrito } from "../ticket";
@@ -16,6 +17,7 @@ export function CarritoTicket({
   sabores,
   medioPago,
   onCambiarMedioPago,
+  clave,
   onQuitar,
   accion,
   estado,
@@ -27,6 +29,8 @@ export function CarritoTicket({
   sabores: Sabor[];
   medioPago: MedioPago;
   onCambiarMedioPago: (medio: MedioPago) => void;
+  /** Identifica a este ticket ante la base: ver `FormularioTicket`. */
+  clave: string;
   onQuitar: (indice: number) => void;
   accion: (datos: FormData) => void;
   estado: EstadoTicket;
@@ -64,12 +68,13 @@ export function CarritoTicket({
             </span>
             <span className="numero text-4xl font-medium">
               <span className="text-base opacity-55">$</span>
-              {total}
+              {formatearMiles(total)}
             </span>
           </div>
 
           <form action={accion} className="mt-3 flex flex-col gap-2">
             <input type="hidden" name="items" value={JSON.stringify(carrito)} />
+            <input type="hidden" name="clave" value={clave} />
             <select
               name="medioPago"
               value={medioPago}

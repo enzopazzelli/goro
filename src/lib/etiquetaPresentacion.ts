@@ -1,3 +1,5 @@
+import { formatearPlata } from "@/lib/plata";
+
 /** Un nombre como "Decena x10" o "Caja ×24" ya dice cuántas unidades descuenta. */
 const CANTIDAD_EN_EL_NOMBRE = /[x×]\s*(\d+)/i;
 
@@ -15,5 +17,6 @@ export function etiquetaPresentacion(nombre: string, unidades: number): string {
 /** El precio tal como se lee en una tabla: "sin precio" no es lo mismo que $0 a la venta. */
 export function textoPrecio(presentacion: { activo: boolean; precio: number }): string {
   if (presentacion.precio === 0) return "sin precio";
-  return presentacion.activo ? `$${presentacion.precio}` : `$${presentacion.precio} (no se vende)`;
+  const precio = formatearPlata(presentacion.precio);
+  return presentacion.activo ? precio : `${precio} (no se vende)`;
 }

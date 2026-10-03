@@ -2,6 +2,7 @@
 
 import { etiquetaPresentacion } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
+import { formatearPlata } from "@/lib/plata";
 import type { ItemEnCarrito } from "../tipos";
 
 export function SelectorDeProductos({
@@ -36,7 +37,7 @@ export function SelectorDeProductos({
             <span className="font-mono text-xs opacity-70">
               {etiquetaPresentacion(presentacion.nombre, presentacion.unidades)}
             </span>
-            <span className="numero">${presentacion.precio}</span>
+            <span className="numero">{formatearPlata(presentacion.precio)}</span>
           </button>
         ))}
       </div>

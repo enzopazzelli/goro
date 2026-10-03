@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { esClaveValida } from "@/lib/claveUnica";
 import { clienteServidor } from "@/lib/supabase/servidor";
 import { itemsParaServidor } from "../ticket";
 import { esMedioDePago, type Cobrado, type ItemDeTicket, type MedioPago } from "../tipos";
@@ -81,10 +82,16 @@ export async function registrarVenta(
     return { error: "Agregá al menos un item al ticket." };
   }
 
+  // La clave identifica a ESTE ticket: si el pedido llega dos veces (doble clic,
+  // reintento tras perder la respuesta), la base devuelve la venta que ya entró
+  // en vez de cobrar otra.
+  const clave = String(datos.get("clave") ?? "");
+
   const supabase = await clienteServidor();
   const { data: ventaId, error } = await supabase.rpc("registrar_venta", {
     p_items: itemsParaServidor(items),
     p_medio_pago: medioPago,
+    p_clave: esClaveValida(clave) ? clave : null,
   });
 
   if (error) {

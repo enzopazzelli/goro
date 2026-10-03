@@ -2,6 +2,7 @@
 
 import { Punto } from "@/componentes/Punto";
 import type { Sabor } from "@/lib/sabores";
+import { formatearPlata } from "@/lib/plata";
 import { saborIdsDe } from "../ticket";
 import type { ItemEnCarrito } from "../tipos";
 
@@ -20,7 +21,7 @@ export function LineasDeCarrito({
         <li key={indice} className="flex items-start gap-2 border-b border-linea pb-2">
           <div className="min-w-0 flex-1">
             <div className="text-sm font-semibold">
-              {item.nombre} · <span className="numero">${item.precio}</span>
+              {item.nombre} · <span className="numero">{formatearPlata(item.precio)}</span>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs text-texto-suave">
               {saborIdsDe(item).map((saborId) => {

@@ -26,7 +26,7 @@ describe("etiquetaPresentacion", () => {
 
 describe("textoPrecio", () => {
   it("muestra el precio de una presentación a la venta", () => {
-    expect(textoPrecio({ activo: true, precio: 5000 })).toBe("$5000");
+    expect(textoPrecio({ activo: true, precio: 5000 })).toBe("$5.000");
   });
 
   it("dice 'sin precio' mientras no se le puso uno, esté activa o no", () => {
@@ -34,6 +34,6 @@ describe("textoPrecio", () => {
   });
 
   it("una presentación con precio pero desactivada se ve como retirada", () => {
-    expect(textoPrecio({ activo: false, precio: 5000 })).toBe("$5000 (no se vende)");
+    expect(textoPrecio({ activo: false, precio: 5000 })).toBe("$5.000 (no se vende)");
   });
 });

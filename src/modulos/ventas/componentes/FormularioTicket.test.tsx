@@ -53,6 +53,43 @@ async function cobrar() {
 
 const aviso = () => screen.getByRole("status").textContent;
 
+const claveDeLaLlamada = (indice: number) => {
+  const llamada = registrarVenta.mock.calls[indice] as unknown as [unknown, FormData];
+  return String(llamada[1].get("clave"));
+};
+
+describe("FormularioTicket: un cobro no se registra dos veces", () => {
+  it("reintentar después de perder la respuesta manda la MISMA clave, y el carrito sigue ahí", async () => {
+    registrarVenta.mockClear();
+    registrarVenta.mockRejectedValueOnce(new Error("se cortó"));
+    montar();
+    agregarBombon();
+
+    await cobrar();
+    await waitFor(() => expect(screen.getByRole("alert").textContent).toContain("Tocá Cobrar"));
+    expect(screen.getByText("1 ítem")).toBeTruthy();
+    await cobrar();
+
+    const primera = claveDeLaLlamada(0);
+    expect(primera).toMatch(/^[0-9a-f-]{36}$/);
+    expect(claveDeLaLlamada(1)).toBe(primera);
+  });
+
+  it("si el ticket cambia, la clave cambia: no se le devuelve a otro pedido la venta de uno anterior", async () => {
+    registrarVenta.mockClear();
+    registrarVenta.mockRejectedValueOnce(new Error("se cortó"));
+    registrarVenta.mockRejectedValueOnce(new Error("se cortó"));
+    montar();
+    agregarBombon();
+    await cobrar();
+
+    agregarBombon();
+    await cobrar();
+
+    expect(claveDeLaLlamada(1)).not.toBe(claveDeLaLlamada(0));
+  });
+});
+
 describe("FormularioTicket: después de cobrar", () => {
   it("el lugar del aviso existe desde antes de cobrar", () => {
     montar();

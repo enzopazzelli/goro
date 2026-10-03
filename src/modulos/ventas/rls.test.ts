@@ -8,6 +8,7 @@ import {
   borrarTurnoDePrueba,
   clavePublica,
   crearUsuarioDePrueba,
+  kgDe,
   limpiarVenta,
   limpiarVentasDe,
   servicio,
@@ -128,6 +129,63 @@ describe("RLS: ventas", () => {
     expect(Number(baldeTrasAnular!.kg_restante)).toBeCloseTo(10);
 
     await limpiarVenta(ventaId as number);
+  });
+
+  it("la misma clave de cobro no registra dos ventas, ni una después de otra ni a la vez", async () => {
+    const pedido = (clave: string) =>
+      colaborador.cliente.rpc("registrar_venta", {
+        p_items: [{ formato_id: formatoId, sabor_ids: [saborId] }],
+        p_medio_pago: "efectivo",
+        p_clave: clave,
+      });
+
+    const kgAntes = await kgDe(baldeId);
+    const claveEnSerie = crypto.randomUUID();
+    const primera = await pedido(claveEnSerie);
+    const segunda = await pedido(claveEnSerie);
+    expect(primera.error).toBeNull();
+    expect(segunda.data).toBe(primera.data);
+
+    // El doble clic de verdad: los dos pedidos viajan juntos y chocan contra el índice.
+    const claveEnParalelo = crypto.randomUUID();
+    const [a, b] = await Promise.all([pedido(claveEnParalelo), pedido(claveEnParalelo)]);
+    expect(a.error).toBeNull();
+    expect(b.error).toBeNull();
+    expect(b.data).toBe(a.data);
+
+    // Una venta por clave, y el balde bajó 2 × 250 g: no 4.
+    for (const clave of [claveEnSerie, claveEnParalelo]) {
+      const { data } = await servicio.from("ventas").select("id").eq("clave_idempotencia", clave);
+      expect(data).toHaveLength(1);
+    }
+
+    expect(await kgDe(baldeId)).toBeCloseTo(kgAntes - 0.5);
+
+    for (const id of [primera.data, a.data]) {
+      await colaborador.cliente.rpc("anular_venta", { p_venta_id: id });
+    }
+    for (const id of [primera.data, a.data]) await limpiarVenta(id as number);
+  });
+
+  it("una clave de cobro de otra persona no devuelve su venta", async () => {
+    const otro = await crearUsuarioDePrueba("colaborador");
+    const clave = crypto.randomUUID();
+
+    const { data: ventaId } = await colaborador.cliente.rpc("registrar_venta", {
+      p_items: [{ formato_id: formatoId, sabor_ids: [saborId] }],
+      p_medio_pago: "efectivo",
+      p_clave: clave,
+    });
+    const { error } = await otro.cliente.rpc("registrar_venta", {
+      p_items: [{ formato_id: formatoId, sabor_ids: [saborId] }],
+      p_medio_pago: "efectivo",
+      p_clave: clave,
+    });
+    expect(error).not.toBeNull();
+
+    await colaborador.cliente.rpc("anular_venta", { p_venta_id: ventaId });
+    await limpiarVenta(ventaId as number);
+    await servicio.auth.admin.deleteUser(otro.id);
   });
 
   it("registrar_venta avisa con hint sin_balde_abierto si el sabor no tiene balde abierto", async () => {

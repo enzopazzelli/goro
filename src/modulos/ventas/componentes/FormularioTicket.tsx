@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import type { Balde } from "@/lib/baldes";
+import { nuevaClave } from "@/lib/claveUnica";
 import type { Formato } from "@/lib/formatos";
 import type { Presentacion } from "@/lib/presentaciones";
 import type { Sabor } from "@/lib/sabores";
@@ -28,6 +29,22 @@ export function FormularioTicket({
 }) {
   const [carrito, setCarrito] = useState<ItemEnCarrito[]>([]);
   const [medioPago, setMedioPago] = useState<MedioPago>("efectivo");
+  // Identifica a este ticket ante la base: si el cobro se manda dos veces (doble
+  // clic, reintento tras perder la respuesta), la base devuelve la venta que ya
+  // entró en vez de cobrar otra. Cambia con CUALQUIER cambio del carrito o del
+  // medio de pago, así que la misma clave siempre es el mismo ticket. Se genera
+  // en un evento y no al renderizar: el servidor y el navegador no coincidirían.
+  const [clave, setClave] = useState("");
+
+  function cambiarCarrito(cambio: (actuales: ItemEnCarrito[]) => ItemEnCarrito[]) {
+    setCarrito(cambio);
+    setClave(nuevaClave());
+  }
+
+  function cambiarMedioPago(medio: MedioPago) {
+    setMedioPago(medio);
+    setClave(nuevaClave());
+  }
   // El aviso de lo cobrado se muestra mientras el carrito esté vacío: al
   // agregar el primer ítem de la venta siguiente se va solo, y si ese ítem se
   // quitó por error, vuelve. Derivarlo del carrito evita tener que apagarlo a
@@ -45,16 +62,18 @@ export function FormularioTicket({
       resultado = await registrarVenta(previo, datos);
     } catch {
       // Si se perdió la respuesta, la venta pudo haber entrado igual. El
-      // carrito queda como está, pero mandando a mirar antes de cobrar de
-      // nuevo: cobrar dos veces es peor que cobrar una vez de más a mano.
+      // carrito queda como está con la MISMA clave: volver a tocar Cobrar es
+      // seguro, porque si ya había entrado la base la devuelve sin cobrar otra.
       return {
-        error: "No sabemos si la venta entró: mirá Últimas ventas antes de cobrar de nuevo.",
+        error:
+          "No llegó la respuesta. Tocá Cobrar de nuevo: si la venta ya había entrado, no se cobra dos veces.",
       };
     }
 
     if (!resultado.error) {
       setCobrado(resultado.cobrado ?? null);
       setCarrito([]);
+      setClave("");
     }
     return resultado;
   }
@@ -62,7 +81,7 @@ export function FormularioTicket({
   const [estado, accion, enviando] = useActionState(cobrar, INICIAL);
 
   function quitar(indice: number) {
-    setCarrito((actuales) => actuales.filter((_, i) => i !== indice));
+    cambiarCarrito((actuales) => actuales.filter((_, i) => i !== indice));
   }
 
   return (
@@ -75,13 +94,13 @@ export function FormularioTicket({
           formatos={formatos.filter((formato) => formato.activo)}
           sabores={sabores}
           baldes={baldes}
-          onAgregar={(item) => setCarrito((actuales) => [...actuales, item])}
+          onAgregar={(item) => cambiarCarrito((actuales) => [...actuales, item])}
         />
         <SelectorDeProductos
           presentaciones={presentaciones.filter(
             (presentacion) => presentacion.activo && presentacion.insumoActivo,
           )}
-          onAgregar={(item) => setCarrito((actuales) => [...actuales, item])}
+          onAgregar={(item) => cambiarCarrito((actuales) => [...actuales, item])}
         />
       </fieldset>
 
@@ -89,7 +108,8 @@ export function FormularioTicket({
         carrito={carrito}
         sabores={sabores}
         medioPago={medioPago}
-        onCambiarMedioPago={setMedioPago}
+        onCambiarMedioPago={cambiarMedioPago}
+        clave={clave}
         onQuitar={quitar}
         accion={accion}
         estado={estado}
