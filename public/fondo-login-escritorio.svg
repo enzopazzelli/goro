@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080"><defs><g id="a"><path d="M-19 -4H19L0 50Z" fill="#e6bd85" stroke="#e6bd85" stroke-width="7" stroke-linejoin="round"></path>
+<circle cx="0" cy="-24" r="24" fill="#f5aebd"></circle><rect x="-28" y="-22" width="56" height="18" rx="9" fill="#f5aebd"></rect>
+<rect x="-15" y="-37" width="14" height="6" rx="3" transform="rotate(-38 -8 -34)" fill="#fff" fill-opacity=".5"></rect></g><g id="b"><rect x="-6" y="14" width="12" height="38" rx="6" fill="#ecd7b4"></rect>
+<path d="M-22 -28a22 22 0 0 1 44 0V16a8 8 0 0 1-8 8H-14a8 8 0 0 1-8-8Z" fill="#a9dcc9"></path>
+<rect x="-11" y="-26" width="5" height="28" rx="2.5" fill="#fff" fill-opacity=".5"></rect><rect x="1" y="-26" width="5" height="28" rx="2.5" fill="#fff" fill-opacity=".5"></rect></g><g id="c"><path d="M-19 4H19L0 56Z" fill="#e6bd85" stroke="#e6bd85" stroke-width="7" stroke-linejoin="round"></path>
+<circle cx="0" cy="-14" r="23" fill="#d9a26c"></circle><rect x="-27" y="-12" width="54" height="17" rx="8.5" fill="#d9a26c"></rect>
+<circle cx="0" cy="-42" r="18" fill="#f6dc93"></circle><rect x="-21" y="-41" width="42" height="13" rx="6.5" fill="#f6dc93"></rect>
+<rect x="-12" y="-52" width="11" height="5" rx="2.5" transform="rotate(-38 -6 -50)" fill="#fff" fill-opacity=".5"></rect></g><g id="d"><rect x="-6" y="14" width="12" height="38" rx="6" fill="#ecd7b4"></rect>
+<path d="M-22 -28a22 22 0 0 1 44 0V16a8 8 0 0 1-8 8H-14a8 8 0 0 1-8-8Z" fill="#f5aebd"></path>
+<rect x="-11" y="-26" width="5" height="28" rx="2.5" fill="#fff" fill-opacity=".5"></rect><rect x="1" y="-26" width="5" height="28" rx="2.5" fill="#fff" fill-opacity=".5"></rect></g><g id="e"><path d="M-19 -4H19L0 50Z" fill="#e6bd85" stroke="#e6bd85" stroke-width="7" stroke-linejoin="round"></path>
+<circle cx="0" cy="-24" r="24" fill="#a9dcc9"></circle><rect x="-28" y="-22" width="56" height="18" rx="9" fill="#a9dcc9"></rect>
+<rect x="-15" y="-37" width="14" height="6" rx="3" transform="rotate(-38 -8 -34)" fill="#fff" fill-opacity=".5"></rect></g><g id="f"><path d="M-19 4H19L0 56Z" fill="#e6bd85" stroke="#e6bd85" stroke-width="7" stroke-linejoin="round"></path>
+<circle cx="0" cy="-14" r="23" fill="#f6dc93"></circle><rect x="-27" y="-12" width="54" height="17" rx="8.5" fill="#f6dc93"></rect>
+<circle cx="0" cy="-42" r="18" fill="#f5aebd"></circle><rect x="-21" y="-41" width="42" height="13" rx="6.5" fill="#f5aebd"></rect>
+<rect x="-12" y="-52" width="11" height="5" rx="2.5" transform="rotate(-38 -6 -50)" fill="#fff" fill-opacity=".5"></rect></g></defs><rect width="1920" height="1080" fill="#fbf1e4"></rect><use href="#d" transform="translate(36.0 -76) rotate(16) scale(0.86)"></use><rect x="112.0" y="-97" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-40 120.0 -94)"></rect>
+<use href="#e" transform="translate(204.0 -76) rotate(-12) scale(0.86)"></use><rect x="280.0" y="-65" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(20 288.0 -62)"></rect>
+<use href="#f" transform="translate(372.0 -76) rotate(8) scale(0.86)"></use><circle cx="456.0" cy="-94" r="4" fill="#d9a26c"></circle>
+<use href="#a" transform="translate(540.0 -76) rotate(-14) scale(0.86)"></use><rect x="616.0" y="-65" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(35 624.0 -62)"></rect>
+<use href="#b" transform="translate(708.0 -76) rotate(10) scale(0.86)"></use><rect x="784.0" y="-97" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-15 792.0 -94)"></rect>
+<use href="#c" transform="translate(876.0 -76) rotate(-8) scale(0.86)"></use><circle cx="960.0" cy="-62" r="4" fill="#a9dcc9"></circle>
+<use href="#d" transform="translate(1044.0 -76) rotate(16) scale(0.86)"></use><rect x="1120.0" y="-97" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(20 1128.0 -94)"></rect>
+<use href="#e" transform="translate(1212.0 -76) rotate(-12) scale(0.86)"></use><rect x="1288.0" y="-65" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(70 1296.0 -62)"></rect>
+<use href="#f" transform="translate(1380.0 -76) rotate(8) scale(0.86)"></use><circle cx="1464.0" cy="-94" r="4" fill="#f5aebd"></circle>
+<use href="#a" transform="translate(1548.0 -76) rotate(-14) scale(0.86)"></use><rect x="1624.0" y="-65" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-15 1632.0 -62)"></rect>
+<use href="#b" transform="translate(1716.0 -76) rotate(10) scale(0.86)"></use><rect x="1792.0" y="-97" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-40 1800.0 -94)"></rect>
+<use href="#c" transform="translate(1884.0 -76) rotate(-8) scale(0.86)"></use><circle cx="1968.0" cy="-62" r="4" fill="#f6dc93"></circle>
+<use href="#d" transform="translate(2052.0 -76) rotate(16) scale(0.86)"></use><rect x="2128.0" y="-97" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(70 2136.0 -94)"></rect>
+<use href="#e" transform="translate(2220.0 -76) rotate(-12) scale(0.86)"></use><rect x="2296.0" y="-65" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(35 2304.0 -62)"></rect>
+<use href="#f" transform="translate(2388.0 -76) rotate(8) scale(0.86)"></use><circle cx="2472.0" cy="-94" r="4" fill="#d9a26c"></circle>
+<use href="#f" transform="translate(-48 100) rotate(8) scale(0.86)"></use><rect x="28.0" y="111" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(70 36.0 114)"></rect>
+<use href="#a" transform="translate(120 100) rotate(-14) scale(0.86)"></use><circle cx="204.0" cy="82" r="4" fill="#f5aebd"></circle>
+<use href="#b" transform="translate(288 100) rotate(10) scale(0.86)"></use><rect x="364.0" y="111" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-15 372.0 114)"></rect>
+<use href="#c" transform="translate(456 100) rotate(-8) scale(0.86)"></use><rect x="532.0" y="79" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-40 540.0 82)"></rect>
+<use href="#d" transform="translate(624 100) rotate(16) scale(0.86)"></use><circle cx="708.0" cy="114" r="4" fill="#f6dc93"></circle>
+<use href="#e" transform="translate(792 100) rotate(-12) scale(0.86)"></use><rect x="868.0" y="79" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(70 876.0 82)"></rect>
+<use href="#f" transform="translate(960 100) rotate(8) scale(0.86)"></use><rect x="1036.0" y="111" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(35 1044.0 114)"></rect>
+<use href="#a" transform="translate(1128 100) rotate(-14) scale(0.86)"></use><circle cx="1212.0" cy="82" r="4" fill="#d9a26c"></circle>
+<use href="#b" transform="translate(1296 100) rotate(10) scale(0.86)"></use><rect x="1372.0" y="111" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-40 1380.0 114)"></rect>
+<use href="#c" transform="translate(1464 100) rotate(-8) scale(0.86)"></use><rect x="1540.0" y="79" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(20 1548.0 82)"></rect>
+<use href="#d" transform="translate(1632 100) rotate(16) scale(0.86)"></use><circle cx="1716.0" cy="114" r="4" fill="#a9dcc9"></circle>
+<use href="#e" transform="translate(1800 100) rotate(-12) scale(0.86)"></use><rect x="1876.0" y="79" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(35 1884.0 82)"></rect>
+<use href="#f" transform="translate(1968 100) rotate(8) scale(0.86)"></use><rect x="2044.0" y="111" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-15 2052.0 114)"></rect>
+<use href="#a" transform="translate(2136 100) rotate(-14) scale(0.86)"></use><circle cx="2220.0" cy="82" r="4" fill="#f5aebd"></circle>
+<use href="#b" transform="translate(2304 100) rotate(10) scale(0.86)"></use><rect x="2380.0" y="111" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(20 2388.0 114)"></rect>
+<use href="#b" transform="translate(36.0 276) rotate(10) scale(0.86)"></use><circle cx="120.0" cy="258" r="4" fill="#d9a26c"></circle>
+<use href="#c" transform="translate(204.0 276) rotate(-8) scale(0.86)"></use><rect x="280.0" y="287" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-40 288.0 290)"></rect>
+<use href="#d" transform="translate(372.0 276) rotate(16) scale(0.86)"></use><rect x="448.0" y="255" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(20 456.0 258)"></rect>
+<use href="#e" transform="translate(540.0 276) rotate(-12) scale(0.86)"></use><circle cx="624.0" cy="290" r="4" fill="#a9dcc9"></circle>
+<use href="#f" transform="translate(708.0 276) rotate(8) scale(0.86)"></use><rect x="784.0" y="255" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(35 792.0 258)"></rect>
+<use href="#a" transform="translate(876.0 276) rotate(-14) scale(0.86)"></use><rect x="952.0" y="287" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-15 960.0 290)"></rect>
+<use href="#b" transform="translate(1044.0 276) rotate(10) scale(0.86)"></use><circle cx="1128.0" cy="258" r="4" fill="#f5aebd"></circle>
+<use href="#c" transform="translate(1212.0 276) rotate(-8) scale(0.86)"></use><rect x="1288.0" y="287" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(20 1296.0 290)"></rect>
+<use href="#d" transform="translate(1380.0 276) rotate(16) scale(0.86)"></use><rect x="1456.0" y="255" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(70 1464.0 258)"></rect>
+<use href="#e" transform="translate(1548.0 276) rotate(-12) scale(0.86)"></use><circle cx="1632.0" cy="290" r="4" fill="#f6dc93"></circle>
+<use href="#f" transform="translate(1716.0 276) rotate(8) scale(0.86)"></use><rect x="1792.0" y="255" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-15 1800.0 258)"></rect>
+<use href="#a" transform="translate(1884.0 276) rotate(-14) scale(0.86)"></use><rect x="1960.0" y="287" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-40 1968.0 290)"></rect>
+<use href="#b" transform="translate(2052.0 276) rotate(10) scale(0.86)"></use><circle cx="2136.0" cy="258" r="4" fill="#d9a26c"></circle>
+<use href="#c" transform="translate(2220.0 276) rotate(-8) scale(0.86)"></use><rect x="2296.0" y="287" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(70 2304.0 290)"></rect>
+<use href="#d" transform="translate(2388.0 276) rotate(16) scale(0.86)"></use><rect x="2464.0" y="255" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(35 2472.0 258)"></rect>
+<use href="#d" transform="translate(-48 452) rotate(16) scale(0.86)"></use><rect x="28.0" y="463" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(20 36.0 466)"></rect>
+<use href="#e" transform="translate(120 452) rotate(-12) scale(0.86)"></use><rect x="196.0" y="431" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(70 204.0 434)"></rect>
+<use href="#f" transform="translate(288 452) rotate(8) scale(0.86)"></use><circle cx="372.0" cy="466" r="4" fill="#f6dc93"></circle>
+<use href="#a" transform="translate(456 452) rotate(-14) scale(0.86)"></use><rect x="532.0" y="431" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-15 540.0 434)"></rect>
+<use href="#b" transform="translate(624 452) rotate(10) scale(0.86)"></use><rect x="700.0" y="463" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-40 708.0 466)"></rect>
+<use href="#c" transform="translate(792 452) rotate(-8) scale(0.86)"></use><circle cx="876.0" cy="434" r="4" fill="#d9a26c"></circle>
+<use href="#d" transform="translate(960 452) rotate(16) scale(0.86)"></use><rect x="1036.0" y="463" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(70 1044.0 466)"></rect>
+<use href="#e" transform="translate(1128 452) rotate(-12) scale(0.86)"></use><rect x="1204.0" y="431" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(35 1212.0 434)"></rect>
+<use href="#f" transform="translate(1296 452) rotate(8) scale(0.86)"></use><circle cx="1380.0" cy="466" r="4" fill="#a9dcc9"></circle>
+<use href="#a" transform="translate(1464 452) rotate(-14) scale(0.86)"></use><rect x="1540.0" y="431" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-40 1548.0 434)"></rect>
+<use href="#b" transform="translate(1632 452) rotate(10) scale(0.86)"></use><rect x="1708.0" y="463" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(20 1716.0 466)"></rect>
+<use href="#c" transform="translate(1800 452) rotate(-8) scale(0.86)"></use><circle cx="1884.0" cy="434" r="4" fill="#f5aebd"></circle>
+<use href="#d" transform="translate(1968 452) rotate(16) scale(0.86)"></use><rect x="2044.0" y="463" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(35 2052.0 466)"></rect>
+<use href="#e" transform="translate(2136 452) rotate(-12) scale(0.86)"></use><rect x="2212.0" y="431" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-15 2220.0 434)"></rect>
+<use href="#f" transform="translate(2304 452) rotate(8) scale(0.86)"></use><circle cx="2388.0" cy="466" r="4" fill="#f6dc93"></circle>
+<use href="#f" transform="translate(36.0 628) rotate(8) scale(0.86)"></use><rect x="112.0" y="607" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(35 120.0 610)"></rect>
+<use href="#a" transform="translate(204.0 628) rotate(-14) scale(0.86)"></use><circle cx="288.0" cy="642" r="4" fill="#a9dcc9"></circle>
+<use href="#b" transform="translate(372.0 628) rotate(10) scale(0.86)"></use><rect x="448.0" y="607" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-40 456.0 610)"></rect>
+<use href="#c" transform="translate(540.0 628) rotate(-8) scale(0.86)"></use><rect x="616.0" y="639" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(20 624.0 642)"></rect>
+<use href="#d" transform="translate(708.0 628) rotate(16) scale(0.86)"></use><circle cx="792.0" cy="610" r="4" fill="#f5aebd"></circle>
+<use href="#e" transform="translate(876.0 628) rotate(-12) scale(0.86)"></use><rect x="952.0" y="639" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(35 960.0 642)"></rect>
+<use href="#f" transform="translate(1044.0 628) rotate(8) scale(0.86)"></use><rect x="1120.0" y="607" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-15 1128.0 610)"></rect>
+<use href="#a" transform="translate(1212.0 628) rotate(-14) scale(0.86)"></use><circle cx="1296.0" cy="642" r="4" fill="#f6dc93"></circle>
+<use href="#b" transform="translate(1380.0 628) rotate(10) scale(0.86)"></use><rect x="1456.0" y="607" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(20 1464.0 610)"></rect>
+<use href="#c" transform="translate(1548.0 628) rotate(-8) scale(0.86)"></use><rect x="1624.0" y="639" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(70 1632.0 642)"></rect>
+<use href="#d" transform="translate(1716.0 628) rotate(16) scale(0.86)"></use><circle cx="1800.0" cy="610" r="4" fill="#d9a26c"></circle>
+<use href="#e" transform="translate(1884.0 628) rotate(-12) scale(0.86)"></use><rect x="1960.0" y="639" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-15 1968.0 642)"></rect>
+<use href="#f" transform="translate(2052.0 628) rotate(8) scale(0.86)"></use><rect x="2128.0" y="607" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-40 2136.0 610)"></rect>
+<use href="#a" transform="translate(2220.0 628) rotate(-14) scale(0.86)"></use><circle cx="2304.0" cy="642" r="4" fill="#a9dcc9"></circle>
+<use href="#b" transform="translate(2388.0 628) rotate(10) scale(0.86)"></use><rect x="2464.0" y="607" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(70 2472.0 610)"></rect>
+<use href="#b" transform="translate(-48 804) rotate(10) scale(0.86)"></use><circle cx="36.0" cy="818" r="4" fill="#f6dc93"></circle>
+<use href="#c" transform="translate(120 804) rotate(-8) scale(0.86)"></use><rect x="196.0" y="783" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(20 204.0 786)"></rect>
+<use href="#d" transform="translate(288 804) rotate(16) scale(0.86)"></use><rect x="364.0" y="815" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(70 372.0 818)"></rect>
+<use href="#e" transform="translate(456 804) rotate(-12) scale(0.86)"></use><circle cx="540.0" cy="786" r="4" fill="#d9a26c"></circle>
+<use href="#f" transform="translate(624 804) rotate(8) scale(0.86)"></use><rect x="700.0" y="815" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-15 708.0 818)"></rect>
+<use href="#a" transform="translate(792 804) rotate(-14) scale(0.86)"></use><rect x="868.0" y="783" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-40 876.0 786)"></rect>
+<use href="#b" transform="translate(960 804) rotate(10) scale(0.86)"></use><circle cx="1044.0" cy="818" r="4" fill="#a9dcc9"></circle>
+<use href="#c" transform="translate(1128 804) rotate(-8) scale(0.86)"></use><rect x="1204.0" y="783" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(70 1212.0 786)"></rect>
+<use href="#d" transform="translate(1296 804) rotate(16) scale(0.86)"></use><rect x="1372.0" y="815" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(35 1380.0 818)"></rect>
+<use href="#e" transform="translate(1464 804) rotate(-12) scale(0.86)"></use><circle cx="1548.0" cy="786" r="4" fill="#f5aebd"></circle>
+<use href="#f" transform="translate(1632 804) rotate(8) scale(0.86)"></use><rect x="1708.0" y="815" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-40 1716.0 818)"></rect>
+<use href="#a" transform="translate(1800 804) rotate(-14) scale(0.86)"></use><rect x="1876.0" y="783" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(20 1884.0 786)"></rect>
+<use href="#b" transform="translate(1968 804) rotate(10) scale(0.86)"></use><circle cx="2052.0" cy="818" r="4" fill="#f6dc93"></circle>
+<use href="#c" transform="translate(2136 804) rotate(-8) scale(0.86)"></use><rect x="2212.0" y="783" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(35 2220.0 786)"></rect>
+<use href="#d" transform="translate(2304 804) rotate(16) scale(0.86)"></use><rect x="2380.0" y="815" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-15 2388.0 818)"></rect>
+<use href="#d" transform="translate(36.0 980) rotate(16) scale(0.86)"></use><rect x="112.0" y="959" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(70 120.0 962)"></rect>
+<use href="#e" transform="translate(204.0 980) rotate(-12) scale(0.86)"></use><rect x="280.0" y="991" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(35 288.0 994)"></rect>
+<use href="#f" transform="translate(372.0 980) rotate(8) scale(0.86)"></use><circle cx="456.0" cy="962" r="4" fill="#f5aebd"></circle>
+<use href="#a" transform="translate(540.0 980) rotate(-14) scale(0.86)"></use><rect x="616.0" y="991" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-40 624.0 994)"></rect>
+<use href="#b" transform="translate(708.0 980) rotate(10) scale(0.86)"></use><rect x="784.0" y="959" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(20 792.0 962)"></rect>
+<use href="#c" transform="translate(876.0 980) rotate(-8) scale(0.86)"></use><circle cx="960.0" cy="994" r="4" fill="#f6dc93"></circle>
+<use href="#d" transform="translate(1044.0 980) rotate(16) scale(0.86)"></use><rect x="1120.0" y="959" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(35 1128.0 962)"></rect>
+<use href="#e" transform="translate(1212.0 980) rotate(-12) scale(0.86)"></use><rect x="1288.0" y="991" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-15 1296.0 994)"></rect>
+<use href="#f" transform="translate(1380.0 980) rotate(8) scale(0.86)"></use><circle cx="1464.0" cy="962" r="4" fill="#d9a26c"></circle>
+<use href="#a" transform="translate(1548.0 980) rotate(-14) scale(0.86)"></use><rect x="1624.0" y="991" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(20 1632.0 994)"></rect>
+<use href="#b" transform="translate(1716.0 980) rotate(10) scale(0.86)"></use><rect x="1792.0" y="959" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(70 1800.0 962)"></rect>
+<use href="#c" transform="translate(1884.0 980) rotate(-8) scale(0.86)"></use><circle cx="1968.0" cy="994" r="4" fill="#a9dcc9"></circle>
+<use href="#d" transform="translate(2052.0 980) rotate(16) scale(0.86)"></use><rect x="2128.0" y="959" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-15 2136.0 962)"></rect>
+<use href="#e" transform="translate(2220.0 980) rotate(-12) scale(0.86)"></use><rect x="2296.0" y="991" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-40 2304.0 994)"></rect>
+<use href="#f" transform="translate(2388.0 980) rotate(8) scale(0.86)"></use><circle cx="2472.0" cy="962" r="4" fill="#f5aebd"></circle>
+<use href="#f" transform="translate(-48 1156) rotate(8) scale(0.86)"></use><rect x="28.0" y="1167" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-15 36.0 1170)"></rect>
+<use href="#a" transform="translate(120 1156) rotate(-14) scale(0.86)"></use><circle cx="204.0" cy="1138" r="4" fill="#d9a26c"></circle>
+<use href="#b" transform="translate(288 1156) rotate(10) scale(0.86)"></use><rect x="364.0" y="1167" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(20 372.0 1170)"></rect>
+<use href="#c" transform="translate(456 1156) rotate(-8) scale(0.86)"></use><rect x="532.0" y="1135" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(70 540.0 1138)"></rect>
+<use href="#d" transform="translate(624 1156) rotate(16) scale(0.86)"></use><circle cx="708.0" cy="1170" r="4" fill="#a9dcc9"></circle>
+<use href="#e" transform="translate(792 1156) rotate(-12) scale(0.86)"></use><rect x="868.0" y="1135" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-15 876.0 1138)"></rect>
+<use href="#f" transform="translate(960 1156) rotate(8) scale(0.86)"></use><rect x="1036.0" y="1167" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-40 1044.0 1170)"></rect>
+<use href="#a" transform="translate(1128 1156) rotate(-14) scale(0.86)"></use><circle cx="1212.0" cy="1138" r="4" fill="#f5aebd"></circle>
+<use href="#b" transform="translate(1296 1156) rotate(10) scale(0.86)"></use><rect x="1372.0" y="1167" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(70 1380.0 1170)"></rect>
+<use href="#c" transform="translate(1464 1156) rotate(-8) scale(0.86)"></use><rect x="1540.0" y="1135" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(35 1548.0 1138)"></rect>
+<use href="#d" transform="translate(1632 1156) rotate(16) scale(0.86)"></use><circle cx="1716.0" cy="1170" r="4" fill="#f6dc93"></circle>
+<use href="#e" transform="translate(1800 1156) rotate(-12) scale(0.86)"></use><rect x="1876.0" y="1135" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-40 1884.0 1138)"></rect>
+<use href="#f" transform="translate(1968 1156) rotate(8) scale(0.86)"></use><rect x="2044.0" y="1167" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(20 2052.0 1170)"></rect>
+<use href="#a" transform="translate(2136 1156) rotate(-14) scale(0.86)"></use><circle cx="2220.0" cy="1138" r="4" fill="#d9a26c"></circle>
+<use href="#b" transform="translate(2304 1156) rotate(10) scale(0.86)"></use><rect x="2380.0" y="1167" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(35 2388.0 1170)"></rect>
+<use href="#b" transform="translate(36.0 1332) rotate(10) scale(0.86)"></use><circle cx="120.0" cy="1314" r="4" fill="#f5aebd"></circle>
+<use href="#c" transform="translate(204.0 1332) rotate(-8) scale(0.86)"></use><rect x="280.0" y="1343" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(70 288.0 1346)"></rect>
+<use href="#d" transform="translate(372.0 1332) rotate(16) scale(0.86)"></use><rect x="448.0" y="1311" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(35 456.0 1314)"></rect>
+<use href="#e" transform="translate(540.0 1332) rotate(-12) scale(0.86)"></use><circle cx="624.0" cy="1346" r="4" fill="#f6dc93"></circle>
+<use href="#f" transform="translate(708.0 1332) rotate(8) scale(0.86)"></use><rect x="784.0" y="1311" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-40 792.0 1314)"></rect>
+<use href="#a" transform="translate(876.0 1332) rotate(-14) scale(0.86)"></use><rect x="952.0" y="1343" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(20 960.0 1346)"></rect>
+<use href="#b" transform="translate(1044.0 1332) rotate(10) scale(0.86)"></use><circle cx="1128.0" cy="1314" r="4" fill="#d9a26c"></circle>
+<use href="#c" transform="translate(1212.0 1332) rotate(-8) scale(0.86)"></use><rect x="1288.0" y="1343" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(35 1296.0 1346)"></rect>
+<use href="#d" transform="translate(1380.0 1332) rotate(16) scale(0.86)"></use><rect x="1456.0" y="1311" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-15 1464.0 1314)"></rect>
+<use href="#e" transform="translate(1548.0 1332) rotate(-12) scale(0.86)"></use><circle cx="1632.0" cy="1346" r="4" fill="#a9dcc9"></circle>
+<use href="#f" transform="translate(1716.0 1332) rotate(8) scale(0.86)"></use><rect x="1792.0" y="1311" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(20 1800.0 1314)"></rect>
+<use href="#a" transform="translate(1884.0 1332) rotate(-14) scale(0.86)"></use><rect x="1960.0" y="1343" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(70 1968.0 1346)"></rect>
+<use href="#b" transform="translate(2052.0 1332) rotate(10) scale(0.86)"></use><circle cx="2136.0" cy="1314" r="4" fill="#f5aebd"></circle>
+<use href="#c" transform="translate(2220.0 1332) rotate(-8) scale(0.86)"></use><rect x="2296.0" y="1343" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-15 2304.0 1346)"></rect>
+<use href="#d" transform="translate(2388.0 1332) rotate(16) scale(0.86)"></use><rect x="2464.0" y="1311" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-40 2472.0 1314)"></rect>
+<use href="#d" transform="translate(-48 1508) rotate(16) scale(0.86)"></use><rect x="28.0" y="1519" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(35 36.0 1522)"></rect>
+<use href="#e" transform="translate(120 1508) rotate(-12) scale(0.86)"></use><rect x="196.0" y="1487" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(-15 204.0 1490)"></rect>
+<use href="#f" transform="translate(288 1508) rotate(8) scale(0.86)"></use><circle cx="372.0" cy="1522" r="4" fill="#a9dcc9"></circle>
+<use href="#a" transform="translate(456 1508) rotate(-14) scale(0.86)"></use><rect x="532.0" y="1487" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(20 540.0 1490)"></rect>
+<use href="#b" transform="translate(624 1508) rotate(10) scale(0.86)"></use><rect x="700.0" y="1519" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(70 708.0 1522)"></rect>
+<use href="#c" transform="translate(792 1508) rotate(-8) scale(0.86)"></use><circle cx="876.0" cy="1490" r="4" fill="#f5aebd"></circle>
+<use href="#d" transform="translate(960 1508) rotate(16) scale(0.86)"></use><rect x="1036.0" y="1519" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(-15 1044.0 1522)"></rect>
+<use href="#e" transform="translate(1128 1508) rotate(-12) scale(0.86)"></use><rect x="1204.0" y="1487" width="16" height="6" rx="3" fill="#d9a26c" transform="rotate(-40 1212.0 1490)"></rect>
+<use href="#f" transform="translate(1296 1508) rotate(8) scale(0.86)"></use><circle cx="1380.0" cy="1522" r="4" fill="#f6dc93"></circle>
+<use href="#a" transform="translate(1464 1508) rotate(-14) scale(0.86)"></use><rect x="1540.0" y="1487" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(70 1548.0 1490)"></rect>
+<use href="#b" transform="translate(1632 1508) rotate(10) scale(0.86)"></use><rect x="1708.0" y="1519" width="16" height="6" rx="3" fill="#a9dcc9" transform="rotate(35 1716.0 1522)"></rect>
+<use href="#c" transform="translate(1800 1508) rotate(-8) scale(0.86)"></use><circle cx="1884.0" cy="1490" r="4" fill="#d9a26c"></circle>
+<use href="#d" transform="translate(1968 1508) rotate(16) scale(0.86)"></use><rect x="2044.0" y="1519" width="16" height="6" rx="3" fill="#f6dc93" transform="rotate(-40 2052.0 1522)"></rect>
+<use href="#e" transform="translate(2136 1508) rotate(-12) scale(0.86)"></use><rect x="2212.0" y="1487" width="16" height="6" rx="3" fill="#f5aebd" transform="rotate(20 2220.0 1490)"></rect>
+<use href="#f" transform="translate(2304 1508) rotate(8) scale(0.86)"></use><circle cx="2388.0" cy="1522" r="4" fill="#a9dcc9"></circle></svg>

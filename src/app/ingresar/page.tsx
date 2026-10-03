@@ -5,7 +5,7 @@ export const metadata = { title: "Entrar" };
 
 export default function Ingresar() {
   return (
-    <main className="flex min-h-dvh items-center justify-center p-6">
+    <main className="flex min-h-dvh items-center justify-center bg-fondo bg-[url(/fondo-login-escritorio.svg)] bg-cover bg-center p-6">
       <div className="w-full max-w-sm rounded-(--r-grande) border border-linea bg-superficie p-8 shadow-sm">
         <header className="mb-6 flex flex-col gap-1">
           <h1 className="font-display text-2xl font-bold">{NOMBRE_COMERCIO}</h1>
