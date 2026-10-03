@@ -1,3 +1,4 @@
+import { EnlaceDeDescarga } from "@/componentes/EnlaceDeDescarga";
 import { Tarjeta } from "@/componentes/Tarjeta";
 import { diaCorto, type Periodo } from "@/lib/periodos";
 import { formatearPlata } from "@/lib/plata";
@@ -13,6 +14,13 @@ import { FiltrosHistorial } from "./FiltrosHistorial";
  * entero, ese número lo suma Postgres en el Panel, no esta pantalla.
  */
 const TOPE = 100;
+
+/** Lo que el Excel recibe: el mismo filtro de la pantalla, pero el archivo trae TODAS las ventas, sin el tope de 100. */
+function parametrosDeDescarga(periodo: Periodo, medioPago: MedioPago | null): string {
+  const parametros = new URLSearchParams({ desde: periodo.desde, hasta: periodo.hasta });
+  if (medioPago) parametros.set("medio", medioPago);
+  return parametros.toString();
+}
 
 function plural(cantidad: number, singular: string): string {
   return `${cantidad} ${singular}${cantidad === 1 ? "" : "s"}`;
@@ -32,9 +40,11 @@ function sinVentas(periodo: Periodo, medioPago: MedioPago | null): string {
 export async function SeccionHistorial({
   periodo,
   medioPago,
+  esDuenio,
 }: {
   periodo: Periodo;
   medioPago: MedioPago | null;
+  esDuenio: boolean;
 }) {
   const [{ ventas, hayMas }, sabores] = await Promise.all([
     listarVentas({ periodo, medioPago, limite: TOPE }),
@@ -54,6 +64,14 @@ export async function SeccionHistorial({
         <span className="numero font-semibold text-texto">{formatearPlata(total)}</span> cobrado
         {anuladas > 0 && ` · ${plural(anuladas, "anulada")}`}
       </p>
+
+      {esDuenio && (
+        <div>
+          <EnlaceDeDescarga href={`/exportar/ventas?${parametrosDeDescarga(periodo, medioPago)}`}>
+            Descargar este período en Excel
+          </EnlaceDeDescarga>
+        </div>
+      )}
 
       {hayMas && (
         <p className="text-sm text-alerta">

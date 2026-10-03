@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { leerPrecioDeBalde } from "@/lib/precioBalde";
 import { clienteServidor } from "@/lib/supabase/servidor";
 import type { EstadoFormulario } from "./acciones";
 
@@ -130,6 +131,28 @@ export async function eliminarSabor(
     }
     return { error: "No se pudo borrar el sabor." };
   }
+
+  revalidatePath("/inventario");
+  revalidatePath("/ventas");
+  return SIN_ERROR;
+}
+
+/** `precioBalde` vacío = volver a usar el precio del balde entero por defecto del comercio. */
+export async function editarPrecioBalde(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  const saborId = Number(datos.get("saborId"));
+  const precio = leerPrecioDeBalde(String(datos.get("precioBalde") ?? ""));
+  if ("error" in precio) return { error: precio.error };
+
+  const supabase = await clienteServidor();
+  const { error } = await supabase
+    .from("sabores")
+    .update({ precio_balde: precio.valor })
+    .eq("id", saborId);
+
+  if (error) return { error: "No se pudo guardar el precio del balde." };
 
   revalidatePath("/inventario");
   revalidatePath("/ventas");

@@ -14,6 +14,7 @@ import { DetalleBaldes } from "./DetalleBaldes";
 import { EditorColorSabor } from "./EditorColorSabor";
 import { EditorNombreSabor } from "./EditorNombreSabor";
 import { FormularioMinimo } from "./FormularioMinimo";
+import { FormularioPrecioBalde } from "./FormularioPrecioBalde";
 import { ModalReponerBalde } from "./ModalReponerBalde";
 
 export function FilaSaborExpandible({
@@ -82,6 +83,7 @@ export function FilaSaborExpandible({
                   <EditorColorSabor saborId={sabor.id} colorActual={sabor.color} />
                   <EditorNombreSabor saborId={sabor.id} nombreActual={sabor.nombre} />
                   <FormularioMinimo saborId={sabor.id} valorActual={sabor.stockMinimo} />
+                  <FormularioPrecioBalde saborId={sabor.id} valorActual={sabor.precioBalde} />
                   <BotonActivoSabor saborId={sabor.id} activo={sabor.activo} />
                   <BotonBorrarSabor saborId={sabor.id} nombre={sabor.nombre} />
                 </div>

@@ -4,6 +4,7 @@ import { Tarjeta } from "@/componentes/Tarjeta";
 import { diaCorto, periodoAnterior, type Periodo } from "@/lib/periodos";
 import { resumenDelPeriodo } from "../consultas/panel";
 import { totalesDelPeriodo } from "../resumen";
+import { CicloDeBaldes } from "./CicloDeBaldes";
 import { KilosPorSabor } from "./KilosPorSabor";
 import { MargenDelPeriodo } from "./MargenDelPeriodo";
 import { RankingDeArticulos } from "./RankingDeArticulos";
@@ -39,7 +40,7 @@ function bajadaDelGrafico(periodo: Periodo): string {
 }
 
 export async function Panel({ periodo }: { periodo: Periodo }) {
-  const { porMedio, porMedioAnterior, porHora, porSabor, porDia, porArticulo, costo } =
+  const { porMedio, porMedioAnterior, porHora, porSabor, porDia, porArticulo, costo, baldes } =
     await resumenDelPeriodo(periodo);
   const { total } = totalesDelPeriodo(porMedio);
 
@@ -87,6 +88,13 @@ export async function Panel({ periodo }: { periodo: Periodo }) {
           <RankingDeArticulos porArticulo={porArticulo} />
         </Seccion>
       </div>
+
+      <Seccion
+        titulo="Baldes"
+        bajada="Cuántos salieron del circuito y por dónde: el que se termina vuelve al proveedor; el que se vende entero se lleva el envase."
+      >
+        <CicloDeBaldes baldes={baldes} />
+      </Seccion>
     </div>
   );
 }

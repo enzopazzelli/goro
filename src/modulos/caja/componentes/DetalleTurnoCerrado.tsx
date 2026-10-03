@@ -1,15 +1,11 @@
 import { Insignia } from "@/componentes/Insignia";
 import { Tarjeta } from "@/componentes/Tarjeta";
 import { diaYHoraDe } from "@/lib/fechas";
+import { nombresDePerfiles } from "@/lib/nombresDePerfiles";
 import { formatearPlata } from "@/lib/plata";
 import { textoDiferencia } from "../arqueo";
 import type { CabeceraTurno } from "../consultas/historial";
-import {
-  arqueoDelTurno,
-  movimientosDelTurno,
-  nombresDePerfiles,
-  ventasDelTurno,
-} from "../consultas/turno";
+import { arqueoDelTurno, movimientosDelTurno, ventasDelTurno } from "../consultas/turno";
 import { resumenDelTurno } from "../resumen";
 import { ResumenTurno } from "./ResumenTurno";
 import { TablaMovimientos } from "./TablaMovimientos";

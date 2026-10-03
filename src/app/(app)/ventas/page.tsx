@@ -1,5 +1,6 @@
 import { listarBaldes } from "@/lib/baldes";
 import { turnoAbierto } from "@/lib/caja";
+import { obtenerConfigComercio } from "@/lib/configComercio";
 import { listarFormatos } from "@/lib/formatos";
 import { listarPresentaciones } from "@/lib/presentaciones";
 import { listarSabores } from "@/lib/sabores";
@@ -10,12 +11,13 @@ import { SeccionUltimasVentas } from "@/modulos/ventas/componentes/SeccionUltima
 export const metadata = { title: "Ventas" };
 
 export default async function Ventas() {
-  const [formatos, sabores, baldes, presentaciones, turno] = await Promise.all([
+  const [formatos, sabores, baldes, presentaciones, turno, config] = await Promise.all([
     listarFormatos(),
     listarSabores(),
     listarBaldes(),
     listarPresentaciones(),
     turnoAbierto(),
+    obtenerConfigComercio(),
   ]);
 
   return (
@@ -32,6 +34,7 @@ export default async function Ventas() {
         sabores={sabores}
         baldes={baldes}
         presentaciones={presentaciones}
+        precioBaldeDefault={config.precioBaldeDefault}
         cajaAbierta={turno !== null}
       />
 

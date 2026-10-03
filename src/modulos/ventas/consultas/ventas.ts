@@ -13,6 +13,7 @@ type FilaItem = {
   id: number;
   precio: number;
   formatos: { nombre: string } | null;
+  baldes: { sabores: { nombre: string } | null } | null;
   presentaciones_insumo: {
     nombre: string;
     unidades: number;
@@ -21,12 +22,15 @@ type FilaItem = {
   movimientos_balde: FilaMovimiento[];
 };
 
-type FilaVenta = {
+export type FilaDeVenta = {
   id: number;
   medio_pago: MedioPago;
   total: number;
   estado: EstadoVenta;
   creado_en: string;
+  creado_por: string;
+  anulado_en: string | null;
+  anulado_por: string | null;
   venta_items: FilaItem[];
 };
 
@@ -36,6 +40,11 @@ type FilaVenta = {
  * por sabor y solo se muestran los que quedaron netamente cargados.
  */
 function mapearItem(fila: FilaItem): ItemDeVenta {
+  // Un balde entero no tiene sabores que corregir: es EL balde, no una elección.
+  if (fila.baldes) {
+    return { id: fila.id, nombre: nombreDeItem(fila), precio: fila.precio, sabores: [] };
+  }
+
   const netoPorSabor = new Map<number, { nombre: string; kg: number }>();
 
   for (const movimiento of fila.movimientos_balde) {
@@ -57,7 +66,7 @@ function mapearItem(fila: FilaItem): ItemDeVenta {
   };
 }
 
-function mapearVenta(fila: FilaVenta): VentaConTicket {
+export function mapearVenta(fila: FilaDeVenta): VentaConTicket {
   return {
     id: fila.id,
     medioPago: fila.medio_pago,
@@ -68,10 +77,11 @@ function mapearVenta(fila: FilaVenta): VentaConTicket {
   };
 }
 
-const SELECCION = `id, medio_pago, total, estado, creado_en,
+export const SELECCION_DE_VENTAS = `id, medio_pago, total, estado, creado_en, creado_por, anulado_en, anulado_por,
    venta_items (
      id, precio,
      formatos ( nombre ),
+     baldes ( sabores ( nombre ) ),
      presentaciones_insumo ( nombre, unidades, insumos ( nombre ) ),
      movimientos_balde ( kg, baldes ( sabores ( id, nombre ) ) )
    )`;
@@ -99,7 +109,7 @@ export async function listarVentas({
   limite,
 }: FiltroVentas): Promise<PaginaDeVentas> {
   const supabase = await clienteServidor();
-  let consulta = supabase.from("ventas").select(SELECCION);
+  let consulta = supabase.from("ventas").select(SELECCION_DE_VENTAS);
 
   if (periodo) {
     const { desdeIso, hastaIso } = rangoUtc(periodo);
@@ -108,7 +118,7 @@ export async function listarVentas({
   if (medioPago) consulta = consulta.eq("medio_pago", medioPago);
 
   const { data } = await consulta.order("creado_en", { ascending: false }).limit(limite + 1);
-  const filas = (data as unknown as FilaVenta[] | null) ?? [];
+  const filas = (data as unknown as FilaDeVenta[] | null) ?? [];
 
   return { ventas: filas.slice(0, limite).map(mapearVenta), hayMas: filas.length > limite };
 }

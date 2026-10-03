@@ -36,6 +36,7 @@ function montar() {
       sabores={[]}
       baldes={[]}
       presentaciones={[bombon]}
+      precioBaldeDefault={null}
       cajaAbierta
     />,
   );

@@ -16,6 +16,7 @@ export type ResumenDelPeriodo = {
   porDia: VentasEnDia[];
   porArticulo: ArticuloVendido[];
   costo: CostoDeLoVendido;
+  baldes: BaldesDelPeriodo;
   /** Lo mismo, del período anterior equivalente: es con lo que se compara. */
   porMedioAnterior: VentasPorMedio[];
 };
@@ -43,8 +44,26 @@ export type VentasEnDiaSemana = {
 
 export type ArticuloVendido = { nombre: string; unidades: number; total: number };
 
-/** Lo que costó lo que salió, separado por naturaleza: los baldes y el ledger de insumos. */
-export type CostoDeLoVendido = { helado: number; insumos: number };
+/**
+ * Lo que costó lo que salió, separado por naturaleza: los baldes, el ledger de
+ * insumos, y los envases de los baldes que se vendieron enteros (se fueron con
+ * el cliente y hay que reponerlos).
+ */
+export type CostoDeLoVendido = { helado: number; insumos: number; envases: number };
+
+/**
+ * Cuántos baldes salieron del circuito en el período y por qué puerta. Los que
+ * se terminaron volvieron al proveedor sin costo; los vendidos enteros dejaron
+ * un envase por reponer.
+ */
+export type BaldesDelPeriodo = {
+  terminados: number;
+  vendidos: number;
+  /** Lo que cuesta reponer el envase de los vendidos: ya está en el margen. */
+  envasesPorReponer: number;
+  /** Lo que habría costado reponer los envases de los terminados, si se hubieran vendido. */
+  envasesAhorrados: number;
+};
 
 /** Un número contra el mismo número del período anterior. */
 export type Variacion = {

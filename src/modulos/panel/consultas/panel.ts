@@ -4,6 +4,7 @@ import { nombreDeItem } from "@/lib/nombreItem";
 import { periodoAnterior, rangoUtc, type Periodo } from "@/lib/periodos";
 import { clienteServidor } from "@/lib/supabase/servidor";
 import type { MedioPago } from "@/modulos/ventas/tipos";
+import { baldesDelPeriodo } from "../resumen";
 import type {
   ArticuloVendido,
   CostoDeLoVendido,
@@ -14,12 +15,13 @@ import type {
 
 type FilaMedio = { medio_pago: MedioPago; cantidad: number; total: number };
 type FilaSabor = { sabor_id: number; sabor_nombre: string; kg: number };
-type FilaCosto = { costo_helado: number; costo_insumos: number };
+type FilaCosto = { costo_helado: number; costo_insumos: number; costo_envases: number };
 type FilaArticulo = {
   formato_nombre: string | null;
   presentacion_nombre: string | null;
   presentacion_unidades: number | null;
   insumo_nombre: string | null;
+  balde_sabor_nombre: string | null;
   unidades: number;
   total: number;
 };
@@ -49,6 +51,7 @@ function articulos(data: unknown): ArticuloVendido[] {
   return ((data as FilaArticulo[] | null) ?? []).map((fila) => ({
     nombre: nombreDeItem({
       formatos: fila.formato_nombre ? { nombre: fila.formato_nombre } : null,
+      baldes: fila.balde_sabor_nombre ? { sabores: { nombre: fila.balde_sabor_nombre } } : null,
       presentaciones_insumo: fila.presentacion_nombre
         ? {
             nombre: fila.presentacion_nombre,
@@ -66,7 +69,11 @@ function articulos(data: unknown): ArticuloVendido[] {
 function costo(data: unknown): CostoDeLoVendido {
   const fila = (data as FilaCosto[] | null)?.[0];
 
-  return { helado: Number(fila?.costo_helado ?? 0), insumos: Number(fila?.costo_insumos ?? 0) };
+  return {
+    helado: Number(fila?.costo_helado ?? 0),
+    insumos: Number(fila?.costo_insumos ?? 0),
+    envases: Number(fila?.costo_envases ?? 0),
+  };
 }
 
 /**
@@ -84,15 +91,17 @@ export async function resumenDelPeriodo(periodo: Periodo): Promise<ResumenDelPer
   const rangoAnterior = { p_desde: anterior.desdeIso, p_hasta: anterior.hastaIso };
 
   const supabase = await clienteServidor();
-  const [porMedio, porHora, porSabor, porDia, porArticulo, costos, anteriores] = await Promise.all([
-    supabase.rpc("ventas_del_periodo", rango),
-    supabase.rpc("ventas_por_hora", { ...rango, p_zona: ZONA_HORARIA }),
-    supabase.rpc("kilos_por_sabor", rango),
-    supabase.rpc("ventas_por_dia", { ...rango, p_zona: ZONA_HORARIA }),
-    supabase.rpc("unidades_por_articulo", rango),
-    supabase.rpc("costo_de_lo_vendido", rango),
-    supabase.rpc("ventas_del_periodo", rangoAnterior),
-  ]);
+  const [porMedio, porHora, porSabor, porDia, porArticulo, costos, baldes, anteriores] =
+    await Promise.all([
+      supabase.rpc("ventas_del_periodo", rango),
+      supabase.rpc("ventas_por_hora", { ...rango, p_zona: ZONA_HORARIA }),
+      supabase.rpc("kilos_por_sabor", rango),
+      supabase.rpc("ventas_por_dia", { ...rango, p_zona: ZONA_HORARIA }),
+      supabase.rpc("unidades_por_articulo", rango),
+      supabase.rpc("costo_de_lo_vendido", rango),
+      supabase.rpc("baldes_del_periodo", rango),
+      supabase.rpc("ventas_del_periodo", rangoAnterior),
+    ]);
 
   return {
     porMedio: medios(porMedio.data),
@@ -101,6 +110,7 @@ export async function resumenDelPeriodo(periodo: Periodo): Promise<ResumenDelPer
     porDia: porDia.data ?? [],
     porArticulo: articulos(porArticulo.data),
     costo: costo(costos.data),
+    baldes: baldesDelPeriodo(baldes.data ?? []),
     porMedioAnterior: medios(anteriores.data),
   };
 }

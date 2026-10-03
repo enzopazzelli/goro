@@ -19,7 +19,19 @@ const docena: ItemEnCarrito = {
   saboresNombres: [],
 };
 
+const baldeEntero: ItemEnCarrito = {
+  tipo: "balde",
+  saborId: 4,
+  nombre: "Balde entero · Frutilla",
+  precio: 85000,
+  saboresNombres: [],
+};
+
 describe("itemsParaServidor", () => {
+  it("un balde entero viaja solo con su sabor: la base elige cuál de los cerrados", () => {
+    expect(itemsParaServidor([baldeEntero])).toEqual([{ balde_sabor_id: 4 }]);
+  });
+
   it("un formato viaja con sus sabores y sin presentación", () => {
     expect(itemsParaServidor([cucurucho])).toEqual([{ formato_id: 3, sabor_ids: [1, 2] }]);
   });
@@ -40,6 +52,7 @@ describe("saborIdsDe", () => {
   it("devuelve los sabores de un formato y ninguno de un producto", () => {
     expect(saborIdsDe(cucurucho)).toEqual([1, 2]);
     expect(saborIdsDe(docena)).toEqual([]);
+    expect(saborIdsDe(baldeEntero)).toEqual([4]);
   });
 });
 

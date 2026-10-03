@@ -9,6 +9,7 @@ import type { Sabor } from "@/lib/sabores";
 import type { Cobrado, ItemEnCarrito, MedioPago } from "../tipos";
 import { registrarVenta, type EstadoTicket } from "../consultas/acciones";
 import { CarritoTicket } from "./CarritoTicket";
+import { SelectorDeBaldes } from "./SelectorDeBaldes";
 import { SelectorDeProductos } from "./SelectorDeProductos";
 import { SelectorFormatoYSabores } from "./SelectorFormatoYSabores";
 
@@ -19,12 +20,15 @@ export function FormularioTicket({
   sabores,
   baldes,
   presentaciones,
+  precioBaldeDefault,
   cajaAbierta,
 }: {
   formatos: Formato[];
   sabores: Sabor[];
   baldes: Balde[];
   presentaciones: Presentacion[];
+  /** El precio del balde entero que vale para los sabores que no tienen uno propio. */
+  precioBaldeDefault: number | null;
   cajaAbierta: boolean;
 }) {
   const [carrito, setCarrito] = useState<ItemEnCarrito[]>([]);
@@ -94,6 +98,12 @@ export function FormularioTicket({
           formatos={formatos.filter((formato) => formato.activo)}
           sabores={sabores}
           baldes={baldes}
+          onAgregar={(item) => cambiarCarrito((actuales) => [...actuales, item])}
+        />
+        <SelectorDeBaldes
+          sabores={sabores}
+          baldes={baldes}
+          precioPorDefecto={precioBaldeDefault}
           onAgregar={(item) => cambiarCarrito((actuales) => [...actuales, item])}
         />
         <SelectorDeProductos

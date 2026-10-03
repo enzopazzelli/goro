@@ -1,7 +1,8 @@
 import { Tarjeta } from "@/componentes/Tarjeta";
 import type { TurnoAbierto } from "@/lib/caja";
 import { diaYHoraDe } from "@/lib/fechas";
-import { movimientosDelTurno, nombresDePerfiles, ventasDelTurno } from "../consultas/turno";
+import { nombresDePerfiles } from "@/lib/nombresDePerfiles";
+import { movimientosDelTurno, ventasDelTurno } from "../consultas/turno";
 import { resumenDelTurno } from "../resumen";
 import { AccionesCaja } from "./AccionesCaja";
 import { ResumenTurno } from "./ResumenTurno";

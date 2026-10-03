@@ -22,13 +22,23 @@ acá abajo cuál fue la última aplicada.
 | `20260930140000_ventas.sql`             | Ventas, cobro de formatos y productos, anulación y ajustes de balde                |
 | `20260930150000_borrar_presentaciones.sql` | El dueño puede borrar una presentación que nunca se vendió                       |
 | `20261001100000_caja.sql`               | Turnos de caja, libro de efectivo y arqueo ciego; reemplaza `registrar_venta` y `anular_venta` |
-
 | `20261001110000_usuarios.sql`           | Reglas de perfiles (siempre un dueño activo, nadie se degrada a sí mismo), renombre sincronizado y `perfil_tiene_historial` |
+| `20261001120000_panel.sql`              | Las funciones de lectura del Panel (vendido, por hora, kilos por sabor) y el índice de `ventas (creado_en)` |
+| `20261001130000_panel_indicadores.sql`  | Por día, por artículo y el costo de lo vendido (margen bruto) |
+| `20261003100000_ventas_robustas.sql`    | **Clave de cobro** (un cobro no se registra dos veces) y **costo congelado** en cada movimiento de insumo; reemplaza `registrar_venta` |
+| `20261003110000_permisos.sql`           | **Permisos por acción** de cada colaborador (`perfiles.permisos`, `tiene_permiso()`); reemplaza `anular_venta`, `corregir_sabor_venta_item`, `registrar_movimiento_caja`, `anular_movimiento_caja`, `registrar_ajuste_balde` y `registrar_movimiento_insumo` |
+| `20261003120000_ciclo_balde.sql`        | **Ciclo del balde**: vaciar, canjear y vender entero; precio del balde entero; reemplaza `registrar_venta`, `anular_venta`, `corregir_sabor_venta_item` y las funciones del Panel |
 
 **Caja cambia cómo se vende:** desde esa migración no se cobra sin una caja abierta. Hay que
 aplicarla **antes** de desplegar el código que la usa; al revés, Ventas muestra "La caja está
 cerrada" y no deja cobrar. Después de aplicarla, **ejecutar** las funciones reemplazadas (abrir la
 caja, cobrar, anular, cerrar): que se creen sin error no prueba que anden.
+
+**Las tres de octubre (`20261003…`) se aplican ANTES de desplegar el código nuevo.** El código lee
+`perfiles.permisos` en cada pantalla y llama a `registrar_venta` con la clave de cobro: sin las
+migraciones, nadie puede entrar. Y entre sí van en orden: la de ciclo del balde reemplaza funciones que
+la de permisos ya había reemplazado. Después de aplicarlas, correr `npm run test:rls`: los tests de
+ventas, permisos, ciclo del balde y Panel ejercitan las funciones nuevas contra la base.
 
 Van **en ese orden** (cada una usa lo de la anterior). Después de todas, correr
 `carga_productos_goro.sql` (no es una migración: es la carga inicial de las listas de Goro; se puede repetir sin duplicar).

@@ -2,11 +2,12 @@ import Link from "next/link";
 import { Insignia } from "@/componentes/Insignia";
 import { Tarjeta } from "@/componentes/Tarjeta";
 import { diaYHoraDe, horaDe } from "@/lib/fechas";
+import { nombresDePerfiles } from "@/lib/nombresDePerfiles";
 import { formatearPlata } from "@/lib/plata";
 import { textoDiferencia } from "../arqueo";
 import { historialDeTurnos } from "../consultas/historial";
-import { nombresDePerfiles } from "../consultas/turno";
 import { diferenciaDeApertura, TURNOS_EN_HISTORIAL } from "../historial";
+import { DescargarCaja } from "./DescargarCaja";
 import type { TurnoCerrado } from "../tipos";
 
 /** Plata que apareció o faltó entre el cierre anterior y esta apertura. Si coincide, no se dice nada. */
@@ -74,6 +75,8 @@ export async function HistorialTurnos() {
           justo.
         </p>
       </header>
+
+      <DescargarCaja />
 
       {turnos.length === 0 ? (
         <p className="text-sm text-texto-suave">Todavía no se cerró ningún turno.</p>

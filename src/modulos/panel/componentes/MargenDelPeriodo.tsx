@@ -49,6 +49,13 @@ export function MargenDelPeriodo({ vendido, costo }: { vendido: number; costo: C
           <dt className="text-texto-suave">Envases y productos</dt>
           <dd className="numero">{formatearPlata(Math.round(costo.insumos))}</dd>
         </div>
+        {/* Solo aparece si se vendió algún balde entero: si no, es una línea en cero. */}
+        {costo.envases > 0 && (
+          <div className="flex gap-2">
+            <dt className="text-texto-suave">Envases de baldes vendidos</dt>
+            <dd className="numero">{formatearPlata(Math.round(costo.envases))}</dd>
+          </div>
+        )}
       </dl>
     </div>
   );

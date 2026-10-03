@@ -94,7 +94,10 @@ export async function borrarTurnoDePrueba(turnoId: number | null) {
  * una venta que impide borrar el formato (y el balde, y el usuario). El afterAll
  * barre todas las ventas que tocaron estos formatos o presentaciones.
  */
-export async function limpiarVentasDe(columna: "formato_id" | "presentacion_id", ids: number[]) {
+export async function limpiarVentasDe(
+  columna: "formato_id" | "presentacion_id" | "balde_id",
+  ids: number[],
+) {
   const { data } = await servicio.from("venta_items").select("venta_id").in(columna, ids);
   for (const venta of new Set((data ?? []).map((item) => item.venta_id))) {
     await limpiarVenta(venta);

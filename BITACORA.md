@@ -51,6 +51,103 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ---
 
+## 2026-10-03 — Los pendientes del Panel y las Fases 8, 9 y 10
+
+### Qué se hizo
+
+Se empezó por lo que quedó señalado al revisar el Panel, y después las tres
+fases que faltaban de la lista de módulos pedidos. **Todo está escrito y probado
+del lado del código, pero las tres migraciones nuevas todavía no están
+aplicadas en Supabase** (ver "Qué queda pendiente").
+
+- **El doble cobro.** Cada ticket lleva una clave al azar (`lib/claveUnica.ts`)
+  que cambia con cualquier cambio del carrito o del medio de pago, y
+  `registrar_venta` devuelve la venta que ya tiene esa clave en vez de crear
+  otra. La unicidad es un índice único parcial (`una_venta_por_clave`), no un
+  `select` previo. Con eso, volver a tocar Cobrar después de perder la respuesta
+  es seguro, y el cartel dejó de decir "mirá Últimas ventas antes de cobrar".
+- **El costo de los insumos se mueve hacia atrás: arreglado.** El costo unitario
+  se escribe en cada movimiento del ledger (`movimientos_insumo.costo_unitario`)
+  y el margen del Panel lo lee de ahí, no de `insumos.costo` de hoy. Las filas
+  que ya existían se completan con el costo actual: es lo más cerca que se puede
+  estar.
+- **Separador de miles en todos los precios** (carrito, selectores, ticket,
+  Historial, Inventario), con `useGrouping: "always"`: según la versión de ICU, el
+  español no agrupa los de cuatro cifras. Era el pendiente chico del TPV.
+- **Fase 8 — permisos por acción.** Tres permisos fijos que el dueño tilda por
+  colaborador al crearlo o editarlo: anular ventas y corregir sabores, registrar
+  gastos/ingresos/retiros de caja, y cargar mercadería/baldes/ajustes de stock.
+  Cada función de Postgres que mueve plata o stock exige `tiene_permiso(...)`, y
+  la pantalla esconde el botón (un contexto, `usePuede` / `SiPuede`, en vez de
+  pasar `puedeX` por tres niveles). El default es tenerlos todos, así que aplicar
+  la migración no le saca nada a nadie.
+- **Fase 9 — ciclo del balde.** "Se terminó" (abierto → vacío, con un ajuste por lo
+  que el sistema creía que sobraba), "Los entregué al proveedor" (vacío →
+  canjeado, de a varios y todo o nada) y **balde entero en Ventas** (cerrado →
+  vendido). El precio del balde entero es un default del comercio que cada sabor
+  puede pisar. Anular esa venta devuelve el balde a la cámara. El Panel suma el
+  envase del balde vendido al costo (el margen real) y muestra cuántos baldes
+  salieron por cada puerta.
+- **Fase 10 — Excel.** Tres descargas para el dueño: Inventario (5 hojas),
+  Historial de ventas (con el filtro de la pantalla, pero TODAS las ventas, no
+  las 100 que se ven) y Caja (turnos con su arqueo y todos los movimientos).
+- 246 tests unitarios; `npm run verificar` y `npm run build` pasan.
+
+### Qué se decidió
+
+- **La clave de cobro cambia con el carrito.** Así la misma clave siempre es el
+  mismo ticket: no se le puede devolver a un pedido distinto la venta de uno
+  anterior. Y la base verifica que la clave sea de quien la manda.
+- **Permisos: una lista fija de tres, no un editor de roles.** Son pocas acciones
+  y se entienden de un vistazo; un editor genérico se puede configurar mal. Abrir
+  un balde, vaciarlo y cerrar la caja quedan fuera: sin eso no se puede trabajar.
+  Vaciar un balde lo puede hacer cualquiera aunque dé de baja kilos: se hace cada
+  vez que un balde se acaba en el mostrador, y queda registrado quién fue.
+- **Balde entero: solo uno cerrado, y no se elige cuál.** La base saca el más
+  viejo (`for update skip locked`, así dos ventas a la vez no pelean por el mismo).
+  Sin precio no se ofrece: mejor un botón con "Sin precio" que un error al cobrar.
+  Corregir sabor no aplica a un balde entero; si se equivocaron, se anula.
+- **Excel de verdad (.xlsx), no CSV.** Un CSV depende de la configuración regional
+  de la compu (coma o punto y coma, coma o punto decimal) y Goro no tiene por qué
+  saberlo. Con `write-excel-file` el archivo abre con doble clic, los números son
+  números y las fechas fechas. Dependencia nueva: `write-excel-file` (y `fflate`
+  de desarrollo, para leer el .xlsx en los tests).
+- **Los Excel son solo del dueño**, y se arman desde su sesión: los nombres de
+  quién hizo cada cosa y el arqueo son suyos por RLS, y una descarga no es la
+  excusa para saltearla. La lectura va de a mil filas (`lib/paginar.ts`) y falla
+  entera si una página falla: un archivo truncado que parece completo es peor que
+  ninguno. Los textos cargados por personas pasan por el saneo de `=`, `+`, `-`, `@`.
+- **El enlace de descarga es un `<a>`, no un `<Link>`:** Next precargaría la ruta
+  y armaría el archivo cada vez que alguien pasa el mouse.
+
+### Qué queda pendiente
+
+1. **Aplicar las tres migraciones, en orden, ANTES de desplegar el código:**
+   `20261003100000_ventas_robustas.sql`, `20261003110000_permisos.sql` y
+   `20261003120000_ciclo_balde.sql`. Sin la de permisos nadie puede entrar (el
+   código lee `perfiles.permisos` en cada pantalla). El SQL no se pudo ejecutar
+   desde acá: **no está probado contra Postgres**. Después, `npm run test:rls`
+   (los tests nuevos están en `ventas/`, `auth/permisos/`, `inventario/ciclo/` y
+   `panel/`) y probar a mano: cobrar, anular, vender un balde entero, sacarle un
+   permiso a un colaborador, y bajar los tres Excel.
+2. Abrir un Excel en la compu de Goro: lo único que no se puede comprobar desde
+   acá es cómo lo muestra Excel (anchos, formatos de plata, hojas).
+3. Del plan quedan la Fase 3 (etiquetas y códigos de barras, lo que Goro más
+   quiere ver) y el escaneo en Ventas — y, antes que nada, la prueba física de la
+   pistola y de la etiqueta en el freezer (0.2 y 0.3), que sigue sin hacerse.
+4. **¿Hay algo más? (regla 1.8).** Lo que se vio y quedó como está, a propósito:
+   - Un colaborador sin permiso de ajustes igual puede dar de baja los kilos que
+     sobran al marcar "Se terminó". Es el caso diario del mostrador; queda el
+     registro de quién fue.
+   - El total que muestra el Historial es el de las filas que se ven (tope de
+     100), y la pantalla lo avisa. El Excel de ventas trae todas.
+   - Ocultar un botón no es una barrera: la barrera es `tiene_permiso` en la base,
+     y los tests de `auth/permisos/` llaman a las funciones directamente.
+   - `FormularioStockMinimoDefault` no se usa en ninguna pantalla desde antes: el
+     mínimo por defecto no se puede editar desde la interfaz. No se tocó.
+
+---
+
 ## 2026-10-01 (tercera parte) — Historial de ventas y Panel del dueño, con sus indicadores
 
 ### Qué se hizo
@@ -87,8 +184,7 @@ salieron tres arreglos; después, la Fase 6.
   lo vendido del período, las ventas por hora y los kilos por sabor; el
   colaborador ve tres atajos. Antes esa pantalla decía "todavía no hay módulos",
   que quedó viejo hace cinco fases.
-- **Migración `20261001120000_panel.sql`** (escrita, con sus tests; **falta
-  aplicarla**): un índice por `ventas (creado_en)` —que el Historial también
+- **Migración `20261001120000_panel.sql`**: un índice por `ventas (creado_en)` —que el Historial también
   usa— y tres funciones de lectura, `ventas_del_periodo`, `ventas_por_hora` y
   `kilos_por_sabor`.
 - **El gráfico por hora es un SVG propio**, sin librería: barras en un
@@ -164,11 +260,6 @@ quiere ver), el balde entero y el escaneo en Ventas, los permisos por acción, e
 ciclo del balde y el Excel. Y los dos pendientes chicos del TPV anotados en el
 roadmap: el total del carrito sin separador de miles y el doble cobro por doble
 clic.
-
-Quedaron anotados en el roadmap dos pendientes chicos del TPV: el total del
-carrito sin separador de miles y el doble cobro por doble clic (que se arregla
-con un índice único, no en la pantalla). Del plan quedan la Fase 3 (etiquetas y
-códigos), el balde entero y el escaneo en Ventas, el ciclo del balde y el Excel.
 
 ---
 

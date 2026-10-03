@@ -4,6 +4,7 @@ import type { Balde } from "@/lib/baldes";
 import { BotonAbrirBalde } from "./BotonAbrirBalde";
 import { BotonAjustarBalde } from "./BotonAjustarBalde";
 import { BotonBorrarBalde } from "./BotonBorrarBalde";
+import { BotonVaciarBalde } from "./BotonVaciarBalde";
 
 const ETIQUETA_ESTADO: Record<string, string> = {
   cerrado: "Cerrado",
@@ -31,9 +32,16 @@ export function DetalleBaldes({ baldes, esDuenio }: { baldes: Balde[]; esDuenio:
             </>
           )}
           {balde.estado === "abierto" && (
-            <SiPuede permiso="cargar_inventario">
-              <BotonAjustarBalde baldeId={balde.id} />
-            </SiPuede>
+            <>
+              <SiPuede permiso="cargar_inventario">
+                <BotonAjustarBalde baldeId={balde.id} />
+              </SiPuede>
+              <BotonVaciarBalde
+                baldeId={balde.id}
+                codigo={balde.codigo}
+                kgRestante={balde.kgRestante}
+              />
+            </>
           )}
         </li>
       ))}

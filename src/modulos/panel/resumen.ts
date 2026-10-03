@@ -1,4 +1,5 @@
 import type {
+  BaldesDelPeriodo,
   CostoDeLoVendido,
   Margen,
   TotalesDelPeriodo,
@@ -36,8 +37,32 @@ export function compararCon(valor: number, anterior: number): Variacion {
  * porque se valúa por kilo.
  */
 export function margenDelPeriodo(vendido: number, costo: CostoDeLoVendido): Margen {
-  const total = Math.round(costo.helado + costo.insumos);
+  const total = Math.round(costo.helado + costo.insumos + costo.envases);
   const ganancia = vendido - total;
 
   return { costo: total, ganancia, porcentaje: vendido === 0 ? null : ganancia / vendido };
+}
+
+type FilaDeBaldes = { estado: string; cantidad: number; costo_envase: number };
+
+/** Junta las filas de `baldes_del_periodo` en las dos puertas: terminado (vacío o ya canjeado) y vendido. */
+export function baldesDelPeriodo(filas: FilaDeBaldes[]): BaldesDelPeriodo {
+  const resultado: BaldesDelPeriodo = {
+    terminados: 0,
+    vendidos: 0,
+    envasesPorReponer: 0,
+    envasesAhorrados: 0,
+  };
+
+  for (const fila of filas) {
+    if (fila.estado === "vendido") {
+      resultado.vendidos += fila.cantidad;
+      resultado.envasesPorReponer += fila.costo_envase;
+    } else {
+      resultado.terminados += fila.cantidad;
+      resultado.envasesAhorrados += fila.costo_envase;
+    }
+  }
+
+  return resultado;
 }

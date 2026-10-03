@@ -21,7 +21,9 @@ export const ETIQUETA_MEDIO_PAGO: Record<MedioPago, string> = {
 /** Lo mínimo que necesita el servidor para registrar un item. */
 export type ItemDeTicket =
   | { tipo: "formato"; formatoId: number; saborIds: number[] }
-  | { tipo: "producto"; presentacionId: number };
+  | { tipo: "producto"; presentacionId: number }
+  /** Un balde entero de este sabor: la base elige cuál de los cerrados sale. */
+  | { tipo: "balde"; saborId: number };
 
 /** Lo que necesita la pantalla para mostrar el ticket en construcción. */
 export type ItemEnCarrito = ItemDeTicket & {

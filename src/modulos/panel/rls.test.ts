@@ -216,7 +216,7 @@ describe("Panel: las sumas del período", () => {
     expect(sabores.data).toEqual([]);
     expect(dias.data).toEqual([]);
     expect(articulos.data).toEqual([]);
-    expect(costos.data).toEqual([{ costo_helado: 0, costo_insumos: 0 }]);
+    expect(costos.data).toEqual([{ costo_helado: 0, costo_insumos: 0, costo_envases: 0 }]);
 
     await limpiarVenta(ventaId);
   });
@@ -233,6 +233,7 @@ describe("Panel: las sumas del período", () => {
         presentacion_nombre: null,
         presentacion_unidades: null,
         insumo_nombre: null,
+        balde_sabor_nombre: null,
         unidades: 2,
         total: 6000,
       },
@@ -252,6 +253,22 @@ describe("Panel: las sumas del período", () => {
     expect(Number(data![0].costo_helado)).toBeCloseTo(25);
     expect(Number(data![0].costo_insumos)).toBeCloseTo(300);
 
+    await limpiarVenta(ventaId);
+  });
+
+  it("subir el costo de un insumo no cambia el margen de lo que ya se vendió", async () => {
+    const ventaId = await venderEn(frutillaId, "2020-03-22T18:00:00Z");
+    const rango = delDia("2020-03-22");
+
+    const { data: antes } = await colaborador.cliente.rpc("costo_de_lo_vendido", rango);
+    expect(Number(antes![0].costo_insumos)).toBeCloseTo(300);
+
+    // Goro sube el vasito de $300 a $999: la venta de esa fecha sigue costando $300.
+    await servicio.from("insumos").update({ costo: 999 }).eq("id", envaseId);
+    const { data: despues } = await colaborador.cliente.rpc("costo_de_lo_vendido", rango);
+    await servicio.from("insumos").update({ costo: 300 }).eq("id", envaseId);
+
+    expect(Number(despues![0].costo_insumos)).toBeCloseTo(300);
     await limpiarVenta(ventaId);
   });
 

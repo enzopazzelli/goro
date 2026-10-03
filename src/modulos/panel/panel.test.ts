@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { ventasPorDiaSemana } from "./dias";
 import { horasDelGrafico, proporcionDe } from "./grafico";
-import { compararCon, margenDelPeriodo, totalesDelPeriodo } from "./resumen";
+import { baldesDelPeriodo, compararCon, margenDelPeriodo, totalesDelPeriodo } from "./resumen";
 import type { VentasEnDia, VentasEnHora, VentasPorMedio } from "./tipos";
 
 function medio(medioPago: VentasPorMedio["medioPago"], cantidad: number, total: number) {
@@ -97,22 +97,24 @@ describe("compararCon", () => {
 
 describe("margenDelPeriodo", () => {
   it("lo cobrado menos lo que costó lo que salió", () => {
-    const margen = margenDelPeriodo(10000, { helado: 2500.4, insumos: 1500 });
+    const margen = margenDelPeriodo(10000, { helado: 2500.4, insumos: 1500, envases: 0 });
 
     expect(margen).toEqual({ costo: 4000, ganancia: 6000, porcentaje: 0.6 });
   });
 
   it("el costo se redondea una sola vez, al final", () => {
     // 1000,6 + 1000,6 = 2001,2 → 2001. Redondeando cada uno darían 2002.
-    expect(margenDelPeriodo(5000, { helado: 1000.6, insumos: 1000.6 }).costo).toBe(2001);
+    expect(margenDelPeriodo(5000, { helado: 1000.6, insumos: 1000.6, envases: 0 }).costo).toBe(
+      2001,
+    );
   });
 
   it("sin ventas no hay porcentaje", () => {
-    expect(margenDelPeriodo(0, { helado: 0, insumos: 0 }).porcentaje).toBeNull();
+    expect(margenDelPeriodo(0, { helado: 0, insumos: 0, envases: 0 }).porcentaje).toBeNull();
   });
 
   it("vender por debajo del costo da ganancia negativa", () => {
-    expect(margenDelPeriodo(1000, { helado: 1500, insumos: 0 }).ganancia).toBe(-500);
+    expect(margenDelPeriodo(1000, { helado: 1500, insumos: 0, envases: 0 }).ganancia).toBe(-500);
   });
 });
 
@@ -149,5 +151,41 @@ describe("ventasPorDiaSemana", () => {
 
   it("sin ventas no hay nada que agrupar", () => {
     expect(ventasPorDiaSemana([])).toEqual([]);
+  });
+});
+
+describe("margenDelPeriodo: baldes vendidos enteros", () => {
+  it("el envase que se lleva el cliente entra en el costo", () => {
+    // Un balde de $10.000 de helado vendido a $85.000, con un envase de $9.000:
+    // la ganancia real no es $75.000 sino $66.000.
+    const margen = margenDelPeriodo(85000, { helado: 10000, insumos: 0, envases: 9000 });
+
+    expect(margen).toEqual({ costo: 19000, ganancia: 66000, porcentaje: 66000 / 85000 });
+  });
+});
+
+describe("baldesDelPeriodo", () => {
+  it("separa los que volvieron al proveedor de los que se fueron con el cliente", () => {
+    const baldes = baldesDelPeriodo([
+      { estado: "vacio", cantidad: 1, costo_envase: 9000 },
+      { estado: "canjeado", cantidad: 3, costo_envase: 27000 },
+      { estado: "vendido", cantidad: 2, costo_envase: 18000 },
+    ]);
+
+    expect(baldes).toEqual({
+      terminados: 4,
+      vendidos: 2,
+      envasesPorReponer: 18000,
+      envasesAhorrados: 36000,
+    });
+  });
+
+  it("sin baldes todo es cero", () => {
+    expect(baldesDelPeriodo([])).toEqual({
+      terminados: 0,
+      vendidos: 0,
+      envasesPorReponer: 0,
+      envasesAhorrados: 0,
+    });
   });
 });

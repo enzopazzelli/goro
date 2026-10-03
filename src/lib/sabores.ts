@@ -6,6 +6,8 @@ export type Sabor = {
   nombre: string;
   activo: boolean;
   stockMinimo: number | null;
+  /** Lo que cuesta el balde entero de este sabor. `null`: usa el precio por defecto del comercio. */
+  precioBalde: number | null;
   color: string;
 };
 
@@ -14,6 +16,7 @@ type FilaSabor = {
   nombre: string;
   activo: boolean;
   stock_minimo: string | null;
+  precio_balde: number | null;
   color: string;
 };
 
@@ -23,6 +26,7 @@ function mapearSabor(fila: FilaSabor): Sabor {
     nombre: fila.nombre,
     activo: fila.activo,
     stockMinimo: fila.stock_minimo === null ? null : Number(fila.stock_minimo),
+    precioBalde: fila.precio_balde,
     color: fila.color,
   };
 }
@@ -32,7 +36,7 @@ export async function listarSabores(): Promise<Sabor[]> {
   const supabase = await clienteServidor();
   const { data } = await supabase
     .from("sabores")
-    .select("id, nombre, activo, stock_minimo, color")
+    .select("id, nombre, activo, stock_minimo, precio_balde, color")
     .order("activo", { ascending: false })
     .order("nombre");
 

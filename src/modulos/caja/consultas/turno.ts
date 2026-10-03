@@ -76,16 +76,6 @@ export async function ventasDelTurno(turnoId: number): Promise<VentaDelTurno[]> 
   }));
 }
 
-/**
- * Nombres para "quién lo hizo". RLS de perfiles deja al colaborador verse solo
- * a sí mismo; por eso las columnas de quién las muestra solo la vista del dueño.
- */
-export async function nombresDePerfiles(): Promise<Map<string, string>> {
-  const supabase = await clienteServidor();
-  const { data } = await supabase.from("perfiles").select("id, nombre");
-  return new Map((data ?? []).map((fila) => [fila.id as string, fila.nombre as string]));
-}
-
 /** Null para el colaborador: RLS de arqueos. */
 export async function arqueoDelTurno(turnoId: number): Promise<Arqueo | null> {
   const supabase = await clienteServidor();
