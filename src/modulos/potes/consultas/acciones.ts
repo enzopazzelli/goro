@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { clienteServidor } from "@/lib/supabase/servidor";
+import { esMotivoAElegir } from "@/modulos/descarte/tipos";
 
 export type EstadoPote = { error: string | null; poteId?: number };
 
@@ -42,27 +43,44 @@ export async function armarPote(_previo: EstadoPote, datos: FormData): Promise<E
   return { error: null, poteId: Number(data) };
 }
 
-async function sobrePote(
-  funcion: "anular_pote" | "descartar_pote",
-  datos: FormData,
-): Promise<EstadoPote> {
+function poteDe(datos: FormData): number | null {
   const poteId = Number(datos.get("poteId"));
-  if (!Number.isInteger(poteId) || poteId <= 0) return { error: "Pote inválido." };
+  return Number.isInteger(poteId) && poteId > 0 ? poteId : null;
+}
+
+/** Se armó mal: el helado vuelve al balde. */
+export async function anularPote(_previo: EstadoPote, datos: FormData): Promise<EstadoPote> {
+  const poteId = poteDe(datos);
+  if (poteId === null) return { error: "Pote inválido." };
 
   const supabase = await clienteServidor();
-  const { error } = await supabase.rpc(funcion, { p_pote_id: poteId });
+  const { error } = await supabase.rpc("anular_pote", { p_pote_id: poteId });
   if (error) return { error: error.message };
 
   refrescar();
   return SIN_ERROR;
 }
 
-/** Se armó mal: el helado vuelve al balde. */
-export async function anularPote(_previo: EstadoPote, datos: FormData): Promise<EstadoPote> {
-  return sobrePote("anular_pote", datos);
-}
-
-/** Se venció o se cayó: es merma, el helado no vuelve. */
+/**
+ * Se venció, se rompió o se derritió: es merma, el helado no vuelve. Lo puede
+ * hacer cualquiera con sesión, y queda en el descarte con su motivo y su costo.
+ */
 export async function descartarPote(_previo: EstadoPote, datos: FormData): Promise<EstadoPote> {
-  return sobrePote("descartar_pote", datos);
+  const poteId = poteDe(datos);
+  if (poteId === null) return { error: "Pote inválido." };
+  const motivo = datos.get("motivo");
+  if (!esMotivoAElegir(motivo)) return { error: "Elegí por qué se tira." };
+  const nota = String(datos.get("nota") ?? "").trim();
+
+  const supabase = await clienteServidor();
+  const { error } = await supabase.rpc("descartar_pote", {
+    p_pote_id: poteId,
+    p_motivo: motivo,
+    p_nota: nota || null,
+  });
+  if (error) return { error: error.message };
+
+  refrescar();
+  revalidatePath("/descarte");
+  return SIN_ERROR;
 }

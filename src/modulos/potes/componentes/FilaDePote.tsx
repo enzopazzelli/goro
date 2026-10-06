@@ -1,42 +1,31 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { Boton } from "@/componentes/Boton";
 import { diaYHoraDe } from "@/lib/fechas";
 import { formatearPlata } from "@/lib/plata";
-import { SiPuede } from "@/modulos/auth/componentes/Permisos";
-import { anularPote, descartarPote, type EstadoPote } from "../consultas/acciones";
+import { anularPote, type EstadoPote } from "../consultas/acciones";
 import type { PoteEnFreezer } from "../tipos";
+import { ModalDescartarPote } from "./ModalDescartarPote";
 
 const INICIAL: EstadoPote = { error: null };
 
-/** Un botón de la fila que pide confirmación antes de tocar el stock. */
-function AccionDePote({
-  poteId,
-  accion,
-  texto,
-  pregunta,
-  variante,
-}: {
-  poteId: number;
-  accion: (previo: EstadoPote, datos: FormData) => Promise<EstadoPote>;
-  texto: string;
-  pregunta: string;
-  variante: "suave" | "peligro";
-}) {
-  const [estado, ejecutar, enviando] = useActionState(accion, INICIAL);
+/** Se armó por error: pide confirmación antes de devolver el helado al balde. */
+function BotonAnular({ pote }: { pote: PoteEnFreezer }) {
+  const [estado, ejecutar, enviando] = useActionState(anularPote, INICIAL);
 
   return (
     <form
       action={ejecutar}
       onSubmit={(evento) => {
+        const pregunta = `¿Anular el pote ${pote.codigo}? Se armó por error: el helado vuelve al balde.`;
         if (!confirm(pregunta)) evento.preventDefault();
       }}
       className="flex items-center gap-2"
     >
-      <input type="hidden" name="poteId" value={poteId} />
-      <Boton type="submit" variante={variante} tamano="chico" disabled={enviando}>
-        {texto}
+      <input type="hidden" name="poteId" value={pote.id} />
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
+        Anular
       </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
@@ -56,6 +45,8 @@ export function FilaDePote({
   elegido: boolean;
   onAlternar: () => void;
 }) {
+  const [descartando, setDescartando] = useState(false);
+
   return (
     <tr className="border-b border-linea align-top last:border-0">
       <td className="p-2">
@@ -75,22 +66,21 @@ export function FilaDePote({
       <td className="p-2 text-xs text-texto-suave">{diaYHoraDe(pote.armadoEn)}</td>
       <td className="p-2">
         <div className="flex flex-wrap justify-end gap-3">
-          <AccionDePote
-            poteId={pote.id}
-            accion={anularPote}
-            texto="Anular"
-            variante="suave"
-            pregunta={`¿Anular el pote ${pote.codigo}? Se armó por error: el helado vuelve al balde.`}
+          <BotonAnular pote={pote} />
+          {/* Sin permiso de por medio: el que lo encuentra vencido es el que lo tira. */}
+          <Boton
+            type="button"
+            variante="peligro"
+            tamano="chico"
+            onClick={() => setDescartando(true)}
+          >
+            Descartar
+          </Boton>
+          <ModalDescartarPote
+            abierto={descartando}
+            onCerrar={() => setDescartando(false)}
+            pote={pote}
           />
-          <SiPuede permiso="cargar_inventario">
-            <AccionDePote
-              poteId={pote.id}
-              accion={descartarPote}
-              texto="Descartar"
-              variante="peligro"
-              pregunta={`¿Descartar el pote ${pote.codigo}? Se tira: el helado NO vuelve al balde.`}
-            />
-          </SiPuede>
         </div>
       </td>
     </tr>

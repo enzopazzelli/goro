@@ -11,7 +11,15 @@ const ETIQUETA_ESTADO: Record<string, string> = {
   abierto: "Abierto",
 };
 
-export function DetalleBaldes({ baldes, esDuenio }: { baldes: Balde[]; esDuenio: boolean }) {
+export function DetalleBaldes({
+  baldes,
+  saborNombre,
+  esDuenio,
+}: {
+  baldes: Balde[];
+  saborNombre: string;
+  esDuenio: boolean;
+}) {
   if (baldes.length === 0) {
     return <p className="text-sm text-texto-suave">Sin baldes en stock.</p>;
   }
@@ -39,6 +47,7 @@ export function DetalleBaldes({ baldes, esDuenio }: { baldes: Balde[]; esDuenio:
               <BotonVaciarBalde
                 baldeId={balde.id}
                 codigo={balde.codigo}
+                saborNombre={saborNombre}
                 kgRestante={balde.kgRestante}
               />
             </>

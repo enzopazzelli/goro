@@ -85,7 +85,7 @@ export function FilaSaborExpandible({
                   <BotonBorrarSabor saborId={sabor.id} nombre={sabor.nombre} />
                 </div>
               )}
-              <DetalleBaldes baldes={baldes} esDuenio={esDuenio} />
+              <DetalleBaldes baldes={baldes} saborNombre={sabor.nombre} esDuenio={esDuenio} />
             </div>
           </td>
         </tr>
