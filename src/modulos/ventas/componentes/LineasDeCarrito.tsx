@@ -20,10 +20,10 @@ export function LineasDeCarrito({
       {carrito.map((item, indice) => (
         <li key={indice} className="flex items-start gap-2 border-b border-linea pb-2">
           <div className="min-w-0 flex-1">
-            <div className="text-sm font-semibold">
+            <div className="text-base font-semibold">
               {item.nombre} · <span className="numero">{formatearPlata(item.precio)}</span>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-texto-suave">
+            <div className="flex flex-wrap items-center gap-2 text-sm text-texto-suave">
               {saborIdsDe(item).map((saborId) => {
                 const sabor = sabores.find((s) => s.id === saborId);
                 return (
@@ -38,7 +38,7 @@ export function LineasDeCarrito({
             type="button"
             onClick={() => onQuitar(indice)}
             aria-label={`Quitar ${item.nombre}`}
-            className="text-texto-suave hover:text-alerta"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-texto-suave transition hover:bg-alerta-fondo hover:text-alerta"
           >
             ✕
           </button>

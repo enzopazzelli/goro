@@ -6,6 +6,7 @@ import { formatearPlata } from "@/lib/plata";
 import { precioDeBalde } from "@/lib/precioBalde";
 import type { Sabor } from "@/lib/sabores";
 import type { ItemEnCarrito } from "../tipos";
+import { DETALLE, NOMBRE, PRECIO, ROTULO_DE_GRUPO, TARJETA, TARJETA_LIBRE } from "./estilosDeVenta";
 
 /**
  * Los sabores de los que hay un balde cerrado para vender entero. Un balde
@@ -40,9 +41,7 @@ export function SelectorDeBaldes({
 
   return (
     <div>
-      <p className="mb-2 font-mono text-xs tracking-wide text-texto-suave uppercase">
-        Balde entero
-      </p>
+      <p className={ROTULO_DE_GRUPO}>Balde entero</p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {ofertas.map(({ sabor, cerrados, precio }) => (
           <button
@@ -59,15 +58,15 @@ export function SelectorDeBaldes({
                 saboresNombres: [sabor.nombre],
               })
             }
-            className="flex flex-col items-center gap-1 rounded-(--radius-arco) border border-linea bg-superficie p-3 text-center transition hover:bg-superficie-honda disabled:opacity-55"
+            className={`${TARJETA} ${TARJETA_LIBRE} disabled:opacity-55`}
           >
-            <span className="flex items-center gap-1 font-display font-semibold">
+            <span className={`flex items-center gap-1.5 ${NOMBRE}`}>
               <Punto color={sabor.color} /> {sabor.nombre}
             </span>
-            <span className="font-mono text-xs opacity-70">
+            <span className={DETALLE}>
               {cerrados} cerrado{cerrados === 1 ? "" : "s"}
             </span>
-            <span className="numero">
+            <span className={PRECIO}>
               {precio === null ? "Sin precio" : formatearPlata(precio)}
             </span>
           </button>

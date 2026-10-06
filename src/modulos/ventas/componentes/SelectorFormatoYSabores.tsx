@@ -7,6 +7,7 @@ import { kgPorSabor } from "@/lib/kgPorSabor";
 import type { Sabor } from "@/lib/sabores";
 import { formatearPlata } from "@/lib/plata";
 import type { ItemEnCarrito } from "../tipos";
+import { DETALLE, NOMBRE, PRECIO, ROTULO_DE_GRUPO, TARJETA, TARJETA_LIBRE } from "./estilosDeVenta";
 import { SelectorDeSabores } from "./SelectorDeSabores";
 
 export function SelectorFormatoYSabores({
@@ -58,9 +59,7 @@ export function SelectorFormatoYSabores({
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <p className="mb-2 font-mono text-xs tracking-wide text-texto-suave uppercase">
-          1 · Formato
-        </p>
+        <p className={ROTULO_DE_GRUPO}>1 · Formato</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {formatos.map((f) => (
             <button
@@ -71,17 +70,15 @@ export function SelectorFormatoYSabores({
                 setFormatoId(f.id);
                 setSaborIds([]);
               }}
-              className={`flex flex-col items-center gap-1 rounded-(--radius-arco) border p-3 text-center transition ${
-                formatoId === f.id
-                  ? "border-marco bg-marco text-fondo"
-                  : "border-linea bg-superficie hover:bg-superficie-honda"
+              className={`${TARJETA} ${
+                formatoId === f.id ? "border-marco bg-marco text-fondo" : TARJETA_LIBRE
               }`}
             >
-              <span className="font-display font-semibold">{f.nombre}</span>
-              <span className="font-mono text-xs opacity-70">
+              <span className={NOMBRE}>{f.nombre}</span>
+              <span className={DETALLE}>
                 {f.gramos} g · {f.cantidadSabores} sabor{f.cantidadSabores > 1 ? "es" : ""}
               </span>
-              <span className="numero">{formatearPlata(f.precio)}</span>
+              <span className={PRECIO}>{formatearPlata(f.precio)}</span>
             </button>
           ))}
         </div>

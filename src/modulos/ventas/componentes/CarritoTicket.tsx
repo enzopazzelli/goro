@@ -63,7 +63,7 @@ export function CarritoTicket({
 
         <div className="border-t-2 border-marco pt-3">
           <div className="flex items-baseline justify-between">
-            <span className="font-mono text-xs tracking-wide text-texto-suave uppercase">
+            <span className="font-mono text-sm tracking-wide text-texto-suave uppercase">
               Total
             </span>
             <span className="numero text-4xl font-medium">
@@ -79,7 +79,7 @@ export function CarritoTicket({
               name="medioPago"
               value={medioPago}
               onChange={(evento) => onCambiarMedioPago(evento.target.value as MedioPago)}
-              className="rounded-(--r) border border-linea bg-superficie px-3 py-2 text-sm"
+              className="rounded-(--r) border border-linea bg-superficie px-3 py-2.5 text-base"
             >
               <option value="efectivo">Efectivo</option>
               <option value="tarjeta">Tarjeta</option>

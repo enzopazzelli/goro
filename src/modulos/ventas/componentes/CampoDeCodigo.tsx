@@ -51,7 +51,7 @@ export function CampoDeCodigo({
     <form onSubmit={enviar} className="flex flex-col gap-1">
       <label
         htmlFor="codigo-de-barras"
-        className="font-mono text-xs tracking-wide text-texto-suave uppercase"
+        className="font-mono text-sm tracking-wide text-texto-suave uppercase"
       >
         Código de barras
       </label>
@@ -65,7 +65,7 @@ export function CampoDeCodigo({
         autoCapitalize="characters"
         spellCheck={false}
         disabled={buscando}
-        className="numero rounded-(--r) border border-linea bg-superficie px-3 py-2 text-sm"
+        className="numero rounded-(--r) border border-linea bg-superficie px-3 py-2.5 text-base"
       />
       <p
         aria-live="polite"

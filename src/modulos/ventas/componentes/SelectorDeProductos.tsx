@@ -4,6 +4,7 @@ import { etiquetaPresentacion } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
 import { formatearPlata } from "@/lib/plata";
 import type { ItemEnCarrito } from "../tipos";
+import { DETALLE, NOMBRE, PRECIO, ROTULO_DE_GRUPO, TARJETA, TARJETA_LIBRE } from "./estilosDeVenta";
 
 export function SelectorDeProductos({
   presentaciones,
@@ -16,7 +17,7 @@ export function SelectorDeProductos({
 
   return (
     <div>
-      <p className="mb-2 font-mono text-xs tracking-wide text-texto-suave uppercase">Productos</p>
+      <p className={ROTULO_DE_GRUPO}>Productos</p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {presentaciones.map((presentacion) => (
           <button
@@ -31,13 +32,13 @@ export function SelectorDeProductos({
                 saboresNombres: [],
               })
             }
-            className="flex flex-col items-center gap-1 rounded-(--radius-arco) border border-linea bg-superficie p-3 text-center transition hover:bg-superficie-honda"
+            className={`${TARJETA} ${TARJETA_LIBRE}`}
           >
-            <span className="font-display font-semibold">{presentacion.insumoNombre}</span>
-            <span className="font-mono text-xs opacity-70">
+            <span className={NOMBRE}>{presentacion.insumoNombre}</span>
+            <span className={DETALLE}>
               {etiquetaPresentacion(presentacion.nombre, presentacion.unidades)}
             </span>
-            <span className="numero">{formatearPlata(presentacion.precio)}</span>
+            <span className={PRECIO}>{formatearPlata(presentacion.precio)}</span>
           </button>
         ))}
       </div>

@@ -3,6 +3,7 @@
 import { Boton } from "@/componentes/Boton";
 import { Punto } from "@/componentes/Punto";
 import type { Sabor } from "@/lib/sabores";
+import { ROTULO_DE_GRUPO } from "./estilosDeVenta";
 
 export function SelectorDeSabores({
   formatoCantidadSabores,
@@ -21,7 +22,7 @@ export function SelectorDeSabores({
 }) {
   return (
     <div>
-      <p className="mb-2 font-mono text-xs tracking-wide text-texto-suave uppercase">
+      <p className={ROTULO_DE_GRUPO}>
         2 · Sabores — elegí hasta {formatoCantidadSabores}, llevás {saborIds.length}
       </p>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -37,7 +38,7 @@ export function SelectorDeSabores({
                 aria-pressed={elegido}
                 disabled={agotado}
                 onClick={() => onAlternar(sabor.id)}
-                className={`flex items-center gap-2 rounded-(--radius-arco) border p-2 text-left transition disabled:cursor-not-allowed disabled:opacity-40 ${
+                className={`flex items-center gap-2.5 rounded-(--radius-arco) border p-3 text-left transition disabled:cursor-not-allowed disabled:opacity-40 ${
                   elegido
                     ? "border-acento bg-acento-fondo"
                     : "border-linea bg-superficie hover:bg-superficie-honda"
@@ -45,8 +46,10 @@ export function SelectorDeSabores({
               >
                 <Punto color={sabor.color} grande />
                 <span className="min-w-0">
-                  <span className="block text-sm font-medium">{sabor.nombre}</span>
-                  <span className="font-mono text-xs text-texto-suave">
+                  <span className="block text-base leading-tight font-semibold">
+                    {sabor.nombre}
+                  </span>
+                  <span className="font-mono text-sm text-texto-suave">
                     {agotado ? "agotado" : `${(kgDisponible[sabor.id] ?? 0).toFixed(1)} kg`}
                   </span>
                 </span>
