@@ -90,6 +90,10 @@ export function FormularioTicket({
     cambiarCarrito((actuales) => actuales.filter((_, i) => i !== indice));
   }
 
+  const productosALaVenta = presentaciones.filter(
+    (presentacion) => presentacion.activo && presentacion.insumoActivo,
+  );
+
   return (
     <div className="grid gap-4 lg:grid-cols-[1fr_360px]">
       {/* Mientras la venta viaja no se agrega nada: el carrito se vacía cuando
@@ -97,6 +101,7 @@ export function FormularioTicket({
           quien cobra sepa si entró o no. */}
       <fieldset disabled={enviando} className="flex min-w-0 flex-col gap-4">
         <CampoDeCodigo
+          presentaciones={productosALaVenta}
           yaEnElTicket={(item) => carrito.some((actual) => mismoObjeto(actual, item))}
           onAgregar={(item) => cambiarCarrito((actuales) => [...actuales, item])}
         />
@@ -113,9 +118,7 @@ export function FormularioTicket({
           onAgregar={(item) => cambiarCarrito((actuales) => [...actuales, item])}
         />
         <SelectorDeProductos
-          presentaciones={presentaciones.filter(
-            (presentacion) => presentacion.activo && presentacion.insumoActivo,
-          )}
+          presentaciones={productosALaVenta}
           onAgregar={(item) => cambiarCarrito((actuales) => [...actuales, item])}
         />
       </fieldset>

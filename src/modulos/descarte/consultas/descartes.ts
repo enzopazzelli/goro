@@ -24,18 +24,19 @@ export async function descartesDelPeriodo(periodo: Periodo): Promise<Descarte[]>
 
 type FilaArticulo = {
   id: number;
+  codigo: string;
   nombre: string;
   unidad: ArticuloDescartable["unidad"];
   tipo: ArticuloDescartable["tipo"];
   cantidad: number | string;
 };
 
-/** Lo que se puede elegir de la lista: los artículos activos, con su stock al lado. */
+/** Lo que se puede buscar por nombre: los artículos activos, con su código y su stock. */
 export async function articulosDescartables(): Promise<ArticuloDescartable[]> {
   const supabase = await clienteServidor();
   const { data } = await supabase
     .from("insumos")
-    .select("id, nombre, unidad, tipo, cantidad")
+    .select("id, codigo, nombre, unidad, tipo, cantidad")
     .eq("activo", true)
     .order("nombre");
 

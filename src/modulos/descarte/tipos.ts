@@ -59,6 +59,8 @@ export type ResumenDeDescarte = {
 /** Un artículo que se puede descartar desde la pantalla: insumo, producto o envase. */
 export type ArticuloDescartable = {
   id: number;
+  /** Lo que pone el buscador en el campo al elegirlo por nombre. */
+  codigo: string;
   nombre: string;
   unidad: Unidad;
   tipo: "insumo" | "producto" | "envase";

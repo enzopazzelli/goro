@@ -25,14 +25,10 @@ export async function descartarArticulo(
   if ("error" in leido) return { error: leido.error };
 
   const supabase = await clienteServidor();
-  let insumoId = leido.insumoId;
-  if (leido.codigo) {
-    const codigo = await articuloDelCodigo(supabase, leido.codigo);
-    if ("error" in codigo) return { error: codigo.error };
-    if ("otro" in codigo) return { error: NO_SE_DESCARTA_ACA[codigo.otro] };
-    insumoId = codigo.articuloId;
-  }
-  if (insumoId === null) return { error: "Escaneá el código o elegí qué se tira." };
+  const codigo = await articuloDelCodigo(supabase, leido.codigo);
+  if ("error" in codigo) return { error: codigo.error };
+  if ("otro" in codigo) return { error: NO_SE_DESCARTA_ACA[codigo.otro] };
+  const insumoId = codigo.articuloId;
 
   const { error } = await supabase.rpc("descartar_insumo", {
     p_insumo_id: insumoId,

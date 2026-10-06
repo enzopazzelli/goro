@@ -1,26 +1,25 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useActionState, useEffect, useMemo, useRef, useState } from "react";
 import { Boton } from "@/componentes/Boton";
+import { CampoCodigoONombre } from "@/componentes/CampoCodigoONombre";
 import { nuevaClave } from "@/lib/claveUnica";
 import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 import { descartarArticulo, type EstadoDescarte } from "../consultas/acciones";
 import { LARGO_MAXIMO_DE_NOTA } from "../formulario";
 import { ETIQUETA_MOTIVO, MOTIVOS_A_ELEGIR, type ArticuloDescartable } from "../tipos";
-import { SelectorDeArticulo } from "./SelectorDeArticulo";
 
 const INICIAL: EstadoDescarte = { error: null };
 const ROTULO = "flex flex-col gap-1 font-mono text-xs tracking-wide text-texto-suave uppercase";
 const CAMPO = "rounded-(--r) border border-linea bg-superficie px-3 py-2 text-sm normal-case";
 
 /**
- * Se escanea (o se elige) lo que se tira, la cantidad y el motivo. Como en
- * Recibir por código, el Enter de la pistola pasa a la cantidad en vez de
- * mandar el formulario a medias; al terminar vuelve al código.
+ * Se escanea (o se busca por nombre) lo que se tira, la cantidad y el motivo.
+ * Como en Recibir por código, el Enter de la pistola pasa a la cantidad en vez
+ * de mandar el formulario a medias; al terminar vuelve al código.
  */
 export function FormularioDescarte({ articulos }: { articulos: ArticuloDescartable[] }) {
   const formulario = useRef<HTMLFormElement>(null);
-  const codigo = useRef<HTMLInputElement>(null);
   const cantidad = useRef<HTMLInputElement>(null);
   // Identifica este descarte ante la base: si se manda dos veces sin cambiar
   // nada (doble clic, respuesta perdida), la base devuelve el mismo y el stock
@@ -37,16 +36,21 @@ export function FormularioDescarte({ articulos }: { articulos: ArticuloDescartab
 
   useEffect(() => {
     if (estado.aviso) {
+      // Al vaciarse, el campo del código toma el foco solo.
       formulario.current?.reset();
-      codigo.current?.focus();
     }
   }, [estado]);
 
-  function alApretarEnter(evento: KeyboardEvent<HTMLInputElement>) {
-    if (evento.key !== "Enter" || evento.currentTarget.value.trim() === "") return;
-    evento.preventDefault();
-    cantidad.current?.focus();
-  }
+  const opciones = useMemo(
+    () =>
+      articulos.map((articulo) => ({
+        clave: String(articulo.id),
+        codigo: articulo.codigo,
+        nombre: articulo.nombre,
+        detalle: `hay ${articulo.cantidad} ${articulo.unidad}`,
+      })),
+    [articulos],
+  );
 
   return (
     <form
@@ -56,23 +60,12 @@ export function FormularioDescarte({ articulos }: { articulos: ArticuloDescartab
       className="flex flex-wrap items-end gap-3"
     >
       <input type="hidden" name="clave" value={clave} />
-      <label className={ROTULO}>
-        Código
-        <input
-          ref={codigo}
-          name="codigo"
-          autoComplete="off"
-          autoCapitalize="characters"
-          spellCheck={false}
-          onKeyDown={alApretarEnter}
-          placeholder="Escaneá o tipeá"
-          className={`numero w-44 ${CAMPO}`}
-        />
-      </label>
-      <label className={ROTULO}>
-        O elegí qué
-        <SelectorDeArticulo articulos={articulos} className={`w-64 ${CAMPO}`} />
-      </label>
+      <CampoCodigoONombre
+        opciones={opciones}
+        siguiente={cantidad}
+        claseRotulo={ROTULO}
+        claseCampo={`w-72 ${CAMPO}`}
+      />
       <label className={ROTULO}>
         Cantidad
         <input

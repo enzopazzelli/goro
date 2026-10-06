@@ -412,14 +412,15 @@
   </ul>
   <div class="caja-aviso ojo"><b>Vender un balde entero deja menos margen de lo que parece</b>El cliente se queda con el envase y hay que comprar otro. El Panel ya lo suma al costo, para que veas la ganancia real.</div>
 
-  <h3>Con código de barras (o tipeando el código)</h3>
-  <p>Arriba de todo hay un campo <span class="campo">Código de barras</span>. Es donde "suena" la pistola: escanea el código y aprieta Enter solo. Sin pistola, tipeás el código (está impreso debajo de las barras) y apretás <b>Enter</b>.</p>
+  <h3>Con código de barras, o buscando por nombre</h3>
+  <p>Arriba de todo hay un campo <span class="campo">Código o nombre</span>. Es donde "suena" la pistola: escanea el código y aprieta Enter solo. Sin pistola, tipeás el código (está impreso debajo de las barras) y apretás <b>Enter</b>.</p>
   <ul>
     <li><b>Un pote armado</b> (<code>GP…</code>) se agrega al ticket con el precio que tenía su etiqueta.</li>
     <li><b>Un balde cerrado</b> (<code>GB…</code>) se vende entero: ese balde en particular.</li>
     <li><b>Un producto</b> (<code>GA…</code>, como un bombón) se agrega por unidad.</li>
   </ul>
   <p>Debajo del campo el sistema dice qué hizo: <i>"Agregado: Pote 1/2 kilo · Frutilla"</i>, o por qué no: <i>"Ese pote ya se vendió"</i>, <i>"Ese código no está cargado"</i>. Un pote no puede entrar dos veces al mismo ticket. El campo queda listo para escanear el siguiente.</p>
+  <p><b>Buscar un producto por nombre:</b> escribí parte del nombre (sin preocuparte por tildes ni mayúsculas: <i>bombon</i> encuentra <i>Bombón</i>) y aparece debajo una lista con los productos que coinciden, cada presentación con su precio. Elegís con un clic, o con las flechas y <b>Enter</b>, y entra al ticket. Busca solo productos: los formatos, sabores y baldes tienen sus botones, y un pote se cobra escaneando su etiqueta.</p>
 
   <h3>Doble clic y reintentos: no se cobra dos veces</h3>
   <p>Si tocás <span class="btn">Cobrar</span> dos veces seguidas, o se corta internet justo al cobrar y volvés a tocar, <b>la venta entra una sola vez</b>. Si aparece <i>"No llegó la respuesta. Tocá Cobrar de nuevo"</i>, hacelo con confianza.</p>
@@ -501,7 +502,7 @@
   <p>La pestaña <b>Cargar</b> tiene un formulario por cosa:</p>
   <div class="tabla-scroll"><table>
     <tr><th>Formulario</th><th>Qué pide</th><th>Quién</th></tr>
-    <tr><td><b>Recibir mercadería</b></td><td>El código del artículo (se escanea o se tipea) y cuántos llegaron. Ver abajo.</td><td>Con permiso de cargar</td></tr>
+    <tr><td><b>Recibir mercadería</b></td><td>El artículo (se escanea, se tipea el código o se busca por nombre) y cuántos llegaron. Ver abajo.</td><td>Con permiso de cargar</td></tr>
     <tr><td><b>Balde nuevo</b></td><td>Sabor, <b>Kg</b> que trae, <b>Costo</b> del balde lleno y <b>Costo envase</b> (lo que cuesta reponer el envase si se vende).</td><td>Con permiso de cargar</td></tr>
     <tr><td><b>Sabor nuevo</b></td><td>El nombre y un color.</td><td>Dueño</td></tr>
     <tr><td><b>Insumo nuevo</b></td><td>Nombre, unidad (unidades o kilos), cantidad actual, mínimo y costo.</td><td>Dueño</td></tr>
@@ -521,7 +522,7 @@
   <h3>Recibir mercadería por código</h3>
   <p>Cuando llega un pedido grande, buscar cada artículo en una lista es un fastidio. En <i>Cargar → Recibir mercadería</i>:</p>
   <ol class="pasos">
-    <li>Escaneá (o tipeá) el <b>código del artículo</b> y apretá Enter. El cursor pasa solo a la cantidad.</li>
+    <li>Escaneá (o tipeá) el <b>código del artículo</b> y apretá Enter, o escribí parte del <b>nombre</b> y elegilo de la lista. El cursor pasa solo a la cantidad.</li>
     <li>Escribí <b>cuántos llegaron</b> y Enter.</li>
     <li>El sistema responde, por ejemplo: <i>"Entraron 120 de Cucurucho. Ahora hay 160"</i>. El cursor vuelve al código para el siguiente artículo.</li>
   </ol>
@@ -625,7 +626,7 @@
   <p>Muestra todos los potes armados que todavía no se vendieron: código, qué es, peso, precio y cuándo se armó. Tildás los que querés imprimir y debajo ves la <b>vista previa de la hoja</b>: se imprime exactamente eso (sin el menú ni los botones). Podés mandar varias etiquetas juntas a una hoja A4.</p>
 
   <h3>Cobrar un pote</h3>
-  <p>En <a href="#ventas">Ventas</a>, escaneá la etiqueta (o tipeá el código) en el campo <span class="campo">Código de barras</span>. El pote entra al ticket al precio de su etiqueta. Un pote <b>no se puede cobrar dos veces</b>: aunque dos personas lo escaneen a la vez, solo una venta lo toma.</p>
+  <p>En <a href="#ventas">Ventas</a>, escaneá la etiqueta (o tipeá el código) en el campo <span class="campo">Código o nombre</span>. El pote entra al ticket al precio de su etiqueta. Un pote <b>no se puede cobrar dos veces</b>: aunque dos personas lo escaneen a la vez, solo una venta lo toma.</p>
   <p>Si anulás esa venta, el pote <b>vuelve al freezer</b> y se puede vender de nuevo. El helado no vuelve al balde, porque el pote sigue existiendo.</p>
 
   <h3>Anular o descartar un pote</h3>
@@ -654,7 +655,7 @@
 
   <h3>La pantalla Descarte</h3>
   <ol>
-    <li>Escaneá el código del artículo (o tipealo) y apretá Enter, o elegilo de la lista <span class="campo">O elegí qué</span>.</li>
+    <li>En <span class="campo">Código o nombre</span>, escaneá el código del artículo y apretá Enter, o escribí parte del nombre y elegilo de la lista que aparece. Debajo del campo se lee qué quedó elegido.</li>
     <li>Poné la <span class="campo">Cantidad</span> y elegí <span class="campo">Por qué</span>: vencido, se rompió o se cayó, se derritió u otro. Si querés, una nota.</li>
     <li>Apretá <span class="btn peligro">Descartar</span>. El stock baja solo.</li>
   </ol>
@@ -682,7 +683,7 @@
   <div class="caja-aviso tip"><b>El código no lleva el precio adentro</b>Solo identifica. El precio, el peso y el sabor están en el sistema. Por eso podés cambiar la lista de precios sin que las etiquetas ya impresas queden mintiendo.</div>
 
   <h3>La pistola es un teclado</h3>
-  <p>La pistola lee las barras y "tipea" el código seguido de Enter. Por eso <b>no hace falta configurar nada</b>: donde se pueda escribir un código (el campo de Ventas, Recibir mercadería), apuntás y disparás. Y si no hay pistola, o una etiqueta no lee, <b>el código está impreso en números debajo de las barras</b>: se tipea igual.</p>
+  <p>La pistola lee las barras y "tipea" el código seguido de Enter. Por eso <b>no hace falta configurar nada</b>: donde se pueda escribir un código (el campo de Ventas, Recibir mercadería, Descarte), apuntás y disparás. Y si no hay pistola, o una etiqueta no lee, <b>el código está impreso en números debajo de las barras</b>: se tipea igual.</p>
 
   <h3>Imprimir etiquetas (módulo Códigos)</h3>
   <p>El módulo <b>Códigos</b> tiene tres pestañas, cada una con su botón <span class="btn suave">🖨 Imprimir esta hoja</span>:</p>

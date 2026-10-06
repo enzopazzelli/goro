@@ -3,6 +3,7 @@
 import { etiquetaPresentacion } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
 import { formatearPlata } from "@/lib/plata";
+import { itemDePresentacion } from "../itemDePresentacion";
 import type { ItemEnCarrito } from "../tipos";
 import { DETALLE, NOMBRE, PRECIO, ROTULO_DE_GRUPO, TARJETA, TARJETA_LIBRE } from "./estilosDeVenta";
 
@@ -23,15 +24,7 @@ export function SelectorDeProductos({
           <button
             key={presentacion.id}
             type="button"
-            onClick={() =>
-              onAgregar({
-                tipo: "producto",
-                presentacionId: presentacion.id,
-                nombre: `${presentacion.insumoNombre} · ${etiquetaPresentacion(presentacion.nombre, presentacion.unidades)}`,
-                precio: presentacion.precio,
-                saboresNombres: [],
-              })
-            }
+            onClick={() => onAgregar(itemDePresentacion(presentacion))}
             className={`${TARJETA} ${TARJETA_LIBRE}`}
           >
             <span className={NOMBRE}>{presentacion.insumoNombre}</span>

@@ -5,8 +5,8 @@ import { esMotivoAElegir, type MotivoAElegir } from "./tipos";
 export const LARGO_MAXIMO_DE_NOTA = 200;
 
 export type DescarteLeido = {
-  codigo: string | null;
-  insumoId: number | null;
+  /** Escaneado, tipeado, o puesto por el buscador al elegir un nombre. */
+  codigo: string;
   cantidad: number;
   motivo: MotivoAElegir;
   nota: string | null;
@@ -18,27 +18,13 @@ function textoDe(datos: FormData, campo: string): string {
   return typeof valor === "string" ? valor.trim() : "";
 }
 
-/** Qué se tira. Si vino un código, manda el código: es lo que se escaneó recién. */
-function leerQue(
-  datos: FormData,
-): { codigo: string | null; insumoId: number | null } | { error: string } {
-  const codigo = textoDe(datos, "codigo");
-  if (codigo) return { codigo, insumoId: null };
-
-  const insumoId = Number(textoDe(datos, "insumoId"));
-  if (!Number.isInteger(insumoId) || insumoId <= 0) {
-    return { error: "Escaneá el código o elegí qué se tira." };
-  }
-  return { codigo: null, insumoId };
-}
-
 /**
  * Lo que mandó el formulario de descarte, validado. La base vuelve a revisar
  * todo (regla 4): esto es para contestar rápido, sin ir y volver.
  */
 export function leerDescarte(datos: FormData): DescarteLeido | { error: string } {
-  const que = leerQue(datos);
-  if ("error" in que) return que;
+  const codigo = textoDe(datos, "codigo");
+  if (!codigo) return { error: "Escaneá el código o buscá por nombre qué se tira." };
 
   const cantidad = Number(textoDe(datos, "cantidad"));
   if (!Number.isFinite(cantidad) || cantidad <= 0) {
@@ -55,7 +41,7 @@ export function leerDescarte(datos: FormData): DescarteLeido | { error: string }
 
   const clave = textoDe(datos, "clave");
   return {
-    ...que,
+    codigo,
     cantidad,
     motivo,
     nota: nota || null,
