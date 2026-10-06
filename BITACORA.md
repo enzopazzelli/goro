@@ -51,6 +51,64 @@ El siguiente paso, en una línea, para poder retomar sin releer nada.
 
 ---
 
+## 2026-10-06 — Lo que pidió Goro en la demo: descarte, botones y letra más grandes
+
+### Qué se hizo
+
+Enzo le mostró el sistema a Goro y salieron cuatro pedidos.
+
+- **Botones de verdad.** Editar, Guardar, Guardar precio, Anular, Salir y el resto eran
+  texto subrayado chico. `Boton` suma el tamaño `chico` (alto de dedo) y `clasesDeBoton`
+  para los `Link`; lo que borra o tira va en `peligro`. La flechita que abre un sabor,
+  un insumo o un producto también pasó a botón.
+- **Letra más grande en Ventas.** Tarjetas de formato, sabor, balde y producto, el carrito,
+  el total y el campo de código. Los tamaños de las tarjetas viven en
+  `modulos/ventas/componentes/estilosDeVenta.ts` para que crezcan juntas. Solo Ventas: el
+  resto del sistema queda igual.
+- **Rótulos en el sabor desplegado.** Mínimo y precio del balde solo decían "default"
+  adentro; ahora tienen rótulo visible ("Mínimo (kg)", "Precio balde entero ($)"), igual
+  que el ajuste de un balde, el nombre y el color.
+- **Módulo de descarte** (diseño en `docs/superpowers/specs/2026-10-06-descarte-design.md`):
+  - Tabla `descartes`: una fila por cosa tirada con el costo **congelado** ese día, y el
+    stock baja por su ledger en la misma transacción (tipo `descarte`).
+  - "Se terminó" pregunta **cuánto se tiró**. Lo tirado es descarte; la diferencia con lo
+    que el sistema estimaba queda como ajuste, para un lado o para el otro.
+  - Descartar un pote pide el motivo.
+  - Pantalla nueva **Descarte**: se escanea o se elige un producto, insumo o envase, se
+    pone la cantidad y el motivo. El dueño ve además cuánto se tiró en el período, lo que
+    más se tira (ordenado por plata), por qué motivo, y el Excel.
+  - Panel: "Se tiró $X" debajo del margen, sin restarlo.
+  - Migraciones `20261006100000_descarte_tipos.sql` y `20261006110000_descarte.sql`
+    (escritas, con sus tests en `modulos/descarte/rls.test.ts`; **falta aplicarlas**).
+- La lectura del código de un artículo subió a `lib/articuloDelCodigo.ts`: la usan
+  Recibir por código y Descarte.
+- Guía de uso con la sección 9 nueva (Descarte); las siguientes se renumeraron.
+- 307 tests unitarios; `npm run verificar` y `npm run build` pasan.
+
+### Qué se decidió
+
+- **La cantidad tirada la dice la persona**, pesada o a ojo. Nunca se toma como descarte
+  lo que el sistema creía que quedaba: es la mezcla que no dejaba ver nada.
+- **Descarta cualquiera con sesión**, también un pote. Cambia lo del 04/10, cuando
+  descartar un pote pedía `cargar_inventario`: con un permiso de por medio, en el
+  mostrador no se carga.
+- **No se descarta un artículo por más de lo que hay en stock**: frena el `50` donde iba
+  `5`. Si el stock está mal, lo corrige quien puede.
+- En "Se terminó" el campo **arranca vacío** (con la estimación adentro, un Enter la
+  registraría como descarte) y pide confirmar si lo tipeado supera en más de 0,5 kg lo
+  estimado.
+- El Panel muestra lo tirado **al lado** del margen, no restado: el margen es de lo vendido.
+- Quedó afuera: descartar un balde cerrado entero (falla del freezer) y tirar una parte de
+  un balde abierto sin terminarlo. Entran después sin cambiar la tabla.
+
+### Qué queda pendiente
+
+1. **Aplicar las dos migraciones de descarte, en orden, ANTES de desplegar** y correr
+   `npm run test:rls` (los 13 de `modulos/descarte/rls.test.ts` y el de potes invertido).
+2. Mirar en pantalla los botones nuevos y la letra de Ventas con Goro.
+
+---
+
 ## 2026-10-04 — Todo lo de los códigos que se puede hacer sin la pistola
 
 ### Qué se hizo
