@@ -22,6 +22,7 @@ export const MODULOS: readonly Modulo[] = [
   { href: "/caja", etiqueta: "Caja", icono: "💵", roles: TODOS },
   { href: "/inventario", etiqueta: "Inventario", icono: "📦", roles: TODOS },
   { href: "/potes", etiqueta: "Potes", icono: "🥡", roles: TODOS },
+  { href: "/descarte", etiqueta: "Descarte", icono: "🗑️", roles: TODOS },
   { href: "/codigos", etiqueta: "Códigos", icono: "🏷️", roles: TODOS },
   { href: "/usuarios", etiqueta: "Usuarios", icono: "👥", roles: SOLO_DUENIO },
 ];

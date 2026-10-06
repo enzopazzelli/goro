@@ -1,33 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { leerCodigo } from "@/lib/codigos/codigo";
+import { articuloDelCodigo } from "@/lib/articuloDelCodigo";
 import { esFaltaDePermiso } from "@/lib/errores";
 import { clienteServidor } from "@/lib/supabase/servidor";
 
 export type EstadoRecepcion = { error: string | null; aviso?: string };
 
-type Cliente = Awaited<ReturnType<typeof clienteServidor>>;
-
-const SOLO_ARTICULOS: Record<string, string> = {
+const SOLO_ARTICULOS = {
   balde: 'Ese es el código de un balde: los baldes se cargan en "Balde nuevo".',
   pote: "Ese es el código de un pote armado, no de mercadería.",
-};
-
-/** El id del artículo que dice el código, o el motivo por el que no sirve. */
-async function articuloDelCodigo(
-  supabase: Cliente,
-  codigo: string,
-): Promise<{ id: number } | { error: string }> {
-  if (!leerCodigo(codigo)) return { error: "Ese código no es de este sistema. ¿Lo tipeaste bien?" };
-
-  const { data } = await supabase.rpc("resolver_codigo", { p_texto: codigo });
-  const encontrado = (data as { tipo: string; id: number }[] | null)?.[0];
-  if (!encontrado) return { error: "Ese código no está cargado." };
-  if (encontrado.tipo === "articulo") return { id: encontrado.id };
-
-  return { error: SOLO_ARTICULOS[encontrado.tipo] ?? "Ese código no es de mercadería." };
-}
+} as const;
 
 /**
  * Entró mercadería: se escanea (o se tipea) el código del insumo y se dice
@@ -44,11 +27,12 @@ export async function recibirPorCodigo(
   }
 
   const supabase = await clienteServidor();
-  const articulo = await articuloDelCodigo(supabase, String(datos.get("codigo") ?? "").trim());
-  if ("error" in articulo) return { error: articulo.error };
+  const leido = await articuloDelCodigo(supabase, String(datos.get("codigo") ?? "").trim());
+  if ("error" in leido) return { error: leido.error };
+  if ("otro" in leido) return { error: SOLO_ARTICULOS[leido.otro] };
 
   const { error } = await supabase.rpc("registrar_movimiento_insumo", {
-    p_insumo_id: articulo.id,
+    p_insumo_id: leido.articuloId,
     p_tipo: "entrada",
     p_cantidad: cantidad,
     p_motivo: "Recepción por código",
@@ -60,7 +44,7 @@ export async function recibirPorCodigo(
   const { data: insumo } = await supabase
     .from("insumos")
     .select("nombre, cantidad")
-    .eq("id", articulo.id)
+    .eq("id", leido.articuloId)
     .single();
 
   revalidatePath("/inventario");
