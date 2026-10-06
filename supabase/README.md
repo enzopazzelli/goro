@@ -29,6 +29,8 @@ acá abajo cuál fue la última aplicada.
 | `20261003110000_permisos.sql`           | **Permisos por acción** de cada colaborador (`perfiles.permisos`, `tiene_permiso()`); reemplaza `anular_venta`, `corregir_sabor_venta_item`, `registrar_movimiento_caja`, `anular_movimiento_caja`, `registrar_ajuste_balde` y `registrar_movimiento_insumo` |
 | `20261003120000_ciclo_balde.sql`        | **Ciclo del balde**: vaciar, canjear y vender entero; precio del balde entero; reemplaza `registrar_venta`, `anular_venta`, `corregir_sabor_venta_item` y las funciones del Panel |
 | `20261004100000_potes_y_codigos.sql`    | **Potes armados** (tabla, armar / anular / descartar / cobrar), `resolver_codigo()` para el lector, balde puntual en la venta y los potes dentro de las cuentas del Panel; reemplaza `registrar_venta`, `anular_venta`, `cobrar_item_balde` y `aplicar_movimiento_balde` |
+| `20261006100000_descarte_tipos.sql`     | El tipo de movimiento `descarte` en los ledgers de baldes e insumos. Va sola: un valor de enum no se puede usar en la misma transacción que lo crea |
+| `20261006110000_descarte.sql`           | **Descarte**: tabla `descartes` con el costo congelado, `descartar_insumo` y `costo_del_descarte`; reemplaza `vaciar_balde` (pregunta cuánto se tiró) y `descartar_pote` (con motivo, ya sin pedir permiso) |
 
 **Caja cambia cómo se vende:** desde esa migración no se cobra sin una caja abierta. Hay que
 aplicarla **antes** de desplegar el código que la usa; al revés, Ventas muestra "La caja está
@@ -40,6 +42,10 @@ caja, cobrar, anular, cerrar): que se creen sin error no prueba que anden.
 migraciones, nadie puede entrar. Y entre sí van en orden: la de ciclo del balde reemplaza funciones que
 la de permisos ya había reemplazado. Después de aplicarlas, correr `npm run test:rls`: los tests de
 ventas, permisos, ciclo del balde y Panel ejercitan las funciones nuevas contra la base.
+
+**Las dos de descarte (`20261006…`) se aplican en orden, una hoja por migración, y ANTES de desplegar
+el código nuevo:** la pantalla de Descarte, "Se terminó" y descartar un pote llaman a las firmas nuevas.
+Después correr `npm run test:rls`: `modulos/descarte/rls.test.ts` ejercita todo contra la base.
 
 Van **en ese orden** (cada una usa lo de la anterior). Después de todas, correr
 `carga_productos_goro.sql` (no es una migración: es la carga inicial de las listas de Goro; se puede repetir sin duplicar).

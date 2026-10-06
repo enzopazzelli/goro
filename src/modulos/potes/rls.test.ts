@@ -121,6 +121,7 @@ describe("Potes armados", () => {
   afterAll(async () => {
     await limpiarVentasDe("pote_id", poteIds);
     await servicio.from("movimientos_balde").delete().eq("balde_id", baldeId);
+    await servicio.from("descartes").delete().in("pote_id", poteIds);
     await servicio.from("potes").delete().in("id", poteIds);
     await servicio.from("movimientos_insumo").delete().eq("insumo_id", envaseId);
     await servicio.from("insumos").delete().eq("id", envaseId);
@@ -293,16 +294,16 @@ describe("Potes armados", () => {
     await limpiarVenta(ventaId as number);
   });
 
-  it("descartar es merma: lo decide quien puede tocar el stock y el helado NO vuelve", async () => {
+  it("descartar es merma: lo puede hacer cualquiera con sesión y el helado NO vuelve", async () => {
     const { data: id } = await armar(250);
     const kgConElPote = await kgDe(baldeId);
     await servicio.from("perfiles").update({ permisos: [] }).eq("id", colaborador.id);
 
-    const sinPermiso = await colaborador.cliente.rpc("descartar_pote", { p_pote_id: id });
-    expect(sinPermiso.error?.message).toContain("No tenés permiso");
-
-    const delDuenio = await duenio.cliente.rpc("descartar_pote", { p_pote_id: id });
-    expect(delDuenio.error).toBeNull();
+    const sinPermiso = await colaborador.cliente.rpc("descartar_pote", {
+      p_pote_id: id,
+      p_motivo: "vencido",
+    });
+    expect(sinPermiso.error).toBeNull();
     expect((await poteDe(id as number)).estado).toBe("descartado");
     expect(await kgDe(baldeId)).toBeCloseTo(kgConElPote);
 

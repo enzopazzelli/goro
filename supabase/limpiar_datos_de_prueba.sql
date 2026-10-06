@@ -12,6 +12,7 @@
 --   * la caja: turnos, arqueos y todos los movimientos (apertura, gastos, retiros…)
 --   * los baldes, con todos sus movimientos de kilos
 --   * los potes armados
+--   * los descartes (lo que se tiró)
 --   * el stock de insumos, productos y envases: vuelve a 0 (y su historial)
 --
 -- QUÉ SE CONSERVA (lo que se carga una vez y se mantiene):
@@ -42,6 +43,7 @@ begin;
 -- referencia a otra, así que si mañana aparece una tabla nueva atada a estas,
 -- este script falla en vez de dejar datos colgados sin que nadie se entere.
 truncate table
+  public.descartes,
   public.movimientos_caja,
   public.arqueos,
   public.movimientos_insumo,
@@ -73,6 +75,7 @@ union all select 'turnos de caja', count(*) from public.turnos_caja
 union all select 'movimientos de caja', count(*) from public.movimientos_caja
 union all select 'baldes', count(*) from public.baldes
 union all select 'potes', count(*) from public.potes
+union all select 'descartes', count(*) from public.descartes
 union all select 'movimientos de insumo', count(*) from public.movimientos_insumo
 union all select '-- se conserva: usuarios', count(*) from public.perfiles
 union all select '-- se conserva: sabores', count(*) from public.sabores
