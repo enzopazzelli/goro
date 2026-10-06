@@ -3,12 +3,13 @@ import { respuestaDeExcel, type Libro } from "@/lib/excel/libro";
 import { periodoPedido } from "@/lib/periodos";
 import { duenioQuePide } from "@/modulos/auth/consultas/administracion";
 import { armarLibroDeCaja } from "@/modulos/caja/consultas/exportar";
+import { armarLibroDeDescarte } from "@/modulos/descarte/consultas/exportar";
 import { armarLibroDeInventario } from "@/modulos/inventario/consultas/exportar";
 import { armarLibroDeVentas } from "@/modulos/ventas/consultas/exportar";
 import { esMedioDePago } from "@/modulos/ventas/tipos";
 
 /*
- * Los Excel: inventario, ventas y caja. Es un Route Handler y no una acción del
+ * Los Excel: inventario, ventas, caja y descarte. Es un Route Handler y no una acción del
  * servidor porque tiene que devolver un archivo, y es un GET para que un enlace
  * común lo baje. Los enlaces que apuntan acá NO usan <Link>: Next precargaría la
  * ruta y armaría el archivo entero de balde, cada vez que alguien pasa el mouse.
@@ -35,6 +36,13 @@ const LIBROS: Record<string, (parametros: Parametros) => Promise<Libro>> = {
   },
   caja: (parametros) =>
     armarLibroDeCaja(
+      periodoPedido({
+        desde: parametros.get("desde") ?? undefined,
+        hasta: parametros.get("hasta") ?? undefined,
+      }),
+    ),
+  descarte: (parametros) =>
+    armarLibroDeDescarte(
       periodoPedido({
         desde: parametros.get("desde") ?? undefined,
         hasta: parametros.get("hasta") ?? undefined,
