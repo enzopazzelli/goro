@@ -99,7 +99,7 @@ export async function resumenDelPeriodo(periodo: Periodo): Promise<ResumenDelPer
   const rangoAnterior = { p_desde: anterior.desdeIso, p_hasta: anterior.hastaIso };
 
   const supabase = await clienteServidor();
-  const [porMedio, porHora, porSabor, porDia, porArticulo, costos, baldes, anteriores] =
+  const [porMedio, porHora, porSabor, porDia, porArticulo, costos, descarte, baldes, anteriores] =
     await Promise.all([
       supabase.rpc("ventas_del_periodo", rango),
       supabase.rpc("ventas_por_hora", { ...rango, p_zona: ZONA_HORARIA }),
@@ -107,6 +107,7 @@ export async function resumenDelPeriodo(periodo: Periodo): Promise<ResumenDelPer
       supabase.rpc("ventas_por_dia", { ...rango, p_zona: ZONA_HORARIA }),
       supabase.rpc("unidades_por_articulo", rango),
       supabase.rpc("costo_de_lo_vendido", rango),
+      supabase.rpc("costo_del_descarte", rango),
       supabase.rpc("baldes_del_periodo", rango),
       supabase.rpc("ventas_del_periodo", rangoAnterior),
     ]);
@@ -118,6 +119,8 @@ export async function resumenDelPeriodo(periodo: Periodo): Promise<ResumenDelPer
     porDia: porDia.data ?? [],
     porArticulo: articulos(porArticulo.data),
     costo: costo(costos.data),
+    // numeric llega como texto; si la consulta falló, cero antes que una pantalla rota.
+    descartado: Number(descarte.data ?? 0),
     baldes: baldesDelPeriodo(baldes.data ?? []),
     porMedioAnterior: medios(anteriores.data),
   };

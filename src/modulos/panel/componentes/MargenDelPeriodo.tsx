@@ -1,3 +1,5 @@
+import Link from "next/link";
+import type { Periodo } from "@/lib/periodos";
 import { formatearPlata } from "@/lib/plata";
 import { margenDelPeriodo } from "../resumen";
 import type { CostoDeLoVendido } from "../tipos";
@@ -8,7 +10,18 @@ import type { CostoDeLoVendido } from "../tipos";
  * daría un número que no es ni una cosa ni la otra. Lo dice la bajada, porque
  * un "ganancia" sin aclarar se lee como la plata que quedó en el bolsillo.
  */
-export function MargenDelPeriodo({ vendido, costo }: { vendido: number; costo: CostoDeLoVendido }) {
+export function MargenDelPeriodo({
+  vendido,
+  costo,
+  descartado,
+  periodo,
+}: {
+  vendido: number;
+  costo: CostoDeLoVendido;
+  /** Lo que se tiró en el período, al costo de ese día. */
+  descartado: number;
+  periodo: Periodo;
+}) {
   const margen = margenDelPeriodo(vendido, costo);
 
   return (
@@ -57,6 +70,19 @@ export function MargenDelPeriodo({ vendido, costo }: { vendido: number; costo: C
           </div>
         )}
       </dl>
+
+      {/* Al lado y no restado: el margen es de lo vendido, y lo tirado no se vendió. Separados
+          se ve cada uno; mezclados, ninguno. */}
+      <p className="text-sm">
+        <span className="text-texto-suave">Se tiró </span>
+        <Link
+          href={`/descarte?${new URLSearchParams(periodo)}`}
+          className="numero font-semibold text-alerta hover:underline"
+        >
+          {formatearPlata(Math.round(descartado))}
+        </Link>
+        <span className="text-texto-suave"> en el período (no está restado del margen).</span>
+      </p>
     </div>
   );
 }

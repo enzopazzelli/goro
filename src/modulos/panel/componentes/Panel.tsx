@@ -40,8 +40,17 @@ function bajadaDelGrafico(periodo: Periodo): string {
 }
 
 export async function Panel({ periodo }: { periodo: Periodo }) {
-  const { porMedio, porMedioAnterior, porHora, porSabor, porDia, porArticulo, costo, baldes } =
-    await resumenDelPeriodo(periodo);
+  const {
+    porMedio,
+    porMedioAnterior,
+    porHora,
+    porSabor,
+    porDia,
+    porArticulo,
+    costo,
+    descartado,
+    baldes,
+  } = await resumenDelPeriodo(periodo);
   const { total } = totalesDelPeriodo(porMedio);
 
   return (
@@ -61,7 +70,7 @@ export async function Panel({ periodo }: { periodo: Periodo }) {
         titulo="Margen"
         bajada="Lo cobrado menos lo que costó lo que salió. Bruto: no descuenta sueldos, alquiler ni los gastos de la caja."
       >
-        <MargenDelPeriodo vendido={total} costo={costo} />
+        <MargenDelPeriodo vendido={total} costo={costo} descartado={descartado} periodo={periodo} />
       </Seccion>
 
       <Seccion titulo="Ventas por hora" bajada={bajadaDelGrafico(periodo)}>

@@ -16,6 +16,8 @@ export type ResumenDelPeriodo = {
   porDia: VentasEnDia[];
   porArticulo: ArticuloVendido[];
   costo: CostoDeLoVendido;
+  /** Lo que se tiró en el período, al costo congelado de cada descarte. */
+  descartado: number;
   baldes: BaldesDelPeriodo;
   /** Lo mismo, del período anterior equivalente: es con lo que se compara. */
   porMedioAnterior: VentasPorMedio[];
