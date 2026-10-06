@@ -82,8 +82,16 @@ Enzo le mostró el sistema a Goro y salieron cuatro pedidos.
     (escritas, con sus tests en `modulos/descarte/rls.test.ts`; **falta aplicarlas**).
 - La lectura del código de un artículo subió a `lib/articuloDelCodigo.ts`: la usan
   Recibir por código y Descarte.
+- **Buscar por nombre** en los campos de código de Ventas, Descarte y Recibir mercadería
+  (lo pidió Goro después). La pistola sigue igual; si lo escrito no es un código, aparece
+  una lista con lo que coincide (sin tildes ni mayúsculas), y se elige con clic o con
+  flechas y Enter. En Ventas agrega el producto; en Descarte y Recibir deja el código del
+  artículo y pasa a la cantidad. Piezas compartidas: `lib/buscarPorNombre.ts`,
+  `componentes/Sugerencias.tsx` y `componentes/CampoCodigoONombre.tsx`. En Ventas busca
+  solo productos (formatos, sabores y baldes tienen tarjetas; un pote se escanea), y
+  Descarte perdió la lista desplegable: un solo campo.
 - Guía de uso con la sección 9 nueva (Descarte); las siguientes se renumeraron.
-- 307 tests unitarios; `npm run verificar` y `npm run build` pasan.
+- 325 tests unitarios; `npm run verificar` y `npm run build` pasan.
 
 ### Qué se decidió
 
