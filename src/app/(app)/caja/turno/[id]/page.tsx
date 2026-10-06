@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { clasesDeBoton } from "@/componentes/Boton";
 import { exigirDuenio } from "@/modulos/auth/consultas/perfil";
 import { DetalleTurnoCerrado } from "@/modulos/caja/componentes/DetalleTurnoCerrado";
 import { turnoPorId } from "@/modulos/caja/consultas/historial";
@@ -22,8 +23,8 @@ export default async function TurnoDeCaja(props: PageProps<"/caja/turno/[id]">) 
 
   return (
     <div className="flex flex-col gap-4">
-      <header className="flex flex-col gap-1">
-        <Link href="/caja" className="text-sm text-texto-suave underline">
+      <header className="flex flex-col items-start gap-2">
+        <Link href="/caja" className={clasesDeBoton("suave", "chico")}>
           ← Caja
         </Link>
         <h1 className="font-display text-3xl font-bold">Turno #{turno.id}</h1>

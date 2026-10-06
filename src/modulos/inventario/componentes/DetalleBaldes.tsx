@@ -17,9 +17,9 @@ export function DetalleBaldes({ baldes, esDuenio }: { baldes: Balde[]; esDuenio:
   }
 
   return (
-    <ul className="flex flex-col gap-1 text-sm">
+    <ul className="flex flex-col gap-2 text-sm">
       {baldes.map((balde) => (
-        <li key={balde.id} className="flex flex-wrap items-center gap-2">
+        <li key={balde.id} className="flex flex-wrap items-end gap-2">
           <span className="numero">{balde.codigo}</span>
           <Insignia variante={balde.estado === "abierto" ? "ok" : "neutra"}>
             {ETIQUETA_ESTADO[balde.estado]}

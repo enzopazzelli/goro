@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { clasesDeBoton } from "@/componentes/Boton";
 import { Insignia } from "@/componentes/Insignia";
 import { Tarjeta } from "@/componentes/Tarjeta";
 import { diaYHoraDe, horaDe } from "@/lib/fechas";
@@ -54,7 +55,7 @@ function FilaTurno({ turno, nombres }: { turno: TurnoCerrado; nombres: Map<strin
         {turno.arqueo ? formatearPlata(turno.arqueo.fondoQueQueda) : "—"}
       </td>
       <td className="p-2 text-right">
-        <Link href={`/caja/turno/${turno.id}`} className="text-xs underline opacity-70">
+        <Link href={`/caja/turno/${turno.id}`} className={clasesDeBoton("suave", "chico")}>
           Ver
         </Link>
       </td>

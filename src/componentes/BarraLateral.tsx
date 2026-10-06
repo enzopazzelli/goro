@@ -6,6 +6,7 @@ import { NOMBRE_COMERCIO, RUBRO_COMERCIO } from "@/config/comercio";
 import { modulosDe } from "@/config/navegacion";
 import { salir } from "@/modulos/auth/consultas/acciones";
 import { ETIQUETA_ROL, type Perfil } from "@/modulos/auth/tipos";
+import { Boton } from "./Boton";
 import { InsigniaCaja } from "./InsigniaCaja";
 
 export function BarraLateral({ perfil, cajaAbierta }: { perfil: Perfil; cajaAbierta: boolean }) {
@@ -54,9 +55,9 @@ export function BarraLateral({ perfil, cajaAbierta }: { perfil: Perfil; cajaAbie
           </div>
         </div>
         <form action={salir}>
-          <button type="submit" className="text-xs underline opacity-70 hover:opacity-100">
+          <Boton type="submit" variante="suave" tamano="chico" className="w-full">
             Salir
-          </button>
+          </Boton>
         </form>
       </div>
     </aside>

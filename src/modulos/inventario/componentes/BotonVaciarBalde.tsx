@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { vaciarBalde } from "../consultas/accionesCicloBalde";
 
 const INICIAL = { error: null };
@@ -35,9 +36,9 @@ export function BotonVaciarBalde({
       className="flex items-center gap-2"
     >
       <input type="hidden" name="baldeId" value={baldeId} />
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <Boton type="submit" variante="peligro" tamano="chico" disabled={enviando}>
         {enviando ? "Guardando…" : "Se terminó"}
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}

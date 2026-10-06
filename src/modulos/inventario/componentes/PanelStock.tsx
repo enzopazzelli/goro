@@ -83,9 +83,9 @@ export function PanelStock({
         <Boton
           type="button"
           variante="suave"
+          tamano="chico"
           title="Cambiar la altura de las filas"
           onClick={() => setDensidad((actual) => (actual === "compacta" ? "comoda" : "compacta"))}
-          className="px-3 py-1.5 text-xs"
         >
           ☰ Densidad
         </Boton>

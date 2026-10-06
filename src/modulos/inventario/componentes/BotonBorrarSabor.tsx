@@ -15,10 +15,10 @@ export function BotonBorrarSabor({ saborId, nombre }: { saborId: number; nombre:
       onSubmit={(evento) => {
         if (!confirm(`¿Borrar el sabor "${nombre}"?`)) evento.preventDefault();
       }}
-      className="flex items-center gap-2"
+      className="flex items-end gap-2"
     >
       <input type="hidden" name="saborId" value={saborId} />
-      <Boton type="submit" variante="peligro" disabled={enviando}>
+      <Boton type="submit" variante="peligro" tamano="chico" disabled={enviando}>
         {enviando ? "Borrando…" : "Borrar"}
       </Boton>
       {estado.error && (

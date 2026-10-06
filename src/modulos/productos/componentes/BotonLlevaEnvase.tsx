@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { crearEnvase } from "../consultas/acciones";
 
 const INICIAL = { error: null };
@@ -16,9 +17,9 @@ export function BotonLlevaEnvase({ formatoId }: { formatoId: number }) {
   return (
     <form action={accion} className="flex flex-wrap items-center gap-2 pl-2 text-xs">
       <input type="hidden" name="formatoId" value={formatoId} />
-      <button type="submit" disabled={creando} className="text-texto-suave underline">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={creando}>
         {creando ? "Creando…" : "Lleva envase (cono, canasta o vasito)"}
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-alerta">
           {estado.error}

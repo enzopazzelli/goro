@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
+import { CampoChico } from "@/componentes/CampoChico";
 import { editarNombreSabor } from "../consultas/accionesSabores";
 
 const INICIAL = { error: null };
@@ -15,19 +17,18 @@ export function EditorNombreSabor({
   const [estado, accion, enviando] = useActionState(editarNombreSabor, INICIAL);
 
   return (
-    <form action={accion} className="flex items-center gap-2">
+    <form action={accion} className="flex items-end gap-2">
       <input type="hidden" name="saborId" value={saborId} />
-      <input
+      <CampoChico
+        etiqueta="Nombre"
         type="text"
         name="nombre"
         defaultValue={nombreActual}
-        aria-label="Nombre del sabor"
         disabled={enviando}
-        className="rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
       />
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
         {enviando ? "Guardando…" : "Guardar"}
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}

@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { editarColorSabor } from "../consultas/accionesSabores";
 
 const INICIAL = { error: null };
@@ -15,19 +16,21 @@ export function EditorColorSabor({
   const [estado, accion, enviando] = useActionState(editarColorSabor, INICIAL);
 
   return (
-    <form action={accion} className="flex items-center gap-2">
+    <form action={accion} className="flex items-end gap-2">
       <input type="hidden" name="saborId" value={saborId} />
-      <input
-        type="color"
-        name="color"
-        defaultValue={colorActual}
-        aria-label="Color del sabor"
-        disabled={enviando}
-        className="h-8 w-10 rounded-(--r) border border-linea bg-superficie p-0.5"
-      />
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <label className="flex flex-col gap-1">
+        <span className="font-mono text-xs tracking-wide text-texto-suave uppercase">Color</span>
+        <input
+          type="color"
+          name="color"
+          defaultValue={colorActual}
+          disabled={enviando}
+          className="h-9 w-12 rounded-(--r) border border-linea bg-superficie p-0.5"
+        />
+      </label>
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
         Guardar
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}

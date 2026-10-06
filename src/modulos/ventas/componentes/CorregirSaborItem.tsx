@@ -51,7 +51,7 @@ export function CorregirSaborItem({
             </option>
           ))}
       </select>
-      <Boton type="submit" variante="suave" disabled={disabled || enviando} className="px-2 py-0.5">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={disabled || enviando}>
         {enviando ? "…" : "Cambiar"}
       </Boton>
       {estado.error && (

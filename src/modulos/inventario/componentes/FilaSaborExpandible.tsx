@@ -3,6 +3,7 @@
 import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { useState } from "react";
 import { Boton } from "@/componentes/Boton";
+import { BotonDesplegar } from "./BotonDesplegar";
 import { Cubeta } from "@/componentes/Cubeta";
 import { Insignia } from "@/componentes/Insignia";
 import type { Balde } from "@/lib/baldes";
@@ -55,22 +56,18 @@ export function FilaSaborExpandible({
             <Boton
               type="button"
               variante="suave"
+              tamano="chico"
               onClick={() => setModalAbierto(true)}
-              className="px-3 py-1.5 text-xs"
             >
               Reponer
             </Boton>
           </SiPuede>
         </td>
         <td className="px-2 py-[var(--fila-y)]">
-          <button
-            type="button"
-            onClick={() => setExpandida((actual) => !actual)}
-            aria-expanded={expandida}
-            className="text-xs text-texto-suave"
-          >
-            {expandida ? "▲" : "▼"}
-          </button>
+          <BotonDesplegar
+            expandida={expandida}
+            onAlternar={() => setExpandida((actual) => !actual)}
+          />
         </td>
       </tr>
 
@@ -79,7 +76,7 @@ export function FilaSaborExpandible({
           <td colSpan={7} className="p-2">
             <div className="flex flex-col gap-2">
               {esDuenio && (
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
                   <EditorColorSabor saborId={sabor.id} colorActual={sabor.color} />
                   <EditorNombreSabor saborId={sabor.id} nombreActual={sabor.nombre} />
                   <FormularioMinimo saborId={sabor.id} valorActual={sabor.stockMinimo} />

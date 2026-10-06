@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { editarPrecioBaldeDefault } from "@/lib/accionesConfigComercio";
 import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
@@ -28,9 +29,9 @@ export function FormularioPrecioBaldeDefault({ valorActual }: { valorActual: num
           className="numero w-28 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
         />
       </label>
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
         {enviando ? "Guardando…" : "Guardar"}
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}

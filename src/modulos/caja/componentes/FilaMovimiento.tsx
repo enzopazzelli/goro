@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { Insignia } from "@/componentes/Insignia";
 import { horaDe } from "@/lib/fechas";
 import { formatearPlata } from "@/lib/plata";
@@ -59,9 +60,9 @@ export function FilaMovimiento({
         {anulable && (
           <form action={accion}>
             <input type="hidden" name="movimientoId" value={movimiento.id} />
-            <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+            <Boton type="submit" variante="peligro" tamano="chico" disabled={enviando}>
               {enviando ? "Anulando…" : "Anular"}
-            </button>
+            </Boton>
           </form>
         )}
         {estado.error && (

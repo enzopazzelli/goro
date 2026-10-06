@@ -75,9 +75,9 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
           />
           A la venta
         </label>
-        <button type="submit" disabled={editando} className="pb-1 text-xs underline opacity-70">
+        <Boton type="submit" variante="suave" tamano="chico" disabled={editando}>
           {editando ? "Guardando…" : "Guardar"}
-        </button>
+        </Boton>
         {estadoEdicion.error && (
           <span role="alert" className="pb-1 text-xs text-alerta">
             {estadoEdicion.error}
@@ -93,7 +93,7 @@ export function FilaFormato({ formato, esDuenio }: { formato: Formato; esDuenio:
         className="flex items-center gap-2"
       >
         <input type="hidden" name="formatoId" value={formato.id} />
-        <Boton type="submit" variante="peligro" disabled={borrando}>
+        <Boton type="submit" variante="peligro" tamano="chico" disabled={borrando}>
           {borrando ? "Borrando…" : "Borrar"}
         </Boton>
         {estadoBorrado.error && (

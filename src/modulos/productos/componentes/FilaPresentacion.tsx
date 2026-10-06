@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { CampoChico } from "@/componentes/CampoChico";
 import { etiquetaPresentacion } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
@@ -54,21 +55,22 @@ export function FilaPresentacion({ presentacion }: { presentacion: Presentacion 
           />
           A la venta
         </label>
-        <button type="submit" disabled={guardando} className="pb-1 text-xs underline opacity-70">
+        <Boton type="submit" variante="suave" tamano="chico" disabled={guardando}>
           {guardando ? "Guardando…" : "Guardar"}
-        </button>
+        </Boton>
         {/* Un formulario no puede ir dentro de otro: este botón envía el de abajo (atributo `form`). */}
-        <button
+        <Boton
           type="submit"
+          variante="peligro"
+          tamano="chico"
           form={idFormularioBorrar}
           disabled={borrando}
           onClick={(evento) => {
             if (!confirm(`¿Borrar "${presentacion.nombre}"?`)) evento.preventDefault();
           }}
-          className="pb-1 text-xs text-alerta underline"
         >
           {borrando ? "Borrando…" : "Borrar"}
-        </button>
+        </Boton>
         {(estado.error || estadoBorrado.error) && (
           <span role="alert" className="pb-1 text-xs text-alerta">
             {estado.error ?? estadoBorrado.error}

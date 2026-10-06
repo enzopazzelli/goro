@@ -1,11 +1,13 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
+import { CampoChico } from "@/componentes/CampoChico";
 import { editarStockMinimo } from "../consultas/accionesSabores";
-import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
+/** El mínimo de alerta de este sabor; vacío usa el del comercio. */
 export function FormularioMinimo({
   saborId,
   valorActual,
@@ -16,23 +18,22 @@ export function FormularioMinimo({
   const [estado, accion, enviando] = useActionState(editarStockMinimo, INICIAL);
 
   return (
-    <form action={accion} className="flex items-center gap-2">
+    <form action={accion} className="flex items-end gap-2">
       <input type="hidden" name="saborId" value={saborId} />
-      <input
+      <CampoChico
+        etiqueta="Mínimo (kg)"
         type="number"
-        onFocus={seleccionarAlEnfocar}
         name="stockMinimo"
         step="0.1"
         min="0"
         defaultValue={valorActual ?? ""}
-        placeholder="default"
-        aria-label="Mínimo en kg"
-        className="numero w-20 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+        placeholder="el del comercio"
+        className="numero w-32"
         disabled={enviando}
       />
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
         Guardar
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}

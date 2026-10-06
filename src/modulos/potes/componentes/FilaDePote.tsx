@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { diaYHoraDe } from "@/lib/fechas";
 import { formatearPlata } from "@/lib/plata";
 import { SiPuede } from "@/modulos/auth/componentes/Permisos";
@@ -8,7 +9,6 @@ import { anularPote, descartarPote, type EstadoPote } from "../consultas/accione
 import type { PoteEnFreezer } from "../tipos";
 
 const INICIAL: EstadoPote = { error: null };
-const ENLACE = "text-xs underline opacity-70 hover:opacity-100 disabled:opacity-40";
 
 /** Un botón de la fila que pide confirmación antes de tocar el stock. */
 function AccionDePote({
@@ -16,11 +16,13 @@ function AccionDePote({
   accion,
   texto,
   pregunta,
+  variante,
 }: {
   poteId: number;
   accion: (previo: EstadoPote, datos: FormData) => Promise<EstadoPote>;
   texto: string;
   pregunta: string;
+  variante: "suave" | "peligro";
 }) {
   const [estado, ejecutar, enviando] = useActionState(accion, INICIAL);
 
@@ -33,9 +35,9 @@ function AccionDePote({
       className="flex items-center gap-2"
     >
       <input type="hidden" name="poteId" value={poteId} />
-      <button type="submit" disabled={enviando} className={ENLACE}>
+      <Boton type="submit" variante={variante} tamano="chico" disabled={enviando}>
         {texto}
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}
@@ -77,6 +79,7 @@ export function FilaDePote({
             poteId={pote.id}
             accion={anularPote}
             texto="Anular"
+            variante="suave"
             pregunta={`¿Anular el pote ${pote.codigo}? Se armó por error: el helado vuelve al balde.`}
           />
           <SiPuede permiso="cargar_inventario">
@@ -84,6 +87,7 @@ export function FilaDePote({
               poteId={pote.id}
               accion={descartarPote}
               texto="Descartar"
+              variante="peligro"
               pregunta={`¿Descartar el pote ${pote.codigo}? Se tira: el helado NO vuelve al balde.`}
             />
           </SiPuede>

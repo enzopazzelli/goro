@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { cambiarActivoSabor } from "../consultas/accionesSabores";
 
 const INICIAL = { error: null };
@@ -12,9 +13,9 @@ export function BotonActivoSabor({ saborId, activo }: { saborId: number; activo:
     <form action={accion} className="flex items-center gap-2">
       <input type="hidden" name="saborId" value={saborId} />
       <input type="hidden" name="activo" value={(!activo).toString()} />
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
         {enviando ? "Guardando…" : activo ? "Desactivar" : "Activar"}
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}

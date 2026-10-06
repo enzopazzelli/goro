@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { clasesDeBoton } from "@/componentes/Boton";
 import { Tarjeta } from "@/componentes/Tarjeta";
 import { listarSabores } from "@/lib/sabores";
 import { listarVentas } from "../consultas/ventas";
@@ -21,7 +22,7 @@ export async function SeccionUltimasVentas() {
             Anular, o corregir un sabor si el cliente cambió de idea.
           </p>
         </div>
-        <Link href="/historial" className="text-sm text-texto-suave underline">
+        <Link href="/historial" className={clasesDeBoton("suave", "chico")}>
           Ver el historial →
         </Link>
       </header>

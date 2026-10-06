@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { Insignia } from "@/componentes/Insignia";
 import { usePuede } from "@/modulos/auth/componentes/Permisos";
 import type { Sabor } from "@/lib/sabores";
@@ -63,9 +64,9 @@ export function FilaVenta({ venta, sabores }: { venta: VentaConTicket; sabores: 
           {venta.estado === "cobrada" && puedeAnular && (
             <form action={accion}>
               <input type="hidden" name="ventaId" value={venta.id} />
-              <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+              <Boton type="submit" variante="peligro" tamano="chico" disabled={enviando}>
                 {enviando ? "Anulando…" : "Anular"}
-              </button>
+              </Boton>
             </form>
           )}
           {estado.error && (

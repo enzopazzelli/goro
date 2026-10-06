@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
+import { Boton } from "@/componentes/Boton";
+import { CampoChico } from "@/componentes/CampoChico";
 import { editarPrecioBalde } from "../consultas/accionesSabores";
 
 const INICIAL = { error: null };
@@ -17,23 +18,22 @@ export function FormularioPrecioBalde({
   const [estado, accion, enviando] = useActionState(editarPrecioBalde, INICIAL);
 
   return (
-    <form action={accion} className="flex items-center gap-2">
+    <form action={accion} className="flex items-end gap-2">
       <input type="hidden" name="saborId" value={saborId} />
-      <input
+      <CampoChico
+        etiqueta="Precio balde entero ($)"
         type="number"
-        onFocus={seleccionarAlEnfocar}
         name="precioBalde"
         step="1"
         min="1"
         defaultValue={valorActual ?? ""}
-        placeholder="default"
-        aria-label="Precio del balde entero"
-        className="numero w-24 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-sm"
+        placeholder="el del comercio"
+        className="numero w-36"
         disabled={enviando}
       />
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
         Guardar precio
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}

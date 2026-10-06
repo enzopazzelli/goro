@@ -2,6 +2,8 @@
 
 import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { useState } from "react";
+import { Boton } from "@/componentes/Boton";
+import { BotonDesplegar } from "./BotonDesplegar";
 import type { Insumo } from "../tipos";
 import { FormularioEdicionInsumo } from "./FormularioEdicionInsumo";
 import { InsigniaStock } from "./InsigniaStock";
@@ -26,25 +28,22 @@ export function FilaInsumoExpandible({ insumo, esDuenio }: { insumo: Insumo; esD
         </td>
         <td className="px-2 py-[var(--fila-y)]">
           <SiPuede permiso="cargar_inventario">
-            <button
+            <Boton
               type="button"
+              variante="suave"
+              tamano="chico"
               onClick={() => setModalAbierto(true)}
-              className="text-xs underline opacity-70"
             >
               Cargar
-            </button>
+            </Boton>
           </SiPuede>
         </td>
         <td className="px-2 py-[var(--fila-y)]">
           {esDuenio && (
-            <button
-              type="button"
-              onClick={() => setExpandida((actual) => !actual)}
-              aria-expanded={expandida}
-              className="text-xs text-texto-suave"
-            >
-              {expandida ? "▲" : "▼"}
-            </button>
+            <BotonDesplegar
+              expandida={expandida}
+              onAlternar={() => setExpandida((actual) => !actual)}
+            />
           )}
         </td>
       </tr>

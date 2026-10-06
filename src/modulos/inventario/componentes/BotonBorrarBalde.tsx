@@ -18,7 +18,7 @@ export function BotonBorrarBalde({ baldeId, codigo }: { baldeId: number; codigo:
       className="flex items-center gap-2"
     >
       <input type="hidden" name="baldeId" value={baldeId} />
-      <Boton type="submit" variante="peligro" disabled={enviando}>
+      <Boton type="submit" variante="peligro" tamano="chico" disabled={enviando}>
         {enviando ? "Borrando…" : "Borrar"}
       </Boton>
       {estado.error && (

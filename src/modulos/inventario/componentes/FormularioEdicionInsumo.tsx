@@ -69,9 +69,9 @@ export function FormularioEdicionInsumo({
           disabled={editando}
           className="numero w-28"
         />
-        <button type="submit" disabled={editando} className="pb-1 text-xs underline opacity-70">
+        <Boton type="submit" variante="suave" tamano="chico" disabled={editando}>
           {editando ? "Guardando…" : "Guardar"}
-        </button>
+        </Boton>
         {estadoEdicion.error && (
           <span role="alert" className="pb-1 text-xs text-alerta">
             {estadoEdicion.error}
@@ -87,7 +87,7 @@ export function FormularioEdicionInsumo({
         className="flex items-center gap-2"
       >
         <input type="hidden" name="insumoId" value={insumo.id} />
-        <Boton type="submit" variante="peligro" disabled={borrando}>
+        <Boton type="submit" variante="peligro" tamano="chico" disabled={borrando}>
           {borrando ? "Borrando…" : "Borrar"}
         </Boton>
         {estadoBorrado.error && (

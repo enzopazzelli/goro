@@ -1,8 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
+import { CampoChico } from "@/componentes/CampoChico";
 import { registrarAjusteBalde } from "../consultas/acciones";
-import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
 
 const INICIAL = { error: null };
 
@@ -10,21 +11,20 @@ export function BotonAjustarBalde({ baldeId }: { baldeId: number }) {
   const [estado, accion, enviando] = useActionState(registrarAjusteBalde, INICIAL);
 
   return (
-    <form action={accion} className="flex items-center gap-2">
+    <form action={accion} className="flex items-end gap-2">
       <input type="hidden" name="baldeId" value={baldeId} />
-      <input
+      <CampoChico
+        etiqueta="Ajuste (± kg)"
         type="number"
-        onFocus={seleccionarAlEnfocar}
         name="kg"
         step="0.01"
-        aria-label="Ajuste en kg (positivo o negativo)"
-        placeholder="± kg"
+        placeholder="-0.5"
         disabled={enviando}
-        className="numero w-16 rounded-(--r) border border-linea bg-superficie px-2 py-1 text-xs"
+        className="numero w-24"
       />
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
         {enviando ? "Ajustando…" : "Ajustar"}
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}

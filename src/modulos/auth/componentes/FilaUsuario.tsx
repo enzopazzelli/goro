@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { Insignia } from "@/componentes/Insignia";
 import { cambiarActivo } from "../consultas/accionesBaja";
 import type { EstadoUsuario } from "../consultas/administracion";
@@ -8,7 +9,7 @@ import { ETIQUETA_ROL, type Perfil } from "../tipos";
 import { resumenDePermisos } from "../permisos";
 
 const INICIAL: EstadoUsuario = { error: null };
-const ENLACE = "text-xs underline opacity-70 hover:opacity-100 disabled:opacity-40";
+const SUAVE = { variante: "suave", tamano: "chico" } as const;
 
 export type AccionDeFila = "editar" | "contrasena" | "borrar";
 
@@ -39,25 +40,30 @@ export function FilaUsuario({
       </td>
       <td className="p-3">
         <div className="flex flex-wrap items-center justify-end gap-3">
-          <button type="button" className={ENLACE} onClick={() => onAccion("editar")}>
+          <Boton type="button" {...SUAVE} onClick={() => onAccion("editar")}>
             Editar
-          </button>
-          <button type="button" className={ENLACE} onClick={() => onAccion("contrasena")}>
+          </Boton>
+          <Boton type="button" {...SUAVE} onClick={() => onAccion("contrasena")}>
             Contraseña
-          </button>
+          </Boton>
           {/* En la fila propia no hay desactivar ni borrar: un clic no puede dejar al dueño afuera. */}
           {!esPropio && (
             <>
               <form action={accion}>
                 <input type="hidden" name="id" value={perfil.id} />
                 <input type="hidden" name="activo" value={String(!perfil.activo)} />
-                <button type="submit" className={ENLACE} disabled={enviando}>
+                <Boton type="submit" {...SUAVE} disabled={enviando}>
                   {perfil.activo ? "Desactivar" : "Activar"}
-                </button>
+                </Boton>
               </form>
-              <button type="button" className={ENLACE} onClick={() => onAccion("borrar")}>
+              <Boton
+                type="button"
+                variante="peligro"
+                tamano="chico"
+                onClick={() => onAccion("borrar")}
+              >
                 Borrar
-              </button>
+              </Boton>
             </>
           )}
         </div>

@@ -2,6 +2,7 @@
 
 import { SiPuede } from "@/modulos/auth/componentes/Permisos";
 import { useState } from "react";
+import { Boton } from "@/componentes/Boton";
 import { etiquetaPresentacion, textoPrecio } from "@/lib/etiquetaPresentacion";
 import type { Presentacion } from "@/lib/presentaciones";
 import { BotonLlevaEnvase } from "@/modulos/productos/componentes/BotonLlevaEnvase";
@@ -50,23 +51,25 @@ export function EnvaseFormato({
           </span>
         ))}
         <SiPuede permiso="cargar_inventario">
-          <button
+          <Boton
             type="button"
+            variante="suave"
+            tamano="chico"
             onClick={() => setModalAbierto(true)}
-            className="underline opacity-70"
           >
             Cargar
-          </button>
+          </Boton>
         </SiPuede>
         {esDuenio && (
-          <button
+          <Boton
             type="button"
+            variante="suave"
+            tamano="chico"
             onClick={() => setEditando((actual) => !actual)}
             aria-expanded={editando}
-            className="underline opacity-70"
           >
             {editando ? "Cerrar" : "Editar"}
-          </button>
+          </Boton>
         )}
       </div>
 

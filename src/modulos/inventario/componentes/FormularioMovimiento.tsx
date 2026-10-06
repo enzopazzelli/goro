@@ -1,5 +1,6 @@
 "use client";
 
+import { Boton } from "@/componentes/Boton";
 import { useAccionConReset } from "@/lib/useAccionConReset";
 import { registrarMovimiento } from "../consultas/accionesInsumos";
 import { seleccionarAlEnfocar } from "@/lib/seleccionarAlEnfocar";
@@ -38,9 +39,9 @@ export function FormularioMovimiento({ insumoId }: { insumoId: number }) {
         aria-label="Motivo"
         className="rounded-(--r) border border-linea bg-superficie px-2 py-1 text-xs"
       />
-      <button type="submit" disabled={enviando} className="text-xs underline opacity-70">
+      <Boton type="submit" variante="suave" tamano="chico" disabled={enviando}>
         {enviando ? "Guardando…" : "Registrar"}
-      </button>
+      </Boton>
       {estado.error && (
         <span role="alert" className="text-xs text-alerta">
           {estado.error}
