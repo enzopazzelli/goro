@@ -103,9 +103,12 @@ Enzo le mostró el sistema a Goro y salieron cuatro pedidos.
 
 ### Qué queda pendiente
 
-1. **Aplicar las dos migraciones de descarte, en orden, ANTES de desplegar** y correr
-   `npm run test:rls` (los 13 de `modulos/descarte/rls.test.ts` y el de potes invertido).
-2. Mirar en pantalla los botones nuevos y la letra de Ventas con Goro.
+1. (Hecho: migraciones aplicadas en la base de prueba; `test:rls` pasa 121, incluidos los 13
+   de descarte.) Los 12 de **caja** no corren mientras siga abierto el turno 79 que abrió
+   Goro en la demo: el test se niega a abrir y cerrar cajas en una base en uso. Cerrarlo
+   desde Caja (o dejarlo, si esos datos sirven) y volver a correr `npm run test:rls`.
+2. Al desplegar a producción: las dos migraciones de descarte, en orden, ANTES del código.
+3. Mirar en pantalla los botones nuevos y la letra de Ventas con Goro.
 
 ---
 
