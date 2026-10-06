@@ -250,13 +250,14 @@
       <li><a href="#inventario">6 · Inventario</a></li>
       <li><a href="#baldes">7 · El ciclo del balde</a></li>
       <li><a href="#potes">8 · Potes armados</a></li>
-      <li><a href="#codigos">9 · Códigos y pistola</a></li>
-      <li><a href="#usuarios">10 · Usuarios y permisos</a></li>
-      <li><a href="#panel">11 · El Panel del dueño</a></li>
-      <li><a href="#excel">12 · Bajar a Excel</a></li>
-      <li><a href="#faq">13 · Si algo sale mal</a></li>
-      <li><a href="#glosario">14 · Glosario</a></li>
-      <li><a href="#limites">15 · Lo que el sistema no hace</a></li>
+      <li><a href="#descarte">9 · Descarte: lo que se tira</a></li>
+      <li><a href="#codigos">10 · Códigos y pistola</a></li>
+      <li><a href="#usuarios">11 · Usuarios y permisos</a></li>
+      <li><a href="#panel">12 · El Panel del dueño</a></li>
+      <li><a href="#excel">13 · Bajar a Excel</a></li>
+      <li><a href="#faq">14 · Si algo sale mal</a></li>
+      <li><a href="#glosario">15 · Glosario</a></li>
+      <li><a href="#limites">16 · Lo que el sistema no hace</a></li>
     </ol>
   </details>
 </nav>
@@ -283,6 +284,7 @@
     <tr><td><b>Caja</b></td><td>Abrir el turno, gastos y retiros, cerrar.</td><td>Todos</td></tr>
     <tr><td><b>Inventario</b></td><td>Baldes, sabores, insumos, productos y precios.</td><td>Todos (editar casi todo: el dueño)</td></tr>
     <tr><td><b>Potes</b></td><td>Armar potes, pesarlos y sacar su etiqueta.</td><td>Todos</td></tr>
+    <tr><td><b>Descarte</b></td><td>Anotar lo que se tira. El dueño ve cuánto se pierde y en qué.</td><td>Todos (los números: el dueño)</td></tr>
     <tr><td><b>Códigos</b></td><td>Imprimir etiquetas de insumos y baldes.</td><td>Todos</td></tr>
     <tr><td><b>Usuarios</b></td><td>Dar de alta gente y decidir qué puede hacer.</td><td>Solo el dueño</td></tr>
   </table></div>
@@ -544,7 +546,7 @@
   </table></div>
 
   <h3>Cuando un balde se termina</h3>
-  <p>En el detalle del sabor, tocá <i>Se terminó</i>. El sistema pregunta; si creía que todavía quedaban kilos, te lo dice (<i>"El sistema creía que quedaban 0,4 kg. Si se terminó, esos kilos se dan de baja"</i>): confirmá. Esa diferencia es normal, porque cada venta descuenta una estimación. Después abrís el siguiente balde.</p>
+  <p>En el detalle del sabor, tocá <i>Se terminó</i>. El sistema te dice cuánto calculaba que quedaba y te pregunta <span class="campo">¿Cuánto se tiró?</span>: si quedó un resto que no se puede servir y se tira, poné cuánto (pesado o a ojo); si no se tiró nada, dejalo vacío. Lo que se tiró queda en <a href="#descarte">Descarte</a> con su costo. La diferencia con lo que el sistema calculaba es normal, porque cada venta descuenta una estimación, y se corrige sola. Después abrís el siguiente balde.</p>
 
   <h3>Cuando entregás los vacíos al proveedor</h3>
   <p>En <i>Inventario → Ver</i>, arriba, el cuadro <b>Vacíos para entregar al proveedor</b> lista los baldes terminados, todos tildados. Cuando los entregás, tocá <span class="btn suave">Los entregué al proveedor</span>. Podés destildar los que todavía no entregaste. Los baldes llenos que te dan a cambio se cargan por <i>Balde nuevo</i>, como siempre.</p>
@@ -599,7 +601,7 @@
     </ul>
   </div>
 
-  <p><b>Qué hacer con un pote que ya no sirve:</b> si lo armaste por error, <i>Anular</i> (el helado vuelve al balde); si se venció o se cayó, <i>Descartar</i> (merma, no vuelve). No existe la opción de "abrir un pote para servirlo suelto".</p>
+  <p><b>Qué hacer con un pote que ya no sirve:</b> si lo armaste por error, <i>Anular</i> (el helado vuelve al balde); si se venció o se cayó, <i>Descartar</i> y elegís por qué (merma, no vuelve; queda en <a href="#descarte">Descarte</a>). No existe la opción de "abrir un pote para servirlo suelto".</p>
 
   <h3>Por qué cada pote tiene su identidad</h3>
   <p>Un pote de 1/4 no pesa siempre 250 g: pesa 238, o 262. El sistema guarda <b>el peso real de cada uno</b> y el precio que tenía cuando se armó. Así sabés cuánto helado salió de verdad, y un cambio de precios no hace mentir a las etiquetas ya pegadas.</p>
@@ -630,15 +632,43 @@
   <div class="tabla-scroll"><table>
     <tr><th>Opción</th><th>Cuándo</th><th>Qué pasa con el helado</th></tr>
     <tr><td><b>Anular</b></td><td>Lo armaste por error: pesaste mal, era otro sabor.</td><td><b>Vuelve al balde.</b> Cualquiera puede hacerlo.</td></tr>
-    <tr><td><b>Descartar</b></td><td>Se venció, se cayó, se tiró.</td><td><b>No vuelve:</b> es merma. Solo quien tiene permiso de cargar/ajustar stock.</td></tr>
+    <tr><td><b>Descartar</b></td><td>Se venció, se cayó, se tiró.</td><td><b>No vuelve:</b> es merma. Cualquiera puede hacerlo: elegís el motivo y queda en <a href="#descarte">Descarte</a>.</td></tr>
   </table></div>
-  <p>Ambas opciones piden confirmación y valen solo mientras el pote sigue en el freezer.</p>
+  <p>Las dos valen solo mientras el pote sigue en el freezer. Anular pide confirmación; Descartar abre una ventanita para elegir el motivo.</p>
   <div class="caja-aviso tip"><b>Un solo sabor por pote</b>Un pote sale de un único balde. Un formato de varios sabores (como el cucurucho doble) se sigue cobrando a mano en Ventas.</div>
 </section>
 
 <!-- ======================================================= -->
+<section id="descarte">
+  <h2><span class="n">9</span>Descarte: lo que se tira</h2>
+  <p class="bajada">Todo lo que no se vende y se tira: el resto de un balde, un pote vencido, una paleta rota, un cucurucho que se partió. Anotarlo es lo que le permite al dueño ver cuánta plata se pierde y en qué.</p>
+
+  <h3>Dónde se anota cada cosa</h3>
+  <div class="tabla-scroll"><table>
+    <tr><th>Qué se tira</th><th>Dónde</th><th>Cuánto</th></tr>
+    <tr><td><b>El resto de un balde</b></td><td><i>Inventario → sabor → Se terminó</i>. Ver <a href="#baldes">El ciclo del balde</a>.</td><td>Los kilos que se tiraron, pesados o a ojo.</td></tr>
+    <tr><td><b>Un pote armado</b></td><td><i>Potes → Descartar</i>, eligiendo el motivo.</td><td>Su peso, solo.</td></tr>
+    <tr><td><b>Un producto, insumo o envase</b></td><td>La pantalla <b>Descarte</b>.</td><td>Las unidades (o los kilos, si se cuenta en kilos).</td></tr>
+  </table></div>
+  <p>Lo puede anotar <b>cualquiera</b>, en el momento en que tira algo. Queda registrado quién fue.</p>
+
+  <h3>La pantalla Descarte</h3>
+  <ol>
+    <li>Escaneá el código del artículo (o tipealo) y apretá Enter, o elegilo de la lista <span class="campo">O elegí qué</span>.</li>
+    <li>Poné la <span class="campo">Cantidad</span> y elegí <span class="campo">Por qué</span>: vencido, se rompió o se cayó, se derritió u otro. Si querés, una nota.</li>
+    <li>Apretá <span class="btn peligro">Descartar</span>. El stock baja solo.</li>
+  </ol>
+  <p>Abajo aparece lo que se descartó hoy. No se puede descartar más de lo que el sistema tiene en stock: si pasa, el stock está mal y hay que avisarle al dueño para que lo corrija.</p>
+  <div class="caja-aviso tip"><b>Si tocás Descartar dos veces</b>Si no llegó la respuesta y volvés a apretar sin cambiar nada, no se descarta dos veces: el sistema reconoce que es el mismo.</div>
+
+  <h3>Para el dueño: cuánto se tiró</h3>
+  <p>En la misma pantalla, el dueño ve <b>Cuánto se tiró</b> en el período que elija: el total en plata, <b>lo que más se tira</b> (por sabor y por producto, ordenado por plata) y por qué motivo. Cada cosa se cuenta al costo que tenía el día que se tiró. Ahí mismo se baja el Excel.</p>
+  <p>En el <a href="#panel">Panel</a>, debajo del margen, aparece <i>Se tiró $…</i> del mismo período. No está restado del margen: el margen es de lo vendido.</p>
+</section>
+
+<!-- ======================================================= -->
 <section id="codigos">
-  <h2><span class="n">9</span>Códigos de barras y la pistola</h2>
+  <h2><span class="n">10</span>Códigos de barras y la pistola</h2>
   <p class="bajada">Cada cosa del local tiene un código propio, creado por el sistema. Nada depende de códigos de fábrica: el proveedor no los trae.</p>
 
   <h3>Cómo son los códigos</h3>
@@ -669,7 +699,7 @@
 
 <!-- ======================================================= -->
 <section id="usuarios">
-  <h2><span class="n">10</span>Usuarios y permisos <span class="rol">solo el dueño</span></h2>
+  <h2><span class="n">11</span>Usuarios y permisos <span class="rol">solo el dueño</span></h2>
   <p class="bajada">Cada persona entra con su propio usuario, así cada venta y cada movimiento quedan a nombre de quien los hizo.</p>
 
   <h3>Dar de alta a alguien</h3>
@@ -687,7 +717,7 @@
     <tr><th>Permiso</th><th>Qué le deja hacer</th></tr>
     <tr><td><b>Anular ventas y corregir sabores</b></td><td>Anular una venta, o cambiarle un sabor a un ticket.</td></tr>
     <tr><td><b>Registrar gastos, ingresos y retiros de caja</b></td><td>Los tres botones de movimientos de la Caja, y anularlos.</td></tr>
-    <tr><td><b>Cargar mercadería, baldes y ajustes de stock</b></td><td>Dar de alta baldes, recibir mercadería, ajustar kilos o unidades, canjear baldes, descartar potes.</td></tr>
+    <tr><td><b>Cargar mercadería, baldes y ajustes de stock</b></td><td>Dar de alta baldes, recibir mercadería, ajustar kilos o unidades, canjear baldes. (Descartar ya no pide este permiso: lo puede hacer cualquiera.)</td></tr>
   </table></div>
   <p>En la tabla de usuarios, la columna <b>Puede, además de vender</b> resume lo que tiene cada uno ("Todo", "Solo vender" o la lista). Un colaborador nuevo arranca con <b>todos tildados</b>, para no sacarle nada sin querer.</p>
   <div class="caja-aviso ejemplo"><b>Ejemplo</b> Ana está aprendiendo y querés que venda pero que no toque la plata ni el stock. Entrás a <i>Usuarios → Editar</i> en su fila y destildás los tres permisos. A partir de ese momento Ana ve Ventas, abre y cierra la caja, pero no ve los botones de anular, de gastos ni de cargar. Cuando le tengas confianza, se los volvés a tildar. Los cambios se aplican enseguida, incluso con su sesión abierta.</div>
@@ -704,7 +734,7 @@
 
 <!-- ======================================================= -->
 <section id="panel">
-  <h2><span class="n">11</span>El Panel del dueño <span class="rol">solo el dueño</span></h2>
+  <h2><span class="n">12</span>El Panel del dueño <span class="rol">solo el dueño</span></h2>
   <p class="bajada">Es lo primero que ves al entrar a Inicio. Sirve para decidir: cuánta gente poner, qué sabor comprar, qué día rinde más.</p>
   <p>Arriba elegís el período (<b>Hoy</b>, <b>Esta semana</b>, <b>Este mes</b> o fechas a mano) y todo se recalcula. Cada bloque:</p>
   <div class="tabla-scroll"><table>
@@ -724,12 +754,13 @@
 
 <!-- ======================================================= -->
 <section id="excel">
-  <h2><span class="n">12</span>Bajar a Excel <span class="rol">solo el dueño</span></h2>
+  <h2><span class="n">13</span>Bajar a Excel <span class="rol">solo el dueño</span></h2>
   <p class="bajada">Un archivo de Excel de verdad (.xlsx): se abre con doble clic, con los números como números y las fechas como fechas. No hace falta configurar nada.</p>
   <div class="tabla-scroll"><table>
     <tr><th>Qué</th><th>Dónde está el botón</th><th>Qué trae</th></tr>
     <tr><td><b>Inventario</b></td><td>Inventario → Ver, arriba a la derecha: <span class="btn suave">⬇ Descargar inventario en Excel</span></td><td>Cinco hojas: <i>Sabores</i> (kilos en stock, baldes cerrados, mínimo y precio de balde), <i>Baldes</i>, <i>Insumos</i>, <i>Productos y envases</i> y <i>Formatos</i>.</td></tr>
     <tr><td><b>Ventas</b></td><td>Historial, debajo del resumen: <span class="btn suave">⬇ Descargar este período en Excel</span></td><td>Dos hojas: <i>Ventas</i> (una fila por venta, con quién cobró y quién anuló) y <i>Detalle</i> (qué se vendió en cada una). Respeta el período y el medio de pago que tengas filtrados, y trae <b>todas</b> las ventas, no solo las 100 de la pantalla.</td></tr>
+    <tr><td><b>Descarte</b></td><td>Descarte → Cuánto se tiró, después de elegir el período: <span class="btn suave">⬇ Descargar Excel</span></td><td>Una hoja con cada cosa tirada: fecha, qué, cantidad, motivo, nota, costo y quién la cargó.</td></tr>
     <tr><td><b>Caja</b></td><td>Caja → Turnos cerrados: elegís <span class="campo">Desde</span> / <span class="campo">Hasta</span> y <span class="btn suave">Descargar Excel</span></td><td>Dos hojas: <i>Turnos</i> (con el arqueo: esperado, contado y diferencia) y <i>Movimientos</i> (cada peso que entró o salió).</td></tr>
   </table></div>
   <div class="caja-aviso ejemplo"><b>Ejemplo</b> Querés saber cuánto se vendió por transferencia en septiembre. En <i>Historial</i> ponés Desde <i>01/09</i>, Hasta <i>30/09</i>, medio <i>Transferencia</i>, <i>Buscar</i>, y bajás el Excel. En la hoja <i>Ventas</i> filtrás la columna Estado por <i>Cobrada</i> y sumás la columna Total.</div>
@@ -738,7 +769,7 @@
 
 <!-- ======================================================= -->
 <section id="faq">
-  <h2><span class="n">13</span>Si algo sale mal</h2>
+  <h2><span class="n">14</span>Si algo sale mal</h2>
   <p class="bajada">Las situaciones de todos los días, con qué hacer.</p>
 
   <details class="faq"><summary>Dice "La caja está cerrada" pero el menú dice "Caja abierta" (o al revés)</summary>
@@ -809,7 +840,7 @@
 
 <!-- ======================================================= -->
 <section id="glosario">
-  <h2><span class="n">14</span>Glosario</h2>
+  <h2><span class="n">15</span>Glosario</h2>
   <div class="tabla-scroll"><table>
     <tr><th>Palabra</th><th>Qué quiere decir acá</th></tr>
     <tr><td>Turno</td><td>El período entre abrir y cerrar la caja.</td></tr>
@@ -834,7 +865,7 @@
 
 <!-- ======================================================= -->
 <section id="limites">
-  <h2><span class="n">15</span>Lo que el sistema no hace (todavía)</h2>
+  <h2><span class="n">16</span>Lo que el sistema no hace (todavía)</h2>
   <p class="bajada">Para que no lo busques:</p>
   <ul>
     <li><b>Clientes y cuenta corriente</b>: hoy se cobra al contado.</li>
